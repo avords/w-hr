@@ -1,0 +1,103 @@
+<script>
+tmp31Html = '<div class="pop-51">' +
+			'<table>' +
+			'<tr>' +
+			'<td>' +
+			'<h6>选择部门：</h6>' +
+			'<div class="lft" id="j-pop31-slt"></div>' +
+			'</td>' +
+			'<td>' +
+			'<div class="ctr">' +
+			'<a href="javascript:void(0);" id="j-pop31-plus" class="f-ib u-add">添加 &gt;</a>' +
+			'<a href="javascript:void(0);" id="j-pop31-clear" class="f-ib u-clr">清空</a>' +
+			'</div>' +
+			'</td>' +
+			'<td>' +
+			'<h6>已选：</h6>' +
+			'<div class="rgt" id="j-pop31-rst"></div>' +
+			'</td>' +
+			'</tr>' +
+			'</table>' +
+			'</div>';
+</script>
+<script>
+$(function(){
+	//加载部门数据
+	$.ajax({ 
+		type:"GET", 
+		url: "${dynamicDomain}/companyDepartment/getDepartments",   
+		success: function(msg){
+			if(msg.treeNode){
+				tmp31Html = tmp31Html.replace('<div class="lft" id="j-pop31-slt"></div>','<div class="lft" id="j-pop31-slt">' + msg.treeNode+ '</div>');
+			}
+		}   
+	});
+	
+	$(document).on('click', '#j-pop31-slt i', function(){
+		var _this = $(this);
+		if(_this.text() === '-'){
+			_this.text('+').parent().next('div').hide();
+		}else{
+			_this.text('-').parent().next('div').show();
+		}
+		return false;
+	});
+
+	// 树状结构的级联选择
+	$(document).on('click', '#j-pop31-slt input', function(){
+		var _this = $(this), _checked = false;
+		if(_this.is(':checked')) _checked = true;
+		_this.parent().parent().next('div').find('input').prop('checked', _checked);
+	});
+
+	// 添加[部门]操作
+	$(document).on('click', '#j-pop31-plus', function(){
+		// 获取此前选中的
+		var _wait = $('#j-pop31-slt input:checked');
+		if(_wait.length <= 0) return false;
+
+		// 获取已存在的数组 以免重复
+		var _has = {};
+		$('#j-pop31-rst h5').each(function(){
+			var _val = $(this).attr('data-val'), _arr = _val.split('|');
+			_has['z'+_arr[0]] = _val;
+		});
+
+		// 重置所有多选框为未选状态
+		$('#j-pop31-slt input').prop('checked', false);
+		var _temp = {}, _n = 0;
+		$.each(_wait, function(){
+			var _this = $(this), _val = _this.val(), _arr = _val.split('-');
+			if(typeof(_has['z'+_arr[0]]) === 'undefined'){
+				var _pus = {'name':_this.parent().text().substr(1), 'pid':_arr[1]};
+				_temp['z' + _arr[0]] = _pus;
+				_n++;
+			}
+		});
+
+		var _opt = '';
+		$.each(_temp, function(i, rs){
+			var _fname = '';
+			if(rs['pid'] > 0) _fname = ' - ' + _depJson['z' + rs['pid']]['name'];
+			_opt += '<h5 class="f-cb" data-val="'+ i.substr(1) +'|'+ rs['name'] + _fname +'">';
+			_opt += '<span class="f-fl">'+ rs['name'] + _fname +'</span>';
+			_opt += '<a href="javascript:void(0);" class="j-pop31-del f-fr">&nbsp;</a></h5>';
+		});
+
+		// 清空已有队列后 新生成
+		$('#j-pop31-rst').append($(_opt));
+	});
+
+	// 清空[部门]操作
+	$(document).on('click', '#j-pop31-clear', function(){
+		$('#j-pop31-rst').empty();
+	});
+
+	// 删除[项目组|部门]操作
+	$(document).on('click', '.j-pop31-del', function(){
+		$(this).parent().remove();
+	});
+
+});
+
+</script>

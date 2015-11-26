@@ -1,0 +1,216 @@
+<#macro page url="" totalPage=1 visiblePages=5 currentPage=1 formId="">
+<div class="b_page_team">
+	<ul id="pagination${formid}" class="pagination"></ul>
+</div>
+<script type="text/javascript">
+$(function(){
+	var total = ${totalPage}
+	if(total<1){
+		total = 1;
+	}
+	$("#pagination${formid}").twbsPagination({
+		  totalPages: total,
+		  visiblePages: ${visiblePages},
+		  startPage:${currentPage},
+		  onPageClick: function (event, page) {
+		  		var pageUrl = "${url}";
+		  		if(pageUrl.indexOf("?")==-1){
+		  			pageUrl += "?";
+		  		}
+			 	window.location.href = pageUrl + "&ec_p="+page;
+		}
+	});
+	
+})
+</script>
+</#macro>
+
+<!-- <#macro spage url="" totalPage=1 currentPage=1 formId="">
+	<#if url?index_of("?")==-1>
+		<#assign surl = "${url}?">
+	<#else>
+		<#assign surl = "${url}">
+	</#if>
+<div class="b_page_team">
+	<ul id="spagination${formid}" class="pagination">
+		<li class="prev <#if currentPage&lt;=1>disabled</#if>"><a href="<#if currentPage&lt;=1>javascript:void(0)<#else>${surl}&ec_p=${currentPage-1}</#if>">上一页</a></li>
+		<li class="text">${currentPage} / ${totalPage}</li>
+		<li class="next <#if currentPage&gt;=totalPage>disabled</#if>"><a href="<#if currentPage&gt;=totalPage>javascript:void(0)<#else>${surl}&ec_p=${currentPage+1}</#if>">下一页</a></li>
+	</ul>
+</div>
+</#macro> -->
+
+<!-- update by huazi 2015-07-06 -->
+<#macro spage url="" totalPage=1 currentPage=1 formId="">
+	<#if url?index_of("?")==-1>
+		<#assign surl = "${url}?">
+	<#else>
+		<#assign surl = "${url}">
+	</#if>
+	<a href="<#if currentPage&lt;=1>javascript:void(0)<#else>${surl}&ec_p=${currentPage-1}</#if>" class="f-ib u-lft">上一页</a>
+		<span class="f-ib">${currentPage} / ${totalPage}</span>
+	<a href="<#if currentPage&gt;=totalPage>javascript:void(0)<#else>${surl}&ec_p=${currentPage+1}</#if>" class="f-ib u-rgt">下一页</a>
+</#macro>
+
+
+
+
+
+<!-- 
+	add by huazi 2015-07-15  foot的分页 用form提交
+	totalPage:总页数
+	currentPage:当前页
+	formId:form表单的ID
+-->
+<#macro pageform totalPage=1 visiblePages=5 currentPage=1 formId="">
+<div class="b_page_team">
+	<ul id="pagination${formid}" class="pagination"></ul>
+	<input type="hidden" name="ec_p" id="ec_p" value="${currentPage}"/>
+</div>
+<script type="text/javascript">
+$(function(){
+	var total = ${totalPage}
+	if(total<1){
+		total = 1;
+	}
+	$("#pagination${formid}").twbsPagination({
+		  totalPages: total,
+		  visiblePages: ${visiblePages},
+		  startPage:${currentPage},
+		  onPageClick: function (event, page) {
+		  		var pageUrl = "${url}";
+		  		if(pageUrl.indexOf("?")==-1){
+		  			pageUrl += "?";
+		  		}
+			 	$("#ec_p").val(page);
+			 	$("#${formId}").submit();
+		}
+	});
+	
+})
+</script>
+</#macro>
+
+
+
+
+<#macro epage url="" totalPage=1 currentPage=1 cpName="" formId="">
+    <#if url?index_of("?")==-1>
+        <#assign eurl = "${url}?">
+    <#else>
+        <#assign eurl = "${url}">
+    </#if>
+    <h5 class="f-fr">
+        <#if currentPage<=1>
+            <a href="javascript:void(0);" class="f-ib u-lft" id="${cpName}_oth"></a>
+        <#else>
+            <a href="javascript:void(0);" onclick="prevPage${cpName}()" class="f-ib u-lft" id="${cpName}_oth"></a>
+        </#if>
+            <span class="f-ib u-txt">${currentPage} / ${totalPage}</span>
+        <#if currentPage &gt;= totalPage>
+            <a href="javascript:void(0);" class="f-ib u-rgt"></a>
+        <#else>
+            <a href="javascript:void(0);" onclick="nextPage${cpName}()" class="f-ib u-rgt"></a>
+        </#if>
+    </h5>
+    <script>
+      function prevPage${cpName}(){
+        $('#${formId}').attr('action','${eurl}${cpName}=${currentPage-1}#${cpName}_oth');
+        $('#${formId}').attr('method','post');
+        $('#${formId}').submit();
+      }
+      function nextPage${cpName}(){
+        $('#${formId}').attr('action','${eurl}${cpName}=${currentPage+1}#${cpName}_oth');
+         $('#${formId}').attr('method','post');
+        $('#${formId}').submit();
+      }
+    </script>
+</#macro>
+
+<#macro singlePage url="" totalPage=1 currentPage=1 cpName="" formId="">
+    <#if url?index_of("?")==-1>
+        <#assign eurl = "${url}?">
+    <#else>
+        <#assign eurl = "${url}">
+    </#if>
+    <h5 class="f-fr">
+        <#if currentPage<=1>
+            <a href="javascript:void(0);" class="f-ib u-lft" id="${cpName}_oth"></a>
+        <#else>
+            <a href="javascript:void(0);" onclick="prevPage${cpName}()" class="f-ib u-lft"></a>
+        </#if>
+            <span class="f-ib u-txt">${currentPage} / ${totalPage}</span>
+        <#if currentPage &gt;= totalPage>
+            <a href="javascript:void(0);" class="f-ib u-rgt"></a>
+        <#else>
+            <a href="javascript:void(0);" onclick="nextPage${cpName}()" class="f-ib u-rgt"></a>
+        </#if>
+    </h5>
+    <script>
+      function prevPage${cpName}(){
+        $('#${formId}').attr('action','${eurl}${cpName}=${currentPage-1}');
+        $('#${formId}').submit();
+      }
+      function nextPage${cpName}(){
+        $('#${formId}').attr('action','${eurl}${cpName}=${currentPage+1}');
+        $('#${formId}').submit();
+      }
+    </script>
+</#macro>
+
+<#macro cartPage url="" totalPage=1 currentPage=1 cpName="" formId="">
+    <#if url?index_of("?")==-1>
+        <#assign eurl = "${url}?">
+    <#else>
+        <#assign eurl = "${url}">
+    </#if>
+    <h5>
+        <#if currentPage<=1>
+            <a href="javascript:void(0);" class="f-ib u-lft"></a>
+        <#else>
+            <a href="${eurl}&${cpName}=${currentPage-1}" class="f-ib u-lft"></a>
+        </#if>
+            <span class="f-ib u-txt">${currentPage} / ${totalPage}</span>
+        <#if currentPage &gt;= totalPage>
+            <a href="javascript:void(0);" class="f-ib u-rgt"></a>
+        <#else>
+            <a href="${eurl}&${cpName}=${currentPage+1}" class="f-ib u-rgt">页</a>
+        </#if>
+    </h5>
+</#macro>
+
+<#macro fpage url="" totalPage=1 currentPage=1 cpName="ec_p" formId="">
+    <#if url?index_of("?")==-1>
+        <#assign eurl = "${url}?">
+    <#else>
+        <#assign eurl = "${url}">
+    </#if>
+    <h5 class="f-fr">
+        <#if currentPage<=1>
+            <a href="javascript:void(0);" style="cursor:not-allowed;" class="f-ib u-lft" id="${cpName}_oth">上一页</a>
+        <#else>
+            <a href="javascript:void(0);" onclick="prevPage${cpName}()" class="f-ib u-lft">上一页</a>
+        </#if>
+        <#if totalPage <1>
+        	<span class="f-ib u-txt">${currentPage} / 1</span>
+        <#else>
+        	<span class="f-ib u-txt">${currentPage} / ${totalPage}</span>
+        </#if>
+           
+        <#if currentPage &gt;= totalPage>
+            <a href="javascript:void(0);" style="cursor:not-allowed;"  class="f-ib u-rgt">下一页</a>
+        <#else>
+            <a href="javascript:void(0);" onclick="nextPage${cpName}()" class="f-ib u-rgt">下一页</a>
+        </#if>
+    </h5>
+    <script>
+      function prevPage${cpName}(){
+        $('#${formId}').attr('action','${eurl}${cpName}=${currentPage-1}');
+        $('#${formId}').submit();
+      }
+      function nextPage${cpName}(){
+        $('#${formId}').attr('action','${eurl}${cpName}=${currentPage+1}');
+        $('#${formId}').submit();
+      }
+    </script>
+</#macro>

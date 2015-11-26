@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>邮箱验证</title>
+    <link rel="stylesheet" type="text/css" media="all" href="${staticDomain}css/reset.z.css"/>
+    <link rel="stylesheet" type="text/css" media="all" href="${staticDomain}css/plus1.z.css"/>
+    <link rel="stylesheet" type="text/css" media="all" href="${staticDomain}css/system.css"/>
+    <script src="${staticDomain}js/jquery.1.8.3.min.js"></script>
+    <script src="${staticDomain}js/jquery.cookie.js"></script>
+    <script src="${staticDomain}js/meta1.width.js"></script>
+</head>
+<body>
+<div id="g-login">
+    <div class="logo f-lyt">
+        <a href="http://www.ibenefit.com.cn" target="_blank" class="f-ib fst"><img src="${staticDomain}image/gy.logo.t.png" /></a>
+        <#if company?? && company.logoId??>
+        	<i class="f-ib"></i>
+       		 <a href="javascript:void(0)" class="f-ib lst"><img src="${adminStaticDomain}${company.logoId}" /></a>
+        </#if>
+    </div>
+    <div class="bg bg1 f-lyt">
+	<div class="g-content">
+		<div class="g-inc">
+			<p>邮箱验证失败，无法绑定！</p>
+			<div class="btn">
+				<a href="javascript:history.go(-1);" class="on">关闭</a>
+				<a href="${dynamicDomain}/index">返回首页</a>
+			</div>
+		</div>
+	</div>
+	<script>
+	    $(function(){
+	        var _h1 = $(window).height(),_h2 = $('.nav').height(),_h3 = $('.footer').height(),h = _h1-(_h2+_h3) ;
+	        $('.g-inc').css('height',h-235+'px');
+	    })
+	</script>
+    </div>
+</div>
+<div id="gy-ftb">
+	<div id="gy-ft" class="f-cb lyt">
+		<h6><a href="http://www.ibenefit.com.cn" target="_blank"><img src="${staticDomain}image/gy.logo.t.png"/></a></h6>
+		<h3>&nbsp;</h3>
+		<h5><img src="${staticDomain}image/gy.char.png"></h5>
+		<div>
+			<h4>
+				Copyright by www.ibenefit.com.cn © 2008-2015<br /><br />
+				<a href="//www.miibeian.gov.cn/state/outPortal/loginPortal.action" target="_blank">沪ICP备13025683号-5</a>
+			</h4>
+			<p style="padding-top: 12px;">
+				</p>
+			<dl class="f-cb f-ib">
+				<dt class="f-fl">
+					<span class="f-dn"><i class="f-ib j-char-c"></i><img src="${staticDomain}image/gy.char.png" /><em>微信扫一扫</em></span>
+					<a href="javascript:void(0)" class="j-char-s"><img class="f-ib" src="${staticDomain}image/gy.ic09.png" /></a>
+					<a href="//weibo.com/ibenefitchina" target="_blank"><img class="f-ib" src="${staticDomain}image/gy.ic10.png" /></a>
+					<a href="//www.linkedin.com/company/ibenefit-china" target="_blank"><img class="f-ib" src="${staticDomain}image/gy.ic11.png" /></a>
+				</dt>
+				<dd class="f-fr">
+					上海 • 北京 • 深圳 • 成都<br /><b>400-161-0009</b>
+				</dd>
+			</dl>
+		</div>
+	</div>
+</div>
+<script>
+if(window.location!=window.parent.location){
+	window.parent.location = "${loginUrl}";
+}
+
+$(function(){
+	// 登录窗的居中显示
+    var _lgn = $('.j-lgn'), _pa = _lgn.parent();
+    //_lgn.css({'top':(_pa.height() - _lgn.height()) / 2});
+    // 样式的特殊情况处理
+    $('#gy-ftb').css({'border-top':0}).addClass('f-lyt');
+    // 模拟多选框
+    $('.j-keep').click(function(){
+        var _this = $(this), _on = 'on';
+        if(_this.hasClass(_on)){
+            _this.removeClass(_on);
+            $('#rememberMe').val('0');
+        }else{
+            _this.addClass(_on);
+            $('#rememberMe').val('1');
+        }
+    });
+
+    $(window).resize(function(){ _lgn.css({'top':(_pa.height() - _lgn.height()) / 2}); });
+
+    // 预定义
+     _note = ['请输入邮箱或手机号码', '请输入6-24位密码'];
+     _tbg = ['#333', '#999'];
+
+    // 预定义Dom元素
+     _tagTxt = $('.j-txt'),
+        _console = $('#j-console'),
+        _form = $('#j-login-fm'),
+        _tagAccount = _tagTxt.eq(0),
+        _tagpassword = _tagTxt.eq(1);
+
+    // 默认赋值
+    _tagAccount.val(_note[0]);
+    _tagpassword.val(_note[1]);
+
+    // 账号|密码 模拟[placeholder]效果
+    _tagTxt.focus(function(){
+        var _this = $(this), _val = $.trim(_this.val());
+        var _i = _tagTxt.index(_this);
+        if(_val == _note[_i]){
+            _this.val('').css('color', _tbg[0])
+        }
+    }).blur(function(){
+        var _this = $(this), _val = $.trim(_this.val());
+        var _i = _tagTxt.index(_this);
+        if(_val == ''){
+            _this.val(_note[_i]).css('color', _tbg[1])
+        }
+    });
+	
+    //记住帐户
+    var rememberMe = $.cookie('rememberMeEmp');
+    if(rememberMe==1){
+    	 var loginName = $.cookie('loginName');
+    	if(loginName != null && loginName != ''){
+			$('#loginName').val(loginName);
+			$('#password').focus();
+		}else{
+			$('#loginName').focus();
+		}
+    }else{
+    	$(".j-keep").click();
+    }
+	
+});
+
+function check(){
+	  // 账号
+    var _val = $.trim(_tagAccount.val()), _len = _val.length;
+    if(_len <= 0 || _val == _note[0]){
+        _console.text('请输入邮箱或手机号码');
+        return false;
+    }else if(true){ // 格式校验 ...
+
+    }else{
+        _console.text('');
+    }
+
+    // 密码
+    var _val = $.trim(_tagpassword.val()), _len = _val.length;
+    if(_len <= 0 || _val == _note[1]){
+        _console.text('请输入6-24位密码');
+        return false;
+    }else{
+        _console.text('');
+    }
+    
+    if($('#rememberMe').val() == 1){
+		$.cookie('loginName',$("#loginName").val(), {expires:365,path:'/'});
+	}else{//删除cookie
+		$.cookie('loginName',"", {expires:-1,path:'/'});
+	}
+    $.cookie('rememberMeEmp',$("#rememberMe").val(), {expires:365,path:'/'});
+    return true;
+}
+</script>
+<script>
+$(function(){
+	// 微信弹窗的点击和关闭
+	$('.j-char-s').click(function(){ $(this).prev('span').fadeIn(); return false; });
+	$('.j-char-c').click(function(){ $(this).parent('span').fadeOut(); return false; });
+	$(document).click(function(){ $('.j-char-c').parent('span').fadeOut(); });
+});
+</script>
+
+</body>
+</head>

@@ -1,0 +1,110 @@
+.skin-blue .main-header .navbar {
+	background-color: #3c8dbc
+}
+
+.skin-blue .main-header .navbar .nav>li>a {
+	color: #fff
+}
+
+.skin-blue .main-header .navbar .nav>li>a:hover, .skin-blue .main-header .navbar .nav>li>a:active,
+	.skin-blue .main-header .navbar .nav>li>a:focus, .skin-blue .main-header .navbar .nav .open>a,
+	.skin-blue .main-header .navbar .nav .open>a:hover, .skin-blue .main-header .navbar .nav .open>a:focus
+	{
+	background: rgba(0, 0, 0, 0.1);
+	color: #f6f6f6
+}
+
+.skin-blue .main-header .navbar .navbar-custom-menu>.nav {
+	margin-right: 10px
+}
+
+.skin-blue .main-header .navbar .sidebar-toggle {
+	color: #fff
+}
+
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+	color: #f6f6f6;
+	background: rgba(0, 0, 0, 0.1)
+}
+
+.skin-blue .main-header .navbar .sidebar-toggle {
+	color: #fff
+}
+
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+	background-color: #367fa9
+}
+
+@media ( max-width :767px) {
+	.skin-blue .main-header .navbar .dropdown-menu li.divider {
+		background-color: rgba(255, 255, 255, 0.1)
+	}
+	.skin-blue .main-header .navbar .dropdown-menu li a {
+		color: #fff
+	}
+	.skin-blue .main-header .navbar .dropdown-menu li a:hover {
+		background: #367fa9
+	}
+}
+
+.skin-blue .main-header .logo {
+	background-color: #367fa9;
+	color: #fff;
+	border-bottom: 0 solid transparent
+}
+
+.skin-blue .main-header .logo>a {
+	color: #fff
+}
+
+.skin-blue .main-header .logo:hover {
+	background: #357ca5
+}
+
+.skin-blue .main-header li.user-header {
+	background-color: #3c8dbc
+}
+
+.skin-blue .content-header {
+	background: transparent
+}
+
+.skin-blue .user-panel>.info, .skin-blue .user-panel>.info>a {
+	color: #fff
+}
+
+.skin-blue .sidebar-menu>li.header {
+	color: #4b646f;
+	background: #1a2226
+}
+
+.skin-blue .sidebar-menu>li>a {
+	border-left: 3px solid transparent;
+	/* 	margin-right: 1px */
+}
+
+.skin-blue .sidebar-menu>li>a:hover, .skin-blue .sidebar-menu>li.active>a
+	{
+	margin-top: 1px;
+	color: #fff;
+	font-weight: bold;
+	background: #00C0EF;
+	border-left-color: #3c8dbc
+}
+
+.skin-blue .wrapper, .skin-blue, .skin-blue .left-side {
+	background: #fff;
+}
+
+.skin-blue .sidebar a {
+	color: #fff;
+}
+
+.skin-blue .treeview-menu>li>a {
+	color: #374850
+}
+
+.skin-blue .treeview-menu>li.active>a, .skin-blue .treeview-menu>li>a:hover
+	{
+	color: #fff;
+}

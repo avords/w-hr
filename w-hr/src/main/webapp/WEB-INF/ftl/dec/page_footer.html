@@ -1,0 +1,64 @@
+<div id="g-foot" class="f-dn">
+	<div class="u-foot">
+		<div class="u-foot-t f-cb">
+			<a href="http://www.ibenefit.com.cn" target="_blank" class="u-logo f-fl"><img src="${staticDomain}image/logo.gif" alt="iBenefit" /></a>
+			<dl class="f-fl f-cb">
+				<dt class="f-fl"><img src="${staticDomain}image/qrcode.gif" /></dt>
+				<dd class="f-fl">关注iBenefit官方微信<br />弹性福利一步搞定！</dd>
+			</dl>
+			<ul class="f-fr">
+				<li class="u-ico">
+					<img src="${staticDomain}image/ico1.gif" class="f-ib" />
+					<img src="${staticDomain}image/ico2.gif" class="f-ib" />
+					<img src="${staticDomain}image/ico3.gif" class="f-ib" />
+				</li>
+				<li class="u-nem">客服热线：400-888-8888</li>
+			</ul>
+		</div>
+		<div class="u-foot-b">
+			<a href="p2.hr.index.z.html" class="f-ib">账户首页</a>
+			<a href="p6.hr.index.z.html" class="f-ib">福利商城</a>
+			<p>Copyright by www.ibenefit.com.cn © 2008-2015</p>
+		</div>
+	</div>
+</div>
+
+<div id="gw-pb-ft">
+	<div id="gw-pb-foot" class="f-cb">
+		<#if s_companyFunctionShowLogo>
+		<h6><a href="http://www.ibenefit.com.cn" target="_blank">
+		<img src="${staticDomain}image/gw.logo.t.png"></a>
+		</h6>
+		</#if>
+		<h5><img src="${staticDomain}image/gw.char.png"></h5>
+		<div>
+			<h4>
+				<a href="${dynamicDomain}/index" class="f-ib">账户首页</a>
+				<a href="${dynamicDomain}/mall/index" class="f-ib">福利商城</a>
+			</h4>
+			<p>Copyright by www.ibenefit.com.cn © 2008-2015<br>
+				<a href="//www.miibeian.gov.cn/state/outPortal/loginPortal.action" target="_blank">沪ICP备13025683号-5</a>
+			</p>
+			<dl class="f-cb f-ib">
+				<dt class="f-fl">
+					<span class="f-dn"><i class="f-ib j-char-c"></i><img src="${staticDomain}image/gw.char.png"><em>微信扫一扫</em></span>
+					<a href="javascript:void(0)" class="j-char-s"><img class="f-ib" src="${staticDomain}image/gw.ic09.png"></a>
+					<a href="//weibo.com/ibenefitchina" target="_blank"><img class="f-ib" src="${staticDomain}image/gw.ic10.png"></a>
+					<a href="//www.linkedin.com/company/ibenefit-china"><img class="f-ib" src="${staticDomain}image/gw.ic11.png"></a>
+				</dt>
+				<dd class="f-fr">
+					上海 • 北京 • 深圳 • 成都<br><b>400-161-0009</b>
+				</dd>
+			</dl>
+		</div>
+	</div>
+</div>
+<script src="${staticDomain}js/jquery.placeholder.js"></script>
+<script>
+$(function(){
+	// 微信弹窗的点击和关闭
+	$('.j-char-s').click(function(){ $(this).prev('span').fadeIn(); return false; });
+	$('.j-char-c').click(function(){ $(this).parent('span').fadeOut(); return false; });
+	$(document).click(function(){ $('.j-char-c').parent('span').fadeOut(); });
+});
+</script>

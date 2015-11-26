@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <title>内部权限设置</title>
+    <meta http-equiv="Content-Language" content="zh-cn" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="-1" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/center.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <script src="${staticDomain}date/WdatePicker.js" charset="utf-8">
+    </script>
+    <script src="${staticDomain}js/jquery.popup.js"></script>
+    <style>
+    #g-fm-p21 fieldset i {
+	  color: #f00;
+	  font: 12px SimSun;
+	  padding: 0 8px;
+	}
+	#g-fm-p21 fieldset p a i {
+	  cursor: pointer;
+	  display: block;
+	  width: 16px;
+	  height: 16px;
+	  background: url('${staticDomain}/image/zico37.gif') no-repeat;
+	  position: absolute;
+	  top: 4px;
+	  right: -12px;
+	}
+    </style>
+  </head>
+  <body>
+    <div id="g-crum2">
+      <h4>
+        <a href="${dynamicDomain}/index">
+          账户首页
+        </a>
+        &gt;
+        <a href="javascript:void(0);">
+          账户管理
+        </a>
+        &gt; 内部权限设置
+      </h4>
+    </div>
+    <div id="g-content" class="f-cb">
+      <#include "/include/nav_menu_link.html">
+        <form action="${dynamicDomain}/role/saveRole" method="post" id="RoleForm">
+        <input type="hidden" name="objectId" value="${entity.objectId}">
+          <div class="m-main f-fr">
+
+            <h4 class="u-tit f-cb">
+              <span class="f-ib">
+                内部权限设置
+              </span>
+              <a href="${dynamicDomain}/role/listRole" class="f-fr">
+                返回
+              </a>
+            </h4>
+
+            <div id="g-fm-p21">
+              <div class="u-fm">
+                <fieldset class="f-cb">
+                  <label class="f-fl">
+                    角色名称：
+                  </label>
+                  <span class="f-fl">
+                    <input type="text" name="roleName" value="${entity.name}" class="u-txt required" />
+                  </span><i>*</i>
+                </fieldset>
+                <fieldset class="f-cb">
+                  <label class="f-fl">
+                    角色编码：
+                  </label>
+                  <span class="f-fl">
+                    <input type="text" name="roleCode" id="roleCode" value="${entity.roleCode}" class="u-txt required" />
+                  </span><i>*</i>
+                </fieldset>
+                <fieldset class="f-cb">
+                  <label class="f-fl">
+                    选择管理员：
+                  </label>
+                  <p class="f-fl j-each-lst">
+                  	<#list haveUsers as user>
+                	 	<a href="javascript:void(0);" data-id="${user.objectId}" class="f-ib">
+                	 	${user.loginName}
+                	 	<i class="j-res"></i>
+                	 	<input type="hidden" name="userIds" value="${user.objectId}" />
+                	 	</a>
+                	 </#list>
+                  </p>
+                  <input type="hidden" class="j-each-val" />
+                  <em data-pop="each,1,doEach,vam" class="f-fl u-choice j-pop-open">
+                    选择账户
+                  </em>
+                </fieldset>
+                <fieldset class="f-cb">
+                  <label class="f-fl">
+                    权限管理：
+                  </label>
+                  <dl class="f-fl">
+                    <#list allMenus as parentMenu> 
+                      <dt>
+                      <#if parentMenu.folderId==9999999||parentMenu.folderId==10000004>
+                      	<input type="checkbox" name="menuIds" class="j-chk-all"  value="${parentMenu.folderId}" />
+                      </#if>
+                      <b class="f-ib">
+                        ${parentMenu.folderName}
+                      </b>
+                    </dt>
+                    <dd>
+                    <#if parentMenu.folderId!=9999999&&parentMenu.folderId!=10000004>
+                    <#list parentMenu.menus as menu>
+                      <input type="checkbox" name="menuIds" class="j-chk-all"  value="${menu.objectId}" />
+                      <i class="f-ib u-c1">
+                        ${menu.name}
+                      </i>
+                      <br />
+                    </#list>
+                   	</#if>
+                  </dd>
+                </#list>
+              </dl>
+            </fieldset>
+
+            <fieldset class="f-cb">
+              <label class="f-fl">
+                &nbsp;
+              </label>
+              <span class="f-fl f-por">
+                <button type="submit">
+                  提交
+                </button>
+              </span>
+            </fieldset>
+          </div>
+          <script>
+          	$(document).ready(function() {
+				$("#roleCode").bind("change",function(){
+				     $("#roleCode").rules("add",{
+				        remote : {
+				            url : "${dynamicDomain}/role/isUnique?ajax=1&objectId=${entity.objectId}", //后台处理程序    
+				            type : "get",
+				            dataType : "json"
+				        },
+				        messages : {
+				            remote : "该企业角色代码已经存在"
+				        }
+				    });
+				});
+	    	});
+          	
+            $(function(){
+
+              // 单个多选
+              $('.j-chk-all').click(function(){
+
+                var _this = $(this), _son = _this.parent().find('.j-chk-son');
+                if(_this.is(':checked')){
+                  _son.prop('checked', true);
+                }else{
+                  _son.prop('checked', false);
+                }
+                });
+
+                // 控制列表尾元素的样式
+                $('.j-list').find('ul:last').css('border-bottom',0);
+
+                // 选项取消(删除)
+                $('body').on('click', '.j-res', function(){
+
+                  var _this = $(this);
+                  _this.parent().remove();
+                  });
+                  });
+                </script>
+
+              </div>
+            </div>
+
+            <!-- 弹窗[选择账户] -->
+            <table class="m-pop-up" id="j-pop-each">
+              <tr>
+                <td class="z-tac">
+                  <div class="z-ib z-wid500">
+                    <h4 class="u-tit">
+                      选择账户
+                    </h4>
+                    <h5 class="u-close">
+                      <a href="javascript:void(0);" data-pop="test1" class="j-pop-cancel">
+                        ×
+                      </a>
+                      <input type="hidden" class="j-pop-data" />
+                    </h5>
+                    <div class="pop-member f-cb">
+
+                      <div class="f-fl u-rgt">
+                        <span class="f-ib">
+                          待选账户：
+                          <input type="checkbox" id="sltWaitAll" data-type="wait" class="f-ib j-slt-all">
+                          <label for="sltWaitAll">
+                            全选
+                          </label>
+                        </span>
+                        <div class="u-max-h j-wait-area">
+                        </div>
+                      </div>
+                      <div class="f-fl u-ctr">
+                        <a href="javascript:void(0);" class="f-ib u-add j-act-plus">
+                          添加 &gt;&gt;
+                        </a>
+                        <a href="javascript:void(0);" class="f-ib u-del j-act-move">
+                          移除 &lt;&lt;
+                        </a>
+                        <a href="javascript:void(0);" class="f-ib u-clr j-act-clear">
+                          清空
+                        </a>
+                      </div>
+                      <div class="f-fl u-rgt">
+                        <span class="f-ib">
+                          已选账户：
+                          <input type="checkbox" id="sltHasAll" data-type="has" class="f-ib j-slt-all">
+                          <label for="sltHasAll">
+                            全选
+                          </label>
+                        </span>
+                        <div class="u-max-h j-has-area">
+                        	 <#list haveUsers as user>
+                        	 	<p class="f-cb" id="j-has-id${user.objectId}">
+                        	 	<input type="checkbox" value="${user.objectId}" name="userId" data-txt="${user.loginName}" class="f-fl j-has-slt">
+                        	 	<span class="f-fl">${user.loginName}</span></p>
+                        	 </#list>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="u-btn">
+                      <a href="javascript:void(0);" class="u-sub j-pop-sure">
+                        提交
+                      </a>
+                      <a href="javascript:void(0);" class="u-rst j-pop-cancel">
+                        取消
+                      </a>
+                    </h6>
+                  </div>
+                </td>
+              </tr>
+            </table>
+            <script>
+            	$("#RoleForm").validate();
+              	$(function(){
+
+                // 预定义数组
+                //var _jsonData = {'0101':'admin', '0102':'adminHR', '0103':'adminCode', '0104':'adminOT', '0105':'adminCFO'};
+                var _jsonData = ${hrUsers};
+                // 默认生成列表
+                var _html = createListHtml(_jsonData);
+                $('.j-wait-area').html(_html);
+
+                // 全选操作
+                $('.j-slt-all').click(function(){
+
+                  var _this = $(this), _status = true;
+                  var _type = _this.attr('data-type');
+                  var _wait = $('.j-'+ _type +'-slt');
+                  if(!_this.is(':checked')) _status = false;
+                  if(_wait.length > 0) _wait.prop('checked', _status);
+                  });
+
+                  // 添加待选区的选中项到已选区域[去重]
+                  $('.j-act-plus').click(function(){
+
+                    var _checkList = $('.j-wait-slt').filter(':checked');
+
+                    if(_checkList.length > 0){
+
+                      var _hasList = {};
+                      $.each(_checkList, function(){
+                        var _this = $(this), _id = _this.val();
+                        _hasList[_id] = _this.attr('data-txt');
+                        });
+
+                        // 读取已有数据
+                        var _old = getOldDate('has');
+                        if(_old !== false){
+                          var mergeJson = mergeData(_hasList, _old);
+                        }else{
+                          var mergeJson = _hasList;
+                        }
+
+                        // 写入已选区域
+                        $('.j-has-area').html(createListHtml(mergeJson, 'has'));
+
+                        // 移除待选区域
+                        removeWaitlist(_hasList);
+
+                        // 取消全选状态
+                        $('.j-slt-all').prop('checked', false);
+                      }
+                      });
+
+                      // 移除已选区的选中项到待选区域[去重]
+                      $('.j-act-move').click(function(){
+
+                        var _checkList = $('.j-has-slt').filter(':checked');
+
+                        if(_checkList.length > 0){
+
+                          var _hasList = {};
+                          $.each(_checkList, function(){
+                            var _this = $(this), _id = _this.val();
+                            _hasList[_id] = _this.attr('data-txt');
+                            });
+
+                            // 读取已有数据
+                            var _old = getOldDate('wait');
+                            if(_old !== false){
+                              var mergeJson = mergeData(_hasList, _old);
+                            }else{
+                              var mergeJson = _hasList;
+                            }
+
+                            // 写入待选区域
+                            $('.j-wait-area').html(createListHtml(mergeJson, 'wait'));
+
+                            // 移除已选区域
+                            removeWaitlist(_hasList, 'has');
+
+                            // 取消全选状态
+                            $('.j-slt-all').prop('checked', false);
+                          }
+                          });
+
+                          // 清空已选区的选中项
+                          $('.j-act-clear').click(function(){
+
+                            var _hasArea = $('.j-has-area');
+                            if(_hasArea.find('p').length > 0){
+                              _hasArea.html('');
+
+                              $('.j-wait-area').html(createListHtml(_jsonData));
+                            }
+
+                            // 取消全选状态
+                            $('.j-slt-all, .j-will-slt').prop('checked', false);
+                            });
+
+                            });
+
+                            // [函数]获取区域内已有数据
+                            function getOldDate(_char){
+
+                              var _c = _char || 'wait';
+                              var _data = false;
+                              var _old = $('.j-'+ _c +'-area').find('.j-'+ _c +'-slt');
+                              if(_old.length > 0){
+                                _data = {};
+                                $.each(_old, function(){
+                                  var _this = $(this), _id = _this.val();
+                                  _data[_id] = _this.attr('data-txt');
+                                  });
+                                }
+                                return _data;
+                              }
+
+                              // [函数]依据部门的取消状态减少待选区域项
+                              function removeWaitlist(_json, _char){
+                                var _aryId = [];
+                                var _c = _char || 'wait';
+                                for(var k in _json){
+                                  _aryId.push('#j-'+ _c +'-id' + k);
+                                }
+                                var _ids = _aryId.join(',');
+                                $(_ids).remove();
+                              }
+
+                              // [函数]创建输出列表
+                              function createListHtml(_list, _type){
+                                var _t = _type || 'wait';
+                                var _html = '';
+                                for(var k in _list){ // 遍历json对象的每个key/value对,p为key
+                                if(_list[k] != ''){
+                                  _html += '<p class="f-cb" id="j-'+ _t +'-id'+ k +'"><input type="checkbox" value="'+ k +'" name="userId" data-txt="'+ _list[k] +'" class="f-fl j-'+ _t +'-slt" />';
+                                  _html += '<span class="f-fl">'+ _list[k] +'</span>';
+                                  _html += '</p>\n';
+                                }
+                              }
+                              return _html;
+                            }
+
+                            // [函数]新数据集交集到旧数据集
+                            function mergeData(_newJson, _oldJson){
+
+                              for(var k in _newJson){
+                                if(typeof(_oldJson[k]) == 'undefined'){
+                                  _oldJson[k] = _newJson[k];
+                                }
+                              }
+                              return _oldJson;
+                            }
+
+                            // [回调函数]弹窗的确定按钮事件
+                            function doEach(){
+                              var _bool = true;
+                              var _hasList = $('.j-has-slt');
+                              if(_hasList.length > 0){
+                                var _html = '';
+                                $.each(_hasList, function(){
+                                  var _this = $(this), _id = _this.val();
+                                  _html += '<a href="javascript:void(0);"  data-id="'+ _id +'" class="f-ib">'+ _this.attr('data-txt') +'<i class="j-res"></i>'+
+                                  '<input type="hidden" name="userIds" value="'+_id+'" /></a>';
+                                 });
+                                  $('.j-each-lst').html(_html);
+                                }else{
+                                  winAlert('请至少选择一项后操作！');
+                                  _bool = false;
+                                }
+                                return _bool;
+                              }
+                            </script>
+                          </form>
+                        </div>
+                        <script>
+                        <#list haveMenus as menu>
+							var checkboxs = $("input[type='checkbox'][name='menuIds'][value='" + ${menu.objectId} + "']");
+							$.each(checkboxs, function() {
+								this.checked = "checked";
+							});
+                        </#list>
+                        </script>
+                      </body>
+                    </html>

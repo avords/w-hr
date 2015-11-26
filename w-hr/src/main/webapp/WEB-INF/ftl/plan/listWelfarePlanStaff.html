@@ -1,0 +1,483 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>历年年度福利计划</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/excel.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <script src="${staticDomain}js/jquery.popup.v1.js"></script>
+    <script src="${staticDomain}js/ajaxfileupload.js"></script>
+</head>
+<body>
+<div id="p11">
+	<div id="g-crum2">
+		<h4>
+			<a href="javascript:void(0);">账户首页</a> &gt;
+			<a href="javascript:void(0);">福利管理</a> &gt;
+			福利计划设置
+		</h4>
+	</div>
+	<div id="g-content" class="f-cb">
+		<#include "/include/nav_menu_link.html">	
+		<script>var _menuIndex = 1;</script>
+		<div class="m-main f-fr">
+			<h4 class="u-tit"><span class="f-ib">福利计划设置</span></h4>
+			<div id="g-step" class="f-cb">
+				<a href="javascript:void(0);" class="u-c22">计划信息</a>
+				<a href="javascript:void(0);" class="u-c12">制定计划</a>
+				<a href="javascript:void(0);" class="u-c13">额度分配</a>
+				<a href="javascript:void(0);">员工选择</a>
+				<a href="javascript:void(0);">确定选择</a>
+				<a href="javascript:void(0);">订单支付</a>
+				<a href="javascript:void(0);" class="u-c31">付款详情</a>
+			</div>
+			<h3>额度分配</h3>
+			<form action="${dynamicDomain}/welfarePlanStaff/page/${welfarePlan.objectId}" method="post" id="searchForm">
+			 <div class="g-con f-cb">
+					<input type="hidden" name="ec_p" id="ec_p">
+					<div class="m-f1 f-cb">
+						<fieldset >
+							<label class="f-ib">部门：</label>
+							<span class="f-ib f-por">
+								<input type="hidden" class="j-slt-val" value="" name="search_EQL_departmentId">
+								<input type="text" value="" readonly="readonly" class="u-txt-slt j-slt">
+								<em class="f-ib f-poa j-opt">
+									<#list departments as item>
+									<a href="javascript:void(0);" data-val="${item.objectId}" class="f-ib">${item.fullName}</a>
+									</#list>
+								</em>
+							</span>
+						</fieldset>
+						<fieldset>
+							<label class="f-ib">员工姓名：</label>
+							<input type="text" class="f-ib u-txt" name="search_LIKES_userName" value='${search_LIKES_userName}'/>										
+						</fieldset>
+					</div>
+					<div class="m-f2 f-cb">
+						<fieldset>
+							<label class="f-ib">员工工号：</label>
+							<input type="text" class="f-ib u-txt"  name="search_LIKES_workNo" value="${rc.search_LIKES_workNo!}"/>					
+						</fieldset>
+						<fieldset>
+							<label class="f-ib">性别：</label>
+							<span>
+								<input type="hidden" name="search_EQI_sex" id="sex">
+								<label class="f-ib m-boy j-boy">男</label>
+								<label class="f-ib m-girl j-girl">女</label>
+							</span>
+						</fieldset>
+						<a href="javascript:void(0);" onclick="$('#searchForm').submit()">查询</a>
+					</div>
+	 			<div class="m-hd">
+					<span>年份：${welfarePlan.year}年 </span>
+					<span style="width:310px;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;display: inline-block;">计划名称： ${welfarePlan.name}</span>
+					<span>发放总人数： ${welfarePlan.headCount}人 </span>
+					<span>总额度： ${welfarePlan.totalAmount}元 </span>
+					<span>最低发放额度： ${welfarePlan.minGrantQuota?default(0)}元 </span>			
+				</div>
+			</div>
+			<div class="g-con-dn f-cb">
+				<h4>
+                <small>
+                    <span>* 年度福利额度将在该年度计划设置开始时间到达时自动下发给员工，并且开始后不可以再进行发放、导入、删除、修改.</span><br>
+                    <#if welfarePlan.overplusStrategy==1>                                       
+                          * <i>剩余额度转换成员工${s_welfarePointName}</i><span>（当员工选择截止时间到期后，您可以查看到所有员工的剩余额度情况，当您为其付款后，i福励平台会自动将员工的剩余额度转换成该员工可自由使用的${s_welfarePointName}。）</span>
+                    <#elseif welfarePlan.overplusStrategy==2>
+                          * <i>本计划剩余额度累计</i><span>（当员工选择截止时间到期后，本计划内的剩余额度将纳入下个福利计划的额度供员工使用）</span>
+                    <#elseif welfarePlan.overplusStrategy==3>
+                          * <i>本计划剩余额度作废</i><span>（当员工选择截止时间到期后，属于本计划的剩余额度将作废。）</span>
+                    </#if>
+                </small>
+                <a href="javascript:void(0);" class="f-ib j-pop-open" onclick="$('#ProjectTeamUserId').empty();" data-char="plancp">发放额度</a>
+                    <a href="javascript:void(0);" class="f-ib u-a2 j-pop-open" data-char="getin">导入</a>
+            </h4>
+				<ol class="f-cb f-fwb">
+					<li>工号</li>
+					<li>姓名</li>
+					<li>部门</li>
+					<li>性别</li>
+					<li>额度（元）</li>
+					<li class="z-lib z-col">操作</li>
+				</ol>	
+				<#list pageSearch.list as item>
+				<ul class="f-cb">
+					<li>${item.workNo}</li>
+					<li>${item.userName}</li>
+					<li>${item.departmentName!"&nbsp;"}</li>
+					<li><#if item.sex == '1'>男<#elseif item.sex == '2'>女 </#if>&nbsp;</li>
+					<li>${item.quota}</li>
+					<li class="z-lib">
+						<a href="javascript:void(0);" data-val="您确认删除?|${item.userId}|${item.userId}|doDelete" class="gdel j-confirm-open">删除</a>
+						<a href="javascript:void(0);" onclick="currentUserId=${item.userId};currentUserName='${item.userName}';currentQuota=${item.quota};" class="j-pop-open" data-char="modify" data-param="">修改</a>
+					</li>
+				</ul>
+				</#list>
+			</div>
+			<div class="u-act f-fr">
+				<@pageform totalPage=pageSearch.totalPage currentPage=pageSearch.currentPage formId="searchForm" />
+			</div>
+			</form>
+			<div class="m-btn">
+				<a href="${dynamicDomain}/welfareSubPlan/edit/${welfarePlan.objectId}">上一步</a>
+				<a href="javascript:void(0);" class="on" onclick="publish()">发布</a>
+				<a href="${dynamicDomain}/welfarePlan/page" class="in">返回</a>
+			</div>			
+		</div>
+	</div>
+	<!-- 弹窗[发放额度] -->
+	<#include "/include/select_users.html">
+	<!-- 弹窗[确认删除] -->
+	<table class="m-pop-up" id="j-pop-confirm" style="display: none">
+		<tr>
+			<td class="z-tac">
+				<div class="z-ib z-wid400">
+					<h4 class="u-tit">删除确认</h4>
+					<h5 class="u-close">
+						<a href="javascript:void(0);" data-pop="test1" class="j-pop-cancel">×</a> 
+						<input type="hidden" class="j-pop-data" />
+					</h5>
+					<div class="pop-confirm">确认删除么？此操作不可恢复！</div>
+					<h6 class="u-btn">
+						<a href="javascript:void(0);" class="u-sub j-pop-sure">确认</a> 
+						<a href="javascript:void(0);" class="u-rst j-pop-cancel">取消</a>
+					</h6>
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+<div style="display: none" id="ProjectTeamUserId"></div>
+<script>
+var currentUserId = null;
+var currentUserName = null;
+var currentQuota = null;
+$(function(){
+	// 模拟Select控件
+	$('.j-slt').click(function(){
+		var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+		$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+		if(_this.hasClass('z-on-slt')){
+			_this.removeClass('z-on-slt');
+			_opt.hide();
+		}else{
+			_this.addClass('z-on-slt');
+			_opt.show();
+		}
+		return false;
+	});
+
+	//下拉项的点击事件
+	$('.j-opt > a').click(function(){
+		var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+		_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+		return false;
+	});
+
+	$('body').click(function(e){
+		$('.j-opt').hide();
+		$('.j-slt').removeClass('z-on-s')
+	});
+
+	//选择性别
+
+	var _boy = $('.j-boy'),_girl = $('.j-girl');
+	_boy.click(function(){
+		var _this = $(this),_on = 'on';
+		if(_this.hasClass(_on)){
+			$("#sex").val(2);
+			_this.removeClass(_on).siblings().addClass(_on);
+		}else{
+			$("#sex").val(1);
+			_this.addClass(_on).siblings().removeClass(_on);
+		}
+	});
+
+	_girl.click(function(){
+		var _this = $(this),_on = 'on';
+		if(_this.hasClass(_on)){
+			$("#sex").val(1);
+			_this.removeClass(_on).siblings().addClass(_on);
+		}else{
+			$("#sex").val(2);
+			_this.addClass(_on).siblings().removeClass(_on);
+		}
+	});
+
+});
+
+// 弹窗对象预定义
+var POPUP = {};
+
+// 配置信息 [弹窗1：发放额度] 
+POPUP.plancp = {
+	'title': '添加人员额度', 'top': 200, 'width':470,'position':'fixed',
+	'content': 'popupContentForPlanCp();',
+	// 'complete': 'popupCompleteForPlanCp();',
+	'sure': {'txt':'确定', 'func':'popupSureForPlanCp();'},
+	'cancel': {'txt':'取消'}
+};
+
+function popupContentForPlanCp(){
+	return  '<form action="" id="WelfarePlanStaffBatchForm"><div id="p-11-zin">'+
+			'<p><span>员工：</span><em>已选择<small class="j-member-n" id="headCount1">0</small>个人</em> <a href="javascript:void(0);" id="selectUsersBtn" class="f-ib" onclick="doPopUpV1(\'selectUsers\')">人员</a></p>'+
+			'<p><span>额度：</span> <input type="text" name="quota" value="" class="required price_integer"><em> ${s_welfarePointName}</em></p>'+	
+			'</div></form>';
+}
+
+function popupSureForPlanCp(){
+	return saveBatch();
+}
+
+// 配置信息 [弹窗2：修改] 
+POPUP.modify = {
+	'title': '修改人员额度', 'top': 200, 'width':470,'position':'fixed',
+	'content': 'popupContentFormodify();',
+	'complete': 'popupCompleteFormodify();',
+	'sure': {'txt':'确定', 'func':'popupSureFormodify();'},
+	'cancel': {'txt':'取消'}
+};
+
+function popupContentFormodify(){
+	return  '<form action="" id="WelfarePlanStaffEditForm"><div id="p-11-zin" class="j-modify">'+
+		 	'<p><span>员工：</span><em></em></p>'+
+			'<p><span>额度：</span> <input type="text" name="quota" id="quota" value="" class="required price_integer"/><em> ${s_welfarePointName}</em></p>'+		
+			'</div></form>';
+}
+function popupCompleteFormodify(){
+	// 根据 _param 读取信息
+	var _info = {'name':currentUserName, 'num': currentQuota};
+	var _ob = $('.j-modify');
+	_ob.find('em:first').text(_info['name']);
+	_ob.find('input').val(_info['num']);
+}
+
+function popupSureFormodify(){
+	return saveQuota();
+}
+
+POPUP.selectUsers = {
+	'title': '选择人员', 'top': 10, 'width':850,'position':'fixed',
+	'content': 'popupContentForSelectUsers();',
+	'sure': {'txt':'确定', 'func':'popupSureForSelectUesrs();'},
+	'cancel': {'txt':'取消'}
+};
+
+function popupContentForSelectUsers(){
+	return tmp332Html;
+}
+
+function popupSureForSelectUesrs(){
+	var _has = {};
+	$('#j-win51-lst a').each(function(){
+		var _k = $(this).attr('data-id');
+		_has['z'+_k] = _k;
+	});
+
+	var _v = [], lst = '', _n = 0;
+	var ids = '';
+	$('#j-pop51-rst input').each(function(){
+		var _this = $(this), _val = _this.val(), _arr = _val.split('|');
+		if(typeof(_has['z'+_arr[0]]) === 'undefined'){
+			lst += '<input type="hidden" name="userId" value="'+ _arr[2] +'">';
+			ids += _arr[2] + ',';
+			_n ++;
+		};
+	});
+	$('#j-pop51-rst').empty();
+	$('#ProjectTeamUserId').empty().append($(lst));
+	$('#headCount1').html(_n);
+	$('#headCount').val(_n);
+	if(_n>0){
+		$("[for='selectUsers']").remove();
+	}
+	return true;
+}
+
+// 配置信息 [弹窗2：导入] 
+POPUP.getin = {
+
+    'title': '导入员工额度', 'top': 100, 'width':470,'position':'fixed',
+    'content': 'popupContentForgetin();',
+    // 'complete': 'popupCompleteForgetin();',
+    'sure': {'txt':'确定', 'func':'popupSureForgetin();'},
+    'cancel': {'txt':'取消'}
+};
+
+function popupContentForgetin(){
+
+    return  '<div id="p-11-getin">'+
+                '<ul class="j-single">'+
+                    '<li class="on" data-val="2"><h2>导入员工额度</h2></li>'+
+                    '<li data-val="1">'+
+                        '<h2>导入员工年薪</h2>'+
+                        '<p>员工额度＝员工年薪 * <input type="text" placeholder="8.00%" id="percent"/>  %（额度比例）</p>'+
+                        '<i>注：额度计算结果只保留到个位数</i>'+
+                    '</li>'+
+                '</ul>' +
+                '<div class="g-ft">'+
+                '<a href="${dynamicDomain}/staff/exportStaffTemplateForPlan" id="templateHref">下载导入模版</a>'+
+                '<p><input type="file" id="uploadFile" name="uploadFile"/></p>'+
+                '<i>模板格式支持：xls ; 大小不超过2M</i>'+
+                '</div>'+           
+            '</div>';
+}
+
+function popupSureForgetin(){
+    var type = $('.j-single .on').data('val');
+    var fileName = $('#uploadFile').val();
+    if(!fileName.endsWith('.xls')){
+        winAlert('文件必须是.xls格式');
+        return false;
+    }
+    if(type=='1'){
+	    //按照员工年薪比例导入
+	    var percent = $('#percent').val();
+	    var name = $("#uploadFile").val();
+	    if(!/^\d+\.?\d{0,2}$/.test(percent)){
+	        winAlert('额度比例最多两位小数');
+	        return false;
+	    }else{
+	      if(percent&&name){
+	         $.ajaxFileUpload({
+                url : '${dynamicDomain}/welfarePlanStaff/importQuotaBySalary/${welfarePlan.objectId}?ajax=1&percent='+percent,
+                secureuri : false,
+                fileElementId : 'uploadFile',
+                type:"POST",
+                dataType : 'json',
+                success : function(msg) {
+                    if(!msg.result){
+                        winAlert(msg.message);
+                    }else{
+                        window.location.reload();
+                    }
+                }
+            });
+	      }
+	    }
+    }else if(type=='2'){
+        var name = $("#uploadFile").val();
+        if(name){
+            $.ajaxFileUpload({
+                url : '${dynamicDomain}/welfarePlanStaff/importQuota/${welfarePlan.objectId}?ajax=1',
+                secureuri : false,
+                fileElementId : 'uploadFile',
+                type:"POST",
+                dataType : 'json',
+                success : function(msg) {
+                    if(!msg.result){
+                        winAlert(msg.message);
+                    }else{
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+    }
+    return true;
+}
+
+// 弹窗里的单选
+$(document.body).on('click', '.j-single h2', function(){
+
+    var _this = $(this), _on = ('on');
+
+    if(_this.parent().hasClass(_on)) return false;
+    
+    _this.parent().addClass(_on).siblings().removeClass(_on);
+    var type = $('.j-single .on').data('val');
+    if(type=='1'){
+        $('#templateHref').attr('href','${dynamicDomain}/staff/exportStaffTemplateForPlanBySalary');
+    }else if(type=='2'){
+        $('#templateHref').attr('href','${dynamicDomain}/staff/exportStaffTemplateForPlan');
+    }
+    return false;
+});
+
+function saveQuota(){
+	if(currentUserId){
+		if($("#WelfarePlanStaffEditForm").valid()){
+			$.ajax({
+		        url:'${dynamicDomain}/welfarePlanStaff/update',
+		        type : 'post',
+		        async : true,
+		        dataType : 'json',
+		        data : {"planId": ${welfarePlan.objectId}, "userId":currentUserId, "quota":$("#quota").val()},
+		        success : function(json) {
+					if(json.result){
+						winAlert("更新成功");
+						$("#searchForm").submit();
+					}
+		          }
+		    });
+		}
+	}
+}
+
+function saveBatch(){
+	var items = $("input[name='userId']");
+	var userIds = "";
+	if(items){
+		items.each(function(){
+			userIds += $(this).val() + ",";
+		});
+	}
+	if(userIds.length == 0){
+		if($("[for='selectUsers']").length==0){
+			$('<span for="selectUsers" class="error">请至少选择一个员工!</span>').insertBefore('#selectUsersBtn');
+		}
+		return false;
+	}else{
+		$("[for='selectUsers']").remove();
+	}
+	if($("#WelfarePlanStaffBatchForm").valid()){
+		$.ajax({ 
+			type:"POST", 
+			url: "${dynamicDomain}/welfarePlanStaff/saveBatch",   
+			data: $("#WelfarePlanStaffBatchForm").serialize() + "&userIds=" + userIds + "&planId=${welfarePlan.objectId}",
+			success: function(msg){
+				if(!msg.result){
+					winAlert(msg.message);
+				}else{
+					window.location.reload();
+				}
+			}   
+		});
+		return true;
+	}
+	return false;
+}
+
+function confirmSure_doDelete(userId){
+	if(userId){
+		window.location.href='${dynamicDomain}/welfarePlanStaff/delete?planId=${welfarePlan.objectId}&userId=' +userId ;
+	}
+}
+
+function publish(){
+	$.ajax({ 
+		type:"POST", 
+		url: "${dynamicDomain}/welfarePlan/publish/${welfarePlan.objectId}",   
+		success: function(msg){
+			if(msg.result==1){
+				window.location.href='${dynamicDomain}/welfarePlan/staffSelect/${welfarePlan.objectId}';
+			}else if(msg.result == 2){
+				winAlert("有" + msg.count + "位员工的额度少于最低发放额度，请您修改员工的额度！");
+			} else if(msg.result == 0){
+				winAlert("该计划已经发布！");
+			} else if(msg.result == 4){
+				winAlert("请选择员工后再发放该计划！");
+			}else if(msg.result == 5){
+                winAlert("没有子计划不能发布！");
+            }else if(msg.result == 6){
+                winAlert("不能发布没有福利选项的子计划！");
+            }
+			return false;
+		}   
+	});
+}
+
+
+</script>
+</body>
+</html>

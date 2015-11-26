@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>购买${s_welfarePointName}</title>
+ 
+    
+    <link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/order.z.css" />
+    
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+ 
+</head>
+<body style="background-color:#fff;">
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">福利管理</a> &gt;
+		<a href="javascript:void(0);">购买${s_welfarePointName}</a>
+	</h4>
+</div>
+<form action="${dynamicDomain}/points/onlinePaySetPayment" method="post" id="onlinePayForm" target="_blank">
+	<div id="g-content" class="f-cb">
+		
+		<#include "/include/nav_menu_link.html">
+		
+		<div class="m-main f-fr">
+			
+			<h4 class="u-tit"><span class="f-ib">购买${s_welfarePointName}</span></h4>
+	
+			<div id="g-inte-crt">
+	
+				<div class="u-info">
+					<span class="f-ib">本平台开户行信息：</span>
+					<fieldset>
+					<dl>
+						<dt>光大银行</dt>
+						<dd>户名：上海瀚乾信息技术服务有限公司</dd>
+						<dd>开户行：光大银行上海浦东二支行</dd>
+						<dd>账号：76260188000108765</dd>
+					</dl>
+					<!-- <dl class="u-ln">
+						<dt>招商银行</dt>
+						<dd>开户行：招商银行 上海分行 黄浦支行</dd>
+						<dd>账号：12345678909888</dd>
+					</dl> -->
+				</fieldset>
+				</div>
+	
+				<dl class="u-desc">
+					<dt>${s_welfarePointName}订单生成</dt>
+					<dd>订单编号：
+						<b>
+						${subOrder.subOrderNo}
+						</b>
+					</dd>
+					<dd>支付金额：<b>￥${payCount?string('#.00')}元</b></dd>
+					<dd>公司信息：${s_companyName}</dd>
+					<dd>账号信息：${user.loginName}</dd>
+				</dl>
+		
+		
+			<!-- 线下支付 -->
+			<#if orderModel.paymentWay == '1'>
+				<h6>您的订单已生成，您选择的是线下支付！</h6>
+				<p>
+					1. 请向本平台的对公账号汇款，并保留支付凭证。<br />
+					2. 我们核实后会立即为您处理。<br />
+				</p>
+				<h5><a href="${dynamicDomain}/welfareOrder" class="f-ib" >查看订单列表</a></h5>
+				
+			<!-- 线上支付 -->
+			<#elseif orderModel.paymentWay == '2' && subOrder.subOrderState==1>
+				<h6>您的订单已生成，您选择的是线上支付！</h6>
+				<h5><a href="javascript:void(0);" class="f-ib j-opn-pay" >立即支付</a></h5>
+				<input type="hidden" id="subOrderId" name="subOrderId" value="${subOrder.objectId}"/>
+			
+			</#if>
+			</div>
+		</div>
+	</div>
+</form>
+
+
+
+
+
+<script>
+$(function(){
+
+	// "现在支付" 弹窗
+	var _popPay = $('#j-pop-pay');
+	var _opnPay = $('.j-opn-pay');
+	var _clsPay = $('.j-cls-pay');
+
+	// [开启]现在支付
+	_opnPay.click(function(){
+		dodMask(true);
+		_popPay.show();
+		$("#onlinePayForm").submit();
+	});
+
+	// [关闭]现在支付
+	_clsPay.click(function(){
+		dodMask(false);
+		_popPay.hide();
+	});
+
+	// "现在支付" 子弹窗
+	var _popsPay = $('#j-pop-spay');
+	var _opnsPay = $('.j-opn-spay');
+	var _clssPay = $('.j-cls-spay');
+
+	// [开启] 子弹窗
+	_opnsPay.click(function(){
+		_popPay.hide();
+		_popsPay.show();
+	});
+
+	// [关闭] 子弹窗
+	_clssPay.click(function(){
+		dodMask(false);
+		_popsPay.hide();
+	});
+
+	// 操作遮罩
+	function dodMask(_bool){
+		var _id = 'm-mask', _mask = $('#' + _id);
+		if(_bool){
+			if(_mask.length === 1){
+				_mask.show();
+			}else{
+				$('<div id="'+ _id +'"></div>').appendTo('body').css({'opacity':'.2'});
+			}
+		}else{
+			_mask.hide();
+		}
+	}
+});
+
+// 初始化函数载体
+function popInit(_char){
+
+	var _func = {
+
+		'init11': function(){ return {'title':'支付密码重置', 'html': $('#tmp11').html()}; }
+	};
+
+	return _func[_char];
+}
+
+// 弹窗的确定按钮回滚函数
+function popSure(_char){
+
+	var _func = {
+
+		'sure11': function(){
+
+			// code....
+
+			return false;
+		}
+	};
+
+	return _func[_char];
+}
+
+</script>
+
+
+<!-- 支付结果 1 -->
+<table class="m-pop-up" id="j-pop-pay" style="z-index:1002;"><tbody><tr><td class="z-tac z-vam"><div class="z-ib pop-pay">
+	<h4>请确认支付结果<a href="javascript:void(0);" class="j-cls-pay">×</a></h4>
+	<dl>
+		<dt>请您在新打开的页面完成支付！</dt>
+		<dd>
+			- 支付完成前请不要关闭此窗口<br />
+			- 支付完成后请根据支付结果点击下面的按钮<br />
+			- 支付失败后，请记录下订单号,请拨打<br />
+			  400-161-0009，我们的客服将为您竭诚服务<br />
+		</dd>
+	</dl>
+	<h5>
+		<a href="javascript:void(0);" onclick="window.location.reload();" class="f-ib ft">支付成功</a>
+		<a href="${dynamicDomain}/mall/index" class="f-ib idx">商城首页</a>
+	</h5>
+</div></td></tr></tbody></table>
+
+
+
+
+
+<?php require('foot#tmp.html');?>
+</body>
+</html>

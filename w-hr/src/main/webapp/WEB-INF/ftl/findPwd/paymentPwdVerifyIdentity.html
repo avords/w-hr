@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>找回密码-验证身份</title>
+    <script src="js/jquery.1.8.3.min.js"></script>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+</head>
+<body>
+
+<script>var _iNav = 2;</script>
+<div id="e-y1-1">
+
+    <div class="z-ib repwd">
+        <h6>&nbsp;</h6>
+        <p><img src="${staticDomain}image/zstp3-2.gif"></p>
+        <h5 class="f-cb">
+            <span>输入账户名</span>
+            <span class="z-on">验证身份</span>
+            <span>重置密码</span>
+            <span>完成</span>
+        </h5>
+        <form action="${secureDomain}/findPaymentPwd/resetPassword" method="post" id="submitForm">
+            <table>
+                <tr>
+                    <td class="wt1">您的邮箱：</td>
+                    <td colspan="2">${email} 如果无法收到邮件，请使用 <a href="javascript:void(0);" class="atg1">手机号码</a> 找回密码！</td>
+                </tr>
+                <tr>
+                    <td class="wt1">&nbsp;</td>
+                    <td colspan="2"><button type="button" onclick="sendEmail();">重发邮件</button></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td class="wt1">手机号码：</td>
+                    <td colspan="2">${mobilePhone} 如果无法收到短信，请使用 <a href="javascript:void(0);" class="atg1">邮箱地址</a> 找回密码！</td>
+                </tr>
+                <tr>
+                    <td class="wt1">验证码：</td>
+                    <td class="wt2"><input type="text" class="tx1 tx2 required" name="code"/> <a href="javascript:void(0);" class="f-ib send" onclick="getCode();">获取验证码</a></td>
+                    <td class="wt3"></td>
+                </tr>
+                <tr>
+                    <td class="wt1">&nbsp;</td>
+                    <td colspan="2"><button type="submit">下一步</button></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+<script>
+function getCode(){
+    $.ajax({
+          url:'${secureDomain}/findPaymentPwd/getPaymentCode',
+          type : 'post',
+          dataType : 'json',
+          data:{'loginName':'${loginName}'},
+          success : function(json) {
+              if(json.result){
+                 alert(json.message);
+              }else{
+                 alert(json.message);
+              }
+          }
+      });
+}
+function sendEmail(){
+      $.ajax({
+          url:'${secureDomain}/findPaymentPwd/sendEmail',
+          type : 'post',
+          dataType : 'json',
+          data:{'loginName':'${loginName}'},
+          success : function(json) {
+              if(json.result){
+                 alert("邮件已发送，请注意查收");
+              }else{
+                 alert(json.message);
+              }
+          }
+      });
+}
+$(function(){
+ $('#submitForm').validate();
+});
+</script>
+</body>
+</head>

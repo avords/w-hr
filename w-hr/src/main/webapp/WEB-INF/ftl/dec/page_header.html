@@ -1,0 +1,55 @@
+<script src="${staticDomain}js/jquery.confirm.js"></script>
+<div id="g-top2">
+	<div class="m-top f-cb">
+	    <p class="u-top-l f-fl">
+            <a href="${dynamicDomain}/index" class="f-ib">账户首页</a>
+            <a href="${dynamicDomain}/mall/index" class="f-ib">福利商城</a>
+        </p>
+		<p class="u-top-r f-fr f-tar">
+			欢迎：${s_fullName!}
+			<span class="f-ib" id="m-shop">
+                <a style="padding-right:16px;" href="${dynamicDomain }/mall/cart" class="u-con f-ib cart-count" id="j-show">购物车(<b id="cartProductCount">0</b>)</a>
+                <span class="m-u f-ib f-dn">购物车中还没有商品，赶紧选购吧！</span>
+            </span>
+			<a style="padding-left:0;" href="${dynamicDomain}/newsNotify/list" class="f-ib">消息中心</a>
+			<a href="javascript:void(0);" data-val="您确认退出?|0|0|out" class="j-confirm-open">退出</a>
+		</p>
+	</div>
+</div>
+<script>
+// [回调] 确认
+function confirmSure_out(_id){
+	window.location.href="${dynamicDomain}/login/in/out";
+}
+</script>
+<div id="g-logo2" class="f-cb">
+
+	<#if s_companyFunctionShowLogo>
+		<div class="f-fl u-logo"><a href="http://www.ibenefit.com.cn" target="_blank"><img src="${staticDomain}image/logo2.gif"></a></div>
+	</#if>
+	
+	<dl class="f-fl u-comp">
+		<dt class="f-ib"><img style="width:170px;height:70px;" src="${adminStaticDomain}${s_companyLogo}"></dt>
+		<dd class="f-ib">
+			<b class="f-ib">${s_companyName}</b>
+			<span class="f-ib">已认证</span><br />
+		</dd>
+	</dl>
+	<div class="f-fr u-sech">
+		<form action="${dynamicDomain}/mall/search" method="get">
+		<fieldset class="f-cb">
+			<input type="text" class="u-txt f-fl" name="queryKeywords" />
+			<button type="submit" class="u-btn f-fl">搜索</button>
+		</fieldset>
+		</form>
+		<p>
+			热门搜索：
+			<#list hotwords as item>
+              <a href="${dynamicDomain }/mall/search?queryKeywords=${item.name}" class="f-ib z-on">${item.name}</a>
+            </#list>
+		</p>
+	</div>
+</div>
+<script>
+queryCartCount();
+</script>

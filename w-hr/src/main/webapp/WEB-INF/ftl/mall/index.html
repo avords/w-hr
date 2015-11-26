@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<title>首页 - 福利商城</title>
+<script type="text/javascript" src="${staticDomain}js/jquery.zfocus.js"></script>
+<script src="${staticDomain}js/jquery.lazyload.min.js"></script>
+<style>
+.r-m-tab div ul {border-top: 0px solid #58b7e8;}
+#g-logo .u-code{display:none;}
+ul.f-cb li h3{overflow: hidden;text-overflow: ellipsis;white-space: nowrap;width:90%;}
+</style>
+</head>
+<div id="g-banner">
+    <div class="u-lyt f-cb">
+        <div class="u-menu f-fl">
+        <#list firstCates as item>
+            <div class="u-m-list j-m-list" data-id="${item.firstId }">
+                <a target="_blank" href="${dynamicDomain}/mall/search?firstId=${item.firstId}" class="u-bg f-ib u-ic${item_index+1 }">${item.name }</a>
+                <ul></ul>
+            </div>
+        </#list>
+        </div>
+        <div class="u-focus f-fl" id="j-focus">
+            <ul class="f-cb">
+                <#list banner as item>
+                    <li>
+                    	<#if item.url??>
+							<a href="${item.url}">
+						<#else>
+							<a href="javascript:void(0);">
+						</#if>
+                    	<img src="${adminStaticDomain}${item.picturePath}" />
+                    	</a>
+                    	</li>
+                </#list>
+            </ul>
+        </div>
+        <script type="text/javascript">$('#j-focus').zFocus({timer:3000, speed:500, onClass:'z-on'});</script>
+        <div class="u-go f-fr">
+            <dl class="f-tac">
+                <dt>账户可用${s_welfarePointName}(元)</dt>
+                <dd class="u-inte"><span id="accountBalance"></span></dd>
+                <dd><a href="${dynamicDomain}/points" class="f-ib">立即充值</a></dd>
+            </dl>
+        </div>
+    </div>
+</div>
+<#if recommend_1??&&page_1.list?size!=0>
+<div id="g-theme" class="u-lyt">
+    <h4 class="m-tit f-cb">
+        <span class="f-fl"><b class="c1 f-ib">${recommend_1.title}</b><i>${recommend_1.subTitle}</i></span>
+        <a href="${dynamicDomain}/mall/season?wpType=2" class="f-fr">更多 》</a>
+    </h4>
+    <ul class="m-img-t f-cb">
+        <#list page_1.list as item>
+           <li class="j-sco">
+	            <a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:289px;height:181px;"/></a>
+	            <h6><span><b class="f-ib">￥${item.sellPrice?string('0.00')}</b><br /><i class="f-ib"></i><br /><a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}" class="f-ib">${item.name}</a></span></h6>
+           </li>
+        </#list>
+    </ul>
+</div>
+</#if>
+<#if recommend_2??&&page_2.list?size!=0>
+<div id="g-pkg" class="u-lyt">
+    <h4 class="m-tit f-cb">
+        <span class="f-fl"><b class="c2 f-ib">${recommend_2.title}</b><small class="c1">${recommend_2.subTitle}</small></span>
+        <a href="${dynamicDomain}/mall/season?wpType=1" class="f-fr">更多 》</a>
+    </h4>
+    <ul class="m-img-t f-cb">
+       <#list page_2.list as item>
+	        <li class="j-sco-b">
+	            <a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:289px;height:181px;"/></a>
+	            <h6>
+		            <span>
+		                <a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}" class="f-ib u-ig">
+		                    <#list item.productPictures as itm>
+		                        <img data-original="${adminStaticDomain}${itm}" style="width:56px;height:56px;"/>
+		                    </#list>
+		                </a>
+		                <a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}" class="f-ib u-btn">立即购买</a>
+		            </span>
+	            </h6>
+	        </li>
+        </#list>
+    </ul>
+</div>
+</#if>
+
+<#if recommend_3??&&page_3.list?size!=0>
+<div id="g-birt" class="u-lyt">
+    <h4 class="m-tit f-cb">
+        <span class="f-fl"><b class="c3 f-ib">${recommend_3.title}</b><small class="c2">${recommend_3.subTitle}</small></span>
+        <a href="${dynamicDomain}/mall/search" class="f-fr">更多 》</a>
+    </h4>
+    <ul class="m-img f-cb">
+	    <#list page_3.list as item>
+	        <li><a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:389px;height:244px;"/></a></li>
+	    </#list>
+    </ul>
+</div>
+</#if>
+
+<#if recommend_4??&&page_4.list?size!=0>
+<div id="g-bdy" class="u-lyt">
+    <h4 class="m-tit f-cb">
+        <span class="f-fl"><b class="c4 f-ib">${recommend_4.title}</b><small class="c3">${recommend_4.subTitle}</small></span>
+        <a href="${dynamicDomain}/mall/search" class="f-fr">更多 》</a>
+    </h4>
+    <ul class="m-img f-cb">
+       <#list page_4.list as item>
+          <li><a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:389px;height:244px;"/></a></li>
+       </#list>
+    </ul>
+</div>
+</#if>
+
+<#if recommend_5??&&page_5.list?size!=0>
+<div id="g-phy" class="u-lyt">
+    <h4 class="m-tit f-cb">
+        <span class="f-fl"><b class="c5 f-ib">${recommend_5.title}</b><small class="c4">${recommend_5.subTitle}</small></span>
+        <a href="${dynamicDomain}/mall/search" class="f-fr">更多 》</a>
+    </h4>
+    <ul class="m-img f-cb">
+       <#list page_5.list as item>
+          <li><a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:389px;height:244px;"/></a></li>
+       </#list>
+    </ul>
+</div>
+</#if>
+
+<#if recommend_6??&&page_6.list?size!=0>
+<div id="g-insu" class="u-lyt">
+    <h4 class="m-tit f-cb">
+        <span class="f-fl"><b class="c6 f-ib">${recommend_6.title}</b><small class="c5">${recommend_6.subTitle}</small></span>
+        <a href="${dynamicDomain}/mall/search" class="f-fr">更多 》</a>
+    </h4>
+    <ul class="m-img f-cb">
+       <#list page_6.list as item>
+          <li><a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:389px;height:244px;"/></a></li>
+       </#list>
+    </ul>
+</div>
+</#if>
+
+<#if recommend_7??&&page_7.list?size!=0>
+<div id="g-phy" class="u-lyt">
+    <h4 class="m-tit f-cb">
+        <span class="f-fl"><b class="c5 f-ib">${recommend_7.title}</b><small class="c4">${recommend_7.subTitle}</small></span>
+        <a href="${dynamicDomain}/mall/search" class="f-fr">更多 》</a>
+    </h4>
+    <ul class="m-img f-cb">
+       <#list page_7.list as item>
+          <li><a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:389px;height:244px;"/></a></li>
+       </#list>
+    </ul>
+</div>
+</#if>
+
+<#if recommend_8??&&page_8.list?size!=0>
+<div id="g-phy" class="u-lyt">
+    <h4 class="m-tit f-cb">
+        <span class="f-fl"><b class="c5 f-ib">${recommend_8.title}</b><small class="c4">${recommend_8.subTitle}</small></span>
+        <a href="${dynamicDomain}/mall/search" class="f-fr">更多 》</a>
+    </h4>
+    <ul class="m-img f-cb">
+       <#list page_8.list as item>
+          <li><a href="${dynamicDomain}/welfarePackage/detail/${item.packageId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:389px;height:244px;"/></a></li>
+       </#list>
+    </ul>
+</div>
+</#if>
+
+<#if (recommend_11??&&page_11.list?size!=0)||(recommend_12??&&page_12.list?size!=0)||(recommend_13??&&page_13.list?size!=0)||(recommend_14??&&page_14.list?size!=0)||(recommend_15??&&page_15.list?size!=0)>
+<div id="g-digi" class="u-lyt f-cb m-tab">
+   <#if productAdvert1??>
+    <dl class="f-fl">
+        <dd>
+        <#if productAdvert1.url??>
+		   <a href="${productAdvert1.url}">
+		<#else>
+		   <a href="javascript:void(0);">
+	    </#if>
+        <img src="${adminStaticDomain}${productAdvert1.picturePath}" /></a></dd>
+    </dl>
+   </#if>
+    <div class="f-fl">
+        <h4 class="j-tab">
+          <#if recommend_11??&&page_11.list?size!=0>
+            <span class="f-ib z-on tab1" data-location="11"><b>${recommend_11.title}</b></span>
+          </#if>
+          <#if recommend_12??&&page_12.list?size!=0>
+            <span class="f-ib tab1" data-location="12"><b>${recommend_12.title}</b></span>
+          </#if>
+          <#if recommend_13??&&page_13.list?size!=0>
+            <span class="f-ib tab1" data-location="13"><b>${recommend_13.title}</b></span>
+          </#if>
+          <#if recommend_14??&&page_14.list?size!=0>
+            <span class="f-ib tab1" data-location="14"><b>${recommend_14.title}</b></span>
+          </#if>
+          <#if recommend_15??&&page_15.list?size!=0>
+            <span class="f-ib tab1" data-location="15"><b>${recommend_15.title}</b></span>
+          </#if>
+          <a href="${dynamicDomain}/mall/search" class="f-ib">更多 》</a>
+        </h4>
+            <ul class="f-cb content1" id="content1_11">
+	          <#list page_11.list as item>
+		            <li>
+		                <table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:230px;height:230px;"/></a></td></tr></table>
+		                <h3 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h3>
+		                <h6><b>${item.sellPrice?string('0.00')}</b> 元<span>市场价：<i>${item.marketPrice?string('0.00')}元</i></span></h6>
+		            </li>
+	          </#list>
+	         </ul>
+             <ul class="f-cb content1" id="content1_12" style="display:none;">
+	              <#list page_12.list as item>
+	                    <li>
+	                        <table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:230px;height:230px;"/></a></td></tr></table>
+	                        <h3 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h3>
+	                        <h6><b>${item.sellPrice?string('0.00')}</b> 元<span>市场价：<i>${item.marketPrice?string('0.00')}元</i></span></h6>
+	                    </li>
+	              </#list>
+              </ul>
+              <ul class="f-cb content1" id="content1_13" style="display:none;">
+              <#list page_13.list as item>
+                    <li>
+                        <table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:230px;height:230px;"/></a></td></tr></table>
+                        <h3 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h3>
+                        <h6><b>${item.sellPrice?string('0.00')}</b> 元<span>市场价：<i>${item.marketPrice?string('0.00')}元</i></span></h6>
+                    </li>
+              </#list>
+              </ul>
+              <ul class="f-cb content1" id="content1_14" style="display:none;">
+              <#list page_14.list as item>
+                    <li>
+                        <table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:230px;height:230px;"/></a></td></tr></table>
+                        <h3 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h3>
+                        <h6><b>${item.sellPrice?string('0.00')}</b> 元<span>市场价：<i>${item.marketPrice?string('0.00')}元</i></span></h6>
+                    </li>
+              </#list>
+              </ul>
+              <ul class="f-cb content1" id="content1_15" style="display:none;">
+              <#list page_15.list as item>
+                    <li>
+                        <table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:230px;height:230px;"/></a></td></tr></table>
+                        <h3 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h3>
+                        <h6><b>${item.sellPrice?string('0.00')}</b> 元<span>市场价：<i>${item.marketPrice?string('0.00')}元</i></span></h6>
+                    </li>
+              </#list>
+              </ul>
+    </div>
+</div>
+</#if>
+
+<#if (recommend_21??&&page_21.list?size!=0)||(recommend_22??&&page_22.list?size!=0)||(recommend_23??&&page_23.list?size!=0)||(recommend_24??&&page_24.list?size!=0)||(recommend_25??&&page_25.list?size!=0)>
+<div id="g-hom" class="u-lyt f-cb m-tab r-m-tab">
+    <#if productAdvert2??>
+	    <dl class="f-fl">
+	        <dd>
+	        <#if productAdvert2.url??>
+				<a href="${productAdvert2.url}" >
+			<#else>
+				<a href="javascript:void(0);">
+			</#if>
+	        <img src="${adminStaticDomain}${productAdvert2.picturePath}" /></a></dd>
+	    </dl>
+    </#if>
+    <div class="f-fl">
+        <h4 class="j-tab-b">
+           <#if recommend_21??&&page_21.list?size!=0>
+            <span class="f-ib z-on tab2" data-location="21"><b>${recommend_21.title}</b></span>
+          </#if>
+          <#if recommend_22??&&page_22.list?size!=0>
+            <span class="f-ib tab2" data-location="22"><b>${recommend_22.title}</b></span>
+          </#if>
+          <#if recommend_23??&&page_23.list?size!=0>
+            <span class="f-ib tab2" data-location="23"><b>${recommend_23.title}</b></span>
+          </#if>
+          <#if recommend_24??&&page_24.list?size!=0>
+            <span class="f-ib tab2" data-location="24"><b>${recommend_24.title}</b></span>
+          </#if>
+          <#if recommend_25??&&page_25.list?size!=0>
+            <span class="f-ib tab2" data-location="25"><b>${recommend_25.title}</b></span>
+          </#if>
+          <a href="${dynamicDomain}/mall/search" class="f-ib">更多 》</a>
+        </h4>
+	     <ul class="f-cb content2" id="content2_21">
+              <#list page_21.list as item>
+                    <li>
+                        <table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:230px;height:230px;"/></a></td></tr></table>
+                        <h3 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h3>
+                        <h6><b>${item.sellPrice?string('0.00')}</b> 元<span>市场价：<i>${item.marketPrice?string('0.00')}元</i></span></h6>
+                    </li>
+              </#list>
+          </ul>
+          <ul class="f-cb content2" id="content2_22" style="display:none;">
+              <#list page_22.list as item>
+                    <li>
+                        <table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:230px;height:230px;"/></a></td></tr></table>
+                        <h3 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h3>
+                        <h6><b>${item.sellPrice?string('0.00')}</b> 元<span>市场价：<i>${item.marketPrice?string('0.00')}元</i></span></h6>
+                    </li>
+              </#list>
+          </ul>
+          <ul class="f-cb content2" id="content2_23" style="display:none;">
+              <#list page_23.list as item>
+                    <li>
+                        <table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:230px;height:230px;"/></a></td></tr></table>
+                        <h3 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h3>
+                        <h6><b>${item.sellPrice?string('0.00')}</b> 元<span>市场价：<i>${item.marketPrice?string('0.00')}元</i></span></h6>
+                    </li>
+              </#list>
+          </ul>
+          <ul class="f-cb content2" id="content2_24" style="display:none;">
+              <#list page_24.list as item>
+                    <li>
+                        <table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:230px;height:230px;"/></a></td></tr></table>
+                        <h3 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h3>
+                        <h6><b>${item.sellPrice?string('0.00')}</b> 元<span>市场价：<i>${item.marketPrice?string('0.00')}元</i></span></h6>
+                    </li>
+              </#list>
+          </ul>
+          <ul class="f-cb content2" id="content2_25" style="display:none;">
+              <#list page_25.list as item>
+                    <li>
+                        <table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img data-original="${adminStaticDomain}${item.mainPicture}" style="width:230px;height:230px;"/></a></td></tr></table>
+                        <h3 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h3>
+                        <h6><b>${item.sellPrice?string('0.00')}</b> 元<span>市场价：<i>${item.marketPrice?string('0.00')}元</i></span></h6>
+                    </li>
+              </#list>
+          </ul>
+    </div>
+</div>
+ </#if>
+<script>
+$(function(){
+	$("img").lazyload({ 
+		placeholder:"${staticDomain}image/product.png",
+       	skip_invisible : false,
+       	threshold : 200
+    });  
+
+    // 列表尾元素的样式控制
+    $('.m-img, .m-img-t').find('li:last').css('margin-right',0);
+
+    $('.j-sco').hover(
+        function(){ $(this).find('h6').stop().animate({'left': 162}); },
+        function(){ $(this).find('h6').stop().animate({'left': 292}, 200); }
+    );
+
+    // 菜单的联动
+    $('.j-m-list').hover(
+        function(){
+        	//加载二级和三级菜单
+            var obj = $(this);
+            var objul = $(this).find("ul");
+            var firstId = obj.data("id");
+            $.ajax({
+                url:"${dynamicDomain}/mallCategory/getSecond/" + firstId,
+                type : 'post',
+                dataType : 'json',
+                success : function(json) {
+                    objul.html('');
+                    var content ='';
+                    for ( var i = 0; i < json.secondCates.length; i++) {
+                        content = content+'<li><fieldset><span class="f-ib"><a target="_blank" href="${dynamicDomain}/mall/search?secondId='+json.secondCates[i].secondId+
+                        '" class="f-ib u-chd">'+json.secondCates[i].name+'</a></span></fieldset>';
+                        for ( var j = 0; j < json.secondCates[i].childrens.length; j++) {
+                            content = content+'<a target="_blank" href="${dynamicDomain}/mall/search?categoryId='+json.secondCates[i].childrens[j].objectId+'" class="f-ib u-chd">'+json.secondCates[i].childrens[j].name+'</a>';
+                        }
+                        content = content+'</li>';
+                    }
+                    objul.html(content);
+                }
+            });
+            $(this).find('ul').show();
+        },
+        function(){ 
+            $(this).find('ul').hide();
+        }
+    );
+
+    // 
+    var _menuCnt = $('.j-m-list ul');
+    _menuCnt.hover(
+        function(){
+            var i = _menuCnt.index(this) + 1;
+            $(this).prev().addClass('z-hov z-hov' + i);
+        },
+        function(){
+            var i = _menuCnt.index(this) + 1;
+            $(this).prev().removeClass('z-hov z-hov' + i);
+        }
+    );
+
+    $('.j-sco-b').hover(
+        function(){
+            var _h = $(this).height() - 4;
+            $(this).find('h6').stop().animate({'height': _h}); 
+        },
+        function(){ $(this).find('h6').stop().animate({'height': 0}, 200); }
+    );
+
+    $('.j-tab > span').click(function(){
+        $('.j-tab > span').removeClass('z-on');
+        $(this).addClass('z-on');
+    });
+
+    $('.j-tab-b > span').click(function(){
+        $('.j-tab-b > span').removeClass('z-on');
+        $(this).addClass('z-on');
+    });
+    
+    $('.tab1').click(function(){
+      $('.tab1').removeClass('z-on');
+      $(this).addClass('z-on');
+      var location = $(this).data('location');
+      $('.content1').hide();
+      $('#content1_'+location).show();
+    });
+    
+     $('.tab2').click(function(){
+      $('.tab2').removeClass('z-on');
+      $(this).addClass('z-on');
+      var location = $(this).data('location');
+      $('.content2').hide();
+      $('#content2_'+location).show();
+    });
+    
+   try{
+          $.ajax({
+          url : "${dynamicDomain}/queryAccountBalance?timstamp=" + (new Date()).valueOf(),
+          type : 'post',
+          dataType : 'json',
+          success : function(msg) {
+              $("#accountBalance").html(parseFloat(msg.accountBalance).toFixed(2));
+          }
+      });
+      }catch(e){
+          $("#accountBalance").html(0.00);
+      }
+      
+      $('.tab1:first').trigger("click");
+      $('.tab2:first').trigger("click");
+});
+</script>
+</body>
+</html>

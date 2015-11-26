@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>订单结算 - 福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/order.z.css" />
+    
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+     <script>
+    $(function(){
+      $('body').css({'background-color':'#fff'});
+    });
+    </script>
+</head>
+<body>
+<div id="g-pay-ok" class="m-succ">
+
+    <h4 class="f-cb">
+        <!-- <a href="javascript:void(0);" class="f-fl"><img src="image/logo.gif" /></a> -->
+        <span class="f-fl">收银台</span>
+    </h4>
+
+    <dl>
+        <dt>恭喜您，支付成功！</dt>
+        <dd><b>订单编号:
+        <#list subOrderList as subOrder>
+            <#if subOrder_has_next>
+            ${subOrder.subOrderNo},
+           <#else>
+            ${subOrder.subOrderNo}
+           </#if>
+        </#list></b></dd>
+    </dl>
+
+    <h5><a href="${dynamicDomain}/mall/index" class="f-ib">继续购买</a><a style="color:#ff7f61;background-color: #fff;" href="${dynamicDomain}/welfareOrder">查看订单 &gt;&gt;</a></h5>
+</div>
+</body>
+</html>

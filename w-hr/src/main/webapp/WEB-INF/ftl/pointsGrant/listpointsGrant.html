@@ -1,0 +1,288 @@
+<#include "/common/page.html">
+<#include "/common/findPayPwd.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>积分发放记录 - 福利商城</title>
+    <script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+</head>
+<body>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">统计查询</a> &gt;
+		积分发放记录
+	</h4>
+</div>
+
+<form action="${dynamicDomain}/pointsGrant" method="post" id="pointGrantForm" name="pointGrantForm">
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<div class="m-main f-fr">
+		<h4 class="u-tit"><span class="f-ib">积分发放记录</span></h4>
+		<input type="hidden" class="j-slt-val-itemType" name="search_EQI_itemType" value="${pageActivity.paramMap.itemType}"/>
+		<div id="g-lst-p5">
+			<div class="u-flt f-cb">
+				<input type="hidden" id="distributeId" name="distributeId" value=""/>
+				<span class="f-fl"><input type="text" readonly="readonly" placeholder="发放开始时间" name="search_GED_createDate" class="u-txt u-date" id="date-start" value="<#if pageActivity.paramMap.createDateAfter??>${pageActivity.paramMap.createDateAfter?string('yyyy-MM-dd')}</#if>"/></span>
+				<span class="f-fl"><input type="text" readonly="readonly" placeholder="发放结束时间" name="search_LED_createDate"class="u-txt u-date" id="date-end" value="<#if pageActivity.paramMap.createDateBefore??>${pageActivity.paramMap.createDateBefore?string('yyyy-MM-dd')}</#if>"/></span>
+				<span class="f-fl f-por">
+					<input type="hidden" class="j-slt-val" name="search_EQI_welfareItemId" value="${pageActivity.paramMap.welfareItemId}"/>
+					<#if pageActivity.paramMap.welfareItemId?? >
+						<#list welfareItems as welfareItem>
+							<#if pageActivity.paramMap.itemType==1 && pageActivity.paramMap.welfareItemId == welfareItem.objectId>
+								<input type="text" value="${welfareItem.itemName}" readonly="" class="u-txt u-slt j-slt">
+							</#if>
+						</#list>
+						
+						<#list acItemList as acItem>
+							<#if pageActivity.paramMap.itemType==2 && pageActivity.paramMap.welfareItemId == acItem.objectId>
+								<input type="text" value="${acItem.activityName}" readonly="" class="u-txt u-slt j-slt">
+							</#if>
+						</#list>
+					<#else>
+						<input type="text" value="发放名目" readonly="" class="u-txt u-slt j-slt">
+					</#if>
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" data-val-item=""  class="f-ib">全部</a>
+						<#list welfareItems as welfareItem>
+							<a href="javascript:void(0);" data-val="${welfareItem.objectId}" data-val-item="1" class="f-ib">${welfareItem.itemName}</a>
+						</#list>
+						<#list acItemList as acItem>
+							<a href="javascript:void(0);" data-val="${acItem.objectId}" data-val-item="2" class="f-ib">${acItem.activityName}</a>
+						</#list>
+					</em>
+				</span>
+
+				<span class="f-fl f-por">
+					<input type="hidden" class="j-slt-val" name="search_EQI_status" value="${pageActivity.paramMap.status}"/>
+					<#if pageActivity.paramMap.status?? >
+						<#list grantPointsStatusList as grantPointsStatus>
+							<#if pageActivity.paramMap.status == grantPointsStatus.value>
+								<input type="text" value="${grantPointsStatus.name}" readonly="" class="u-txt u-slt j-slt">
+							</#if>
+						</#list>
+					<#else>
+						<input type="text" value="发放状态" readonly="" class="u-txt u-slt j-slt">
+					</#if>
+					
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>
+						
+						<#list grantPointsStatusList as grantPointsStatus>
+							<a href="javascript:void(0);" data-val="${grantPointsStatus.value}" class="f-ib z-on-slt">${grantPointsStatus.name}</a>
+						</#list>
+					</em>
+				</span>
+				<span class="f-fr z-lst">
+					<button type="button" class="u-sch">查询</button>
+				</span>
+			</div>
+
+			<fieldset class="f-cb u-lst-top">
+				<h4 class="f-fl">
+					<small>共 ${pageActivity.totalCount}条记录</small>
+				</h4>
+				<div class="f-fr f-tar">
+					<h5>
+						<@fpage url="${dynamicDomain}/pointsGrant" totalPage=pageActivity.totalPage currentPage=pageActivity.currentPage formId="pointGrantForm" />
+					</h5>
+				</div>
+			</fieldset>
+
+			<div class="u-lst z-top">
+				<ol class="f-cb">
+					<li class="z-w1">积分</li>
+					<li class="z-w2">发放对象</li>
+					<li class="z-w3">发放名目</li>
+					<li class="z-w4">发放日期</li>
+					<li class="z-w5">提交日期</li>
+					<li class="z-w6">发放状态</li>
+					<li class="z-w7">操作</li>
+				</ol>
+			</div>
+
+			<div class="u-lst z-cnt j-list">
+			
+				<#if pageActivity??>
+					<#list pageActivity.list as pointDistrubuteTemp>
+						<ul class="f-cb">
+							<li class="z-w1">${pointDistrubuteTemp.totalPoint}</li>
+							<li class="z-w2">
+								<#list dictionaryList as dict>
+									<#if pointDistrubuteTemp.distributeBy == dict.value>
+										${dict.name}
+									</#if>
+								</#list>
+								<a href="#" data-val="${pointDistrubuteTemp.objectId}" class="f-ib gtg1">(查看明细)</a>
+							</li>
+							<li class="z-w3">${pointDistrubuteTemp.itemName}</li>
+							<li class="z-w4">${pointDistrubuteTemp.distributeDate?string('yyyy-MM-dd HH:mm:ss')}</li>
+							<li class="z-w5">${pointDistrubuteTemp.createDate?string('yyyy-MM-dd HH:mm:ss')}</li>
+							<li class="z-w6">
+								<#list grantPointsStatusList as grantPointsStatus>
+									<#if pointDistrubuteTemp.status == grantPointsStatus.value>
+										${grantPointsStatus.name}
+									</#if>
+								</#list>
+							</li>
+							<li class="z-w7">
+								<#if pointDistrubuteTemp.status == 2 && pointDistrubuteTemp.userId gt 0>
+									<a href="javascript:void(0);" onclick="doConfirm(${pointDistrubuteTemp.objectId})" class="gtg">确认</a>
+								</#if>
+								<#if pointDistrubuteTemp.status = 2 || pointDistrubuteTemp.status = 1>
+									<a href="javascript:void(0)" onclick="doCancle(${pointDistrubuteTemp.objectId})" class="gtg">取消</a>
+								</#if>
+							</li>
+						</ul>
+					</#list>
+				
+				<#else>
+					未查到信息
+				</#if>
+			</div>
+
+			<div class="u-act f-cb">
+				<@pageform totalPage=pageActivity.totalPage currentPage=pageActivity.currentPage formId="pointGrantForm" />
+			</div>
+			<#include "/include/send_confirm.html">
+		</div>
+	</div>
+</div>
+</form>
+
+<script>
+$(function(){
+	
+	// 模拟Select控件
+	$('.j-slt').click(function(){
+		var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+		$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+		if(_this.hasClass('z-on-slt')){
+			_this.removeClass('z-on-slt');
+			_opt.hide();
+		}else{
+			_this.addClass('z-on-slt');
+			_opt.show();
+		}
+		return false;
+	});
+
+	// 下拉项的点击事件
+	$('.j-opt > a').click(function(){
+		var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+		if(!(typeof(_this.attr("data-val-item"))=="undefined")){
+			$(".j-slt-val-itemType").val(_this.attr("data-val-item"));
+		}
+		
+		_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+		return false;
+	});
+
+	$('body').click(function(e){
+		$('.j-opt').hide();
+		$('.j-slt').removeClass('z-on-slt')
+	});
+
+	// 控制列表尾元素的样式
+	$('.j-list').find('ul:last').css('border-bottom',0);
+
+	//选择开始时间
+	$('#date-start').click(function(){
+		WdatePicker({maxDate:'#F{$dp.$D(\'date-end\')}'});
+	});
+	//选择开始时间
+	$('#date-end').click(function(){
+		WdatePicker({minDate:'#F{$dp.$D(\'date-start\')}'});
+	});
+	
+	
+	
+	
+	$(".u-sch").click(function(){
+		$("#ec_p").val(1);
+		$("#pointGrantForm").submit();
+	});
+	
+	
+	
+	//查看明细				
+	$(".gtg1").click(function(){
+		$("#distributeId").val($(this).attr('data-val'));
+		$("#pointGrantForm").attr("action",'${dynamicDomain}/pointsGrant/pointsGrantDetail');
+		$("#pointGrantForm").submit();
+	});
+	
+	
+	
+	
+	
+});
+
+
+
+//弹窗的确定按钮回滚函数
+function popSure(_char){
+	var _func = {
+		'sure11': function(){
+			return confirmPay();
+		},
+		'sure12': function(){
+			resetPassword();
+        }
+	};
+	return _func[_char];
+}
+//初始化函数载体
+function popInit(_char){
+	var _func = {
+		'init11': function(){ return {'title':'确认发放信息', 'html': $('#tmp11').html()}; },
+		'init12': function(){ 
+
+            var _html = '<dl class="dl2 f-cb"><dt class="j-cancel" data-func="cleanPwd">手机号码：</dt>' + 
+                        '<dd><input type="text" value="${s_user.mobilePhone}" readonly="readonly"/>&nbsp;<a href="javascript:void(0);" class="f-ib u-code" id="j-btn-code">获取验证码</a></dd></dl>' +
+                        '<dl class="dl2 f-cb"><dt>手机验证码：</dt>' +
+                        '<dd><input id="smsCode" type="text" />&nbsp;<a href="javascript:void(0);" class="f-ib u-code" id="j-btn-send">提交</a></dd></dl>';
+
+            return {'title':'支付密码重置', 'html': _html}; 
+        }
+	};
+	return _func[_char];
+}
+function doConfirm(id){
+	$.ajax({ 
+		type:"GET", 
+		url: "${dynamicDomain}/pointDistribute/toConfirm?distributeId="+id,   
+		success: function(msg){  
+			toConfirm(msg);
+		}
+	});
+}
+
+function doCancle(id){
+	$.ajax({ 
+		type:"GET", 
+		url: "${dynamicDomain}/pointDistribute/cancel?distributeId="+id,   
+		success: function(msg){
+			if(msg.result){
+				winAlert("取消成功");
+			}else{
+				winAlert("取消失败");
+			}
+			return false;
+		}
+	});
+	return false;
+}
+
+//确定和关闭操作
+$(document).on('click', '.j-pop-cancel', function(){
+	window.location.reload();
+});
+</script>
+<@findPayPwd/>
+</body>
+</html>

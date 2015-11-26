@@ -1,0 +1,330 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>年度福利管理</title>
+    <script src="${staticDomain}js/jquery.popup.v1.js"></script>
+    <script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/excel.css" />
+</head>
+<body>
+	<div id="p9">
+	<div id="g-crum2">
+	    <h4>
+	        <a href="javascript:void(0);">账户首页</a> &gt;
+	        <a href="javascript:void(0);">福利管理</a> &gt;
+	        历年年度福利计划
+	    </h4>
+	</div>
+	
+	<div id="g-content" class="f-cb">
+	    <#include "/include/nav_menu_link.html">    
+	    <script>var _menuIndex = 1;</script>
+	    <div class="m-main f-fr">
+	        
+	        <h4 class="u-tit"><span class="f-ib">福利计划</span></h4>
+	       <form id="planForm" action="${dynamicDomain }/welfarePlan/page" method="post">
+	        <div id="g-search">
+	            <fieldset class="f-cb">             
+	                <span class="f-ib f-por">
+	                    <input type="hidden" name="search_EQI_year" class="j-slt-val" value="${search_EQI_year}">
+	                    <#if search_EQI_year==null||search_EQI_year==''>
+	                         <input type="text" readonly="readonly" class="u-txt-slt j-slt-o" value="全部">
+	                    <#else>
+	                         <input type="text" readonly="readonly" class="u-txt-slt j-slt-o" value="${search_EQI_year}">
+	                    </#if>
+	                   
+	                    <em class="f-ib f-poa j-opt-o">
+	                      <a href="javascript:void(0);" class="f-ib">全部</a>
+	                      <#list allYear as year>
+	                        <a href="javascript:void(0);" data-val="${year}" class="f-ib">${year}</a>
+	                      </#list>
+	                    </em>
+	                    <!--<input type="text" value="${search_EQI_year}" name="search_EQI_year" readonly="readonly" class="u-txt-slt" onclick="WdatePicker({dateFmt:'yyyy',maxDate:'%y-%M-%d',readOnly:true})"> -->
+	                </span>
+	                <label class="f-ib" id="planSearch" onclick="$('#planForm').submit();" style="cursor:pointer;">查询</label>
+	            </fieldset>                  
+	            <h4 class="f-fl">
+	                <a href="${dynamicDomain }/welfarePlan/create" class="f-ib">添加福利计划</a>
+	                <a href="javascript:void(0);" data-char="plancp" data-param="" class="f-ib j-pop-open u-right">复制历年福利计划</a>
+	                <small>说明：请在选择期限开始前完成额度设置和年度计划，当计划开始选择时将不可以再修改额度和计划！</small>
+	            </h4>
+	        </div>
+	
+	        <div class="u-lst z-top">
+	            <ol class="f-cb">
+	                <li class="z-w1">年份</li>
+	                <li class="z-w2">计划名称</li>
+	                <li class="z-w3">总发放额度(元)</li>
+	                <li class="z-w4">发放人数(人)</li>
+	                <li class="z-w5">确认支付(人)</li>
+	                <li class="z-w6">拒绝支付(人)</li>
+	                <li class="z-w7">选择期限</li>
+	                <li class="z-w8">状态</li>
+	                <li class="z-w9">操作</li>
+	            </ol>
+	        </div>
+	
+	        <div class="u-lst z-cnt j-list">
+	            <#list pageSearch.list as item>
+	                <ul class="f-cb">
+	                    <li class="z-w1">${item.year}</li>
+	                    <li class="z-w2" style="text-align:left;">${item.name}</li>
+	                    <li class="z-w3">${item.totalAmount}</li>
+	                    <li class="z-w4">${item.headCount}</li>
+	                    <li class="z-w5">${item.confirmHeadCount}</li>
+	                    <li class="z-w6">${item.rejectHeadCount}</li>
+	                    <li class="z-w7"><small>${item.beginSelectDate?string('yyyy-MM-dd')}<br />${item.endSelectDate?string('yyyy-MM-dd')}</small></li>
+	                    <li class="z-w8">
+	                    <#if item.status==0>
+	                       草稿
+	                    <#elseif item.status==5>
+	                       待发布
+	                    <#elseif item.status==10>
+	                       选择中
+	                     <#elseif item.status==15>
+                           待确认
+                         <#elseif item.status==20>
+                           待付款
+                         <#elseif item.status==25>
+                           已付款
+                         <#elseif item.status==30>
+                           已完成
+	                    </#if>
+	                    </li>
+	                    <li class="z-w9">
+	                        <#if item.status==0>
+	                           <#if s_user.objectId==item.createdBy>
+	                            <a href="${dynamicDomain}/welfarePlan/edit/${item.objectId}" class="gtg">修改</a>&nbsp;&nbsp;
+	                             <a href="javascript:void(0);" data-val="您确认删除?|${item.objectId}|${item.objectId}|deletedWelfarePlan" class="gdel j-confirm-open">删除</a>
+	                           </#if>
+	                        <#elseif item.status==5>
+	                            <#if s_user.objectId==item.createdBy>
+                                   <a href="${dynamicDomain}/welfarePlan/edit/${item.objectId}" class="gtg">修改</a>&nbsp;&nbsp;
+                                   <a href="${dynamicDomain}/welfarePlanStaff/page/${item.objectId}" class="gtg">额度设置</a>&nbsp;&nbsp;
+                                </#if>
+	                            <#if item.headCount gt 0>
+	                                <a href="${dynamicDomain}/welfarePlan/exportQuota/${item.objectId}" class="gtg">导出额度 </a>&nbsp;&nbsp;
+	                            </#if>
+	                        <#elseif item.status==10>
+	                            <a href="${dynamicDomain}/welfareSubPlan/edit/${item.objectId}?type=detail" class="gtg">计划详情</a>&nbsp;&nbsp;
+	                            <#if item.headCount gt 0>
+		                            <a href="${dynamicDomain}/welfarePlan/exportQuota/${item.objectId}" class="gtg">导出额度 </a>&nbsp;&nbsp;
+		                        </#if>
+	                        <#elseif item.status==15>
+	                            <a href="${dynamicDomain}/welfareSubPlan/edit/${item.objectId}?type=detail" class="gtg">计划详情</a>&nbsp;&nbsp;
+	                            <#if s_user.objectId==item.createdBy>
+	                                <a href="${dynamicDomain}/welfarePlanStaff/confirmSelect/${item.objectId}" class="gtg">确定选择</a>&nbsp;&nbsp;
+	                            </#if>
+	                            <a href="${dynamicDomain}/welfarePlan/exportUserSelect/${item.objectId}" class="gtg">导出员工选择</a>&nbsp;&nbsp;
+	                        <#elseif item.status==20>
+	                            <a href="${dynamicDomain}/welfareSubPlan/edit/${item.objectId}?type=detail" class="gtg">计划详情</a>&nbsp;&nbsp;
+	                            <a href="${dynamicDomain}/welfarePlan/payDetail/${item.objectId}" class="gtg">支付详情</a>&nbsp;&nbsp;
+	                            <a href="${dynamicDomain}/welfarePlan/exportUserSelect/${item.objectId}" class="gtg">导出员工选择</a>&nbsp;&nbsp;
+	                        <#elseif item.status==25>
+	                            <a href="${dynamicDomain}/welfareSubPlan/edit/${item.objectId}?type=detail" class="gtg">计划详情</a>&nbsp;&nbsp;
+	                            <a href="${dynamicDomain}/welfarePlan/payDetail/${item.objectId}" class="gtg">支付详情</a>&nbsp;&nbsp;
+	                        <#elseif item.status==30>
+                                <a href="${dynamicDomain}/welfareSubPlan/edit/${item.objectId}?type=detail" class="gtg">计划详情</a>&nbsp;&nbsp;
+                                <a href="${dynamicDomain}/welfarePlan/payDetail/${item.objectId}" class="gtg">支付详情</a>&nbsp;&nbsp;
+                                <a href="${dynamicDomain}/welfarePlan/exportUserSelect/${item.objectId}" class="gtg">导出员工选择</a>&nbsp;&nbsp;
+	                        </#if>
+	                    </li>
+	                </ul>
+	            </#list>
+	        </div>
+	
+	        <div class="u-act f-cb">
+	            <@pageform totalPage=pageSearch.totalPage currentPage=pageSearch.currentPage formId="planForm" />
+	        </div>
+	      </form>
+	    </div>
+	
+	<script>
+	$(function(){
+	
+	    // 模拟Select控件
+	    var _on = 'z-on-slt';
+	
+	    // 下拉项的显示事件
+	    $(document.body).on('click', '.j-slt-o', function(){
+	
+	        var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+	
+	        $('.j-slt-o').not(this).removeClass(_on).next().hide();
+	
+	        if(_this.hasClass(_on)){
+	            _this.removeClass(_on);
+	            _opt.hide();
+	        }else{
+	            _this.addClass(_on);
+	            _opt.show();
+	        }
+	
+	        return false;
+	    });
+	
+	    // 下拉项的点击事件
+	    $(document.body).on('click', '.j-opt-o > a', function(){
+	
+	        var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+	
+	        _opt.hide().prev().removeClass(_on).val(_this.text()).prev().val(_val);
+	    });
+	
+	    // 
+	    $(document.body).click(function(){
+	        $('.j-opt-o').hide();
+	        $('.j-slt-o').removeClass(_on)
+	    });
+	    $('body').attr('id','p9');
+	});
+	
+	// 弹窗里的单选
+	$(document.body).on('click', '.j-single li', function(){
+	
+	    var _this = $(this), _on = ('on');
+	
+	    if(_this.hasClass(_on)) return false;
+	    
+	    _this.addClass(_on).siblings().removeClass(_on);
+	
+	    return false;
+	});
+	
+	
+	
+	// 弹窗对象预定义
+	var POPUP = {};
+	
+	// 配置信息 [弹窗1：添加/编辑计划] 
+	POPUP.plancp = {
+	
+	    'title': '复制年度福利计划', 'top': 200, 'width':330,
+	    'content': 'popupContentForPlanCp();',
+	    'complete': 'popupCompleteForPlanCp();',
+	    'sure': {'txt':'确定', 'func':'popupSureForPlanCp();'},
+	    'cancel': {'txt':'取消'}
+	};
+	
+	function popupContentForPlanCp(){
+	
+	    // // 此处的数据是模拟数据，真实数据需数据库获取。注意数据格式！
+	    // var _data = {'1':'2014', '2':'2013', '3':'2012'};
+	    // var _opt = '';
+	    // for(var i in _data){
+	    //  _opt += '<a href="javascript:void(0);" data-val="'+ i +'" class="f-ib">'+ _data[i] +'</a>';
+	    // }
+	
+	    // var _data2 = {'10':'体检福利计划', '20':'保险福利计划', '30':'储蓄计划', '40':'旅游计划', '50':'健身计划'};
+	    // var _opt2 = '';
+	    // for(var i in _data2){
+	    //  var _on = i == 20 ? ' class="on"' : '';
+	    //  _opt2 += '<li'+ _on +' data-val="'+ i +'">'+ _data2[i] +'</li>';
+	    // }
+	
+	    return '<div id="pop-plan-cpye">' +
+	                '<fieldset class="f-cb">    ' +
+	                    '<label class="f-ib">年份</label>' +
+	                    '<span class="f-ib f-por">' +
+	                        '<input type="hidden" class="j-slt-val" value="0">' +
+	                        '<input type="text" value="" readonly="readonly" class="u-txt-slt j-slt-o">' +
+	                        '<em class="f-ib f-poa j-opt-o" id="j-opt-yeay"></em>' +
+	                        // '<em class="f-ib f-poa j-opt-o" id="j-opt-yeay">'+ _opt +'</em>' +
+	                    '</span>' +
+	                '</fieldset>' +
+	                            
+	                '<div class="u-singel">' +
+	                    '<ul class="j-single" id="j-single"></ul>' +
+	                    // '<ul class="j-single" id="j-single">'+ _opt2 +'</ul>' +
+	                '</div>' +
+	            '</div>';
+	}
+	
+	function popupCompleteForPlanCp(){
+	
+	    // 此处的数据是模拟数据，真实数据需数据库获取。注意数据格式！
+	    var _data = {
+	    <#list allYear as item>
+	       <#if item_has_next>
+	           '${item}':'${item}',
+	       <#else>
+	           '${item}':'${item}'
+	       </#if>
+	    </#list>
+	    };
+	    var _opt = '';
+	    for(var i in _data){
+	        _opt += '<a href="javascript:void(0);" data-val="'+ i +'" class="f-ib plan-year">'+ _data[i] +'</a>';
+	    }
+	    $('#j-opt-yeay').html(_opt);
+	    $('.plan-year').click(function(){
+	      var year = $(this).data('val');
+	      $.ajax({
+	            url:"${dynamicDomain}/welfarePlan/getPlans/"+year,
+	            async: false,
+	            type : 'post',
+	            success : function(json) {
+	                if(json.result){
+	                var content = '';
+	                var plans = json.plans;
+	                   for(var i=0;i<plans.length;i++){
+	                       content = content+'<li data-val="'+ plans[i].objectId +'">'+ plans[i].name +'</li>';
+	                   }
+	                   $('#j-single').html(content);
+	                }else{
+	                    winAlert('操作失败');
+	                }
+	            }
+	    });
+	    });
+	}
+	
+	function popupSureForPlanCp(){
+	    //得到总计划id
+	    var planId = $('#j-single .on').data('val');
+	    if(planId==''||planId==undefined){
+	       winAlert('请选择需要复制的福利计划!');
+	       return false;
+	    }
+	    $.ajax({
+	            url:"${dynamicDomain}/welfarePlan/copy/"+planId,
+	            async: false,
+	            type : 'post',
+	            success : function(json) {
+	                if(json.result){
+	                   var newPlanId = json.newPlanId;
+	                   window.location.href='${dynamicDomain}/welfarePlan/edit/'+newPlanId;
+	                }else{
+	                   winAlert('操作失败');
+	                }
+	            }
+	    });
+	    return true;
+	}
+	
+	// [回调] 确认
+	function confirmSure_deletedWelfarePlan(id){
+	    $.ajax({
+                url:"${dynamicDomain }/welfarePlan/delete/"+id,
+                async: false,
+                type : 'post',
+                success : function(json) {
+                    if(json.result){
+                       window.location.reload();
+                    }else{
+                       winAlert('操作失败');
+                    }
+                }
+        });
+	}
+	</script>
+	</div>
+</div>
+</body>
+</html>

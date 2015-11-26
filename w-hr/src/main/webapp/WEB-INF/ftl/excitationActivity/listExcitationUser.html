@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>报名名单管理 - 福利商城</title>
+</head>
+<body>
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">激励管理</a> &gt;
+		报名名单管理
+	</h4>
+</div>
+<form method="post" action="${dynamicDomain}/excitationActivity/activityUserInfo/${exActivity.objectId}" id="queryForm" name="queryForm" >
+<div id="g-content" class="f-cb">
+
+	<#include "/include/nav_menu_link.html">
+    <#include "/common/page.html">
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit f-cb">
+			<span class="f-ib">报名名单列表</span>
+			<a href="${dynamicDomain}/excitationActivity/queryActivityList" class="f-fr">返回</a>
+		</h4>
+
+		<div id="g-lt-p12-3">
+
+			<h3><b class="f-ib">活动信息</b></h3>
+			<p class="u-desc">
+				活动标题：${exActivity.title}<br />
+				发布时间：${exActivity.createdOn?string('yyyy-MM-dd HH:mm:ss')}<br />
+				报名时间：${exActivity.applyBeginDate?string('yyyy-MM-dd HH:mm:ss')} 至 ${exActivity.applyEndDate?string('yyyy-MM-dd HH:mm:ss')}<br />
+			</p>
+
+			<h3><b class="f-ib">当期报名人数</b></h3>
+
+			<div class="u-flt f-cb">
+				<span class="f-fl">
+					<#if pageUserInfo.paramMap.staffName??>
+					    <input type="text" class="u-txt z-tw1" placeholder="员工姓名" name="search_LIKES_staffName" value="${pageUserInfo.paramMap.staffName?substring(1,pageUserInfo.paramMap.staffName?length-1)}">
+					<#else>
+						<input type="text" class="u-txt z-tw1" placeholder="员工姓名" name="search_LIKES_staffName">
+					</#if>
+				</span>
+
+				<span class="f-fl f-por">
+					<input type="hidden" class="j-slt-val" value="${pageUserInfo.paramMap.departmentId}" name="search_EQI_departmentId">
+					<#if pageUserInfo.paramMap.departmentId??>
+						<#if deptList?exists && (deptList?size>0) >
+	                         <#list deptList as dept>
+	                               <#if dept.objectId == pageUserInfo.paramMap.departmentId >
+	                                  <input type="text" value="${dept.name}" readonly="" class="u-txt u-slt j-slt">
+	                               </#if>
+	                         </#list>
+		                </#if>
+		            <#else>
+		                <input type="text" value="所有部门" readonly="" class="u-txt u-slt j-slt">
+	                </#if>
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">所有部门</a>
+						<#if deptList?exists && (deptList?size>0) >
+	                         <#list deptList as dept>
+	                               <a href="javascript:void(0);" data-val="${dept.objectId}" class="f-ib">${dept.name}</a>
+	                         </#list>
+	                    </#if>
+					</em>
+				</span>
+
+				<span class="f-fl f-por">
+					<input type="hidden" class="j-slt-val" value="${pageUserInfo.paramMap.sex}" name="search_EQI_sex">
+					<#if pageUserInfo.paramMap.sex?? >
+					    <#list dictionaryList as dict>
+					        <#if pageUserInfo.paramMap.sex == dict.value>
+							    <input type="text" value="${dict.name}" readonly="" class="u-txt u-slt j-slt">
+							</#if>
+						</#list>
+					<#else>
+					    <input type="text" value="所有性别" readonly="" class="u-txt u-slt j-slt">
+					</#if>
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">所有性别</a>
+						<#list dictionaryList as dict>
+							<a href="javascript:void(0);" data-val="${dict.value}" class="f-ib">${dict.name}</a>
+						</#list>
+					</em>
+				</span>
+
+				<span class="f-fl z-lst"><button type="submit" class="u-sch">查询</button></span>
+
+				<script>
+				$(function(){
+
+					// 模拟Select控件
+					$('.j-slt').click(function(){
+
+						var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+						$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+						if(_this.hasClass('z-on-slt')){
+							_this.removeClass('z-on-slt');
+							_opt.hide();
+						}else{
+							_this.addClass('z-on-slt');
+							_opt.show();
+						}
+						return false;
+					});
+
+					// 下拉项的点击事件
+					$('.j-opt > a').click(function(){
+
+						var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+						_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+						
+						return false;
+					});
+
+					$('body').click(function(e){
+						
+						$('.j-opt').hide();
+						$('.j-slt').removeClass('z-on-slt')
+					});
+
+					// 控制列表尾元素的样式
+					$('.j-list').find('ul:last').css('border-bottom',0);
+				});
+				</script>
+			</div>
+
+			<div class="u-act f-cb">
+				<h4 class="f-fl">
+					<span class="f-ib u-pub">共 <i>${pageUserInfo.totalCount}</i> 条员工记录</span>
+					<a href="javascript:void(0);" target="top" class="f-ib u-out">导出</a>
+				</h4>
+
+				<h5 class="f-fr">
+					<@fpage url="${dynamicDomain}/excitationActivity/activityUserInfo/${exActivity.objectId}"  totalPage=pageUserInfo.totalPage currentPage=pageUserInfo.currentPage formId="queryForm" />
+				</h5>
+			</div>
+
+			<ol class="u-tte f-cb">
+				<li class="u-w1">工号</li>
+				<li class="u-w2">姓名</li>
+				<li class="u-w3">性别</li>
+				<li class="u-w4">手机号码</li>
+				<li class="u-w5">部门</li>
+				<li class="u-w6">邮箱</li>
+			</ol>
+
+			<div class="u-list j-list">
+			    <#if pageUserInfo.list?exists && (pageUserInfo.list?size>0) >
+	               <#list pageUserInfo.list as user>
+	                   <ul class="f-cb">
+							<li class="u-w1">${user.workNo}</li>
+							<li class="u-w2">${user.staffName}</li>
+							<li class="u-w3">
+								<#list dictionaryList as dict>
+									<#if user.sex == dict.value>
+										${dict.name}
+									</#if>
+							    </#list>
+							</li>
+							<li class="u-w4">${user.telephone}</li>
+							<li class="u-w5">${user.deptName}</li>
+							<li class="u-w6">${user.email}</li>
+				       </ul>
+				   </#list>
+			    </#if>
+			</div>
+
+			<div class="u-act f-cb">
+				<h5 class="f-fr">
+					<@pageform totalPage=pageUserInfo.totalPage currentPage=pageUserInfo.currentPage formId="queryForm" />
+				</h5>
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+<script type="text/javascript">
+$(function(){
+	$(".u-out").click(function(){
+		
+		$("#queryForm").attr("target","top");
+		$("#queryForm").attr("action","${dynamicDomain}/excitationActivity/exportExcelByUser/${exActivity.objectId}");
+		$("#queryForm").submit();
+		
+		$("#queryForm").attr("target","");
+		$("#queryForm").attr("action","${dynamicDomain}/excitationActivity/activityUserInfo/${exActivity.objectId}");
+		
+	});
+	
+	//查询
+	$(".u-sch").click(function(){
+		$("#ec_p").val(1);
+		$("#queryForm").submit();
+	});
+	
+});
+</script>
+</body>
+</html>

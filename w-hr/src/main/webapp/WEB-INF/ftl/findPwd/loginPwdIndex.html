@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>找回密码-输入用户名</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+    <script src="${staticDomain}js/jquery.1.8.3.min.js"></script>
+    <script src="${staticDomain}js/jquery.validate.min.js"></script>
+    <script src="${staticDomain}js/jquery.metadata.js"></script>
+    <script src="${staticDomain}js/additional-methods.js"></script>
+    <script src="${staticDomain}js/jquery.validate_zh.js"></script>
+    <script src="${staticDomain}js/jquery.placeholder.js"></script>
+    <script src="${staticDomain}js/jquery.alert.js"></script>
+</head>
+<body>
+
+<script>var _iNav = 2;</script>
+<div id="e-y1-1">
+    <div class="repwd">
+        <h6>密码找回</h6>
+        <p><img src="${staticDomain}image/zstp3-1.gif"></p>
+        <h5 class="f-cb">
+            <span class="z-on">输入账户名</span>
+            <span>验证身份</span>
+            <span>重置密码</span>
+            <span>完成</span>
+        </h5>
+        <form action="${secureDomain}/findLoginPwd/verifyIdentity" method="post" id="submitForm">
+            <div style="margin-left:20%;font-size:15px;color:red;">${message}</div>
+            <table>
+                <tr>
+                    <td class="wt1">账户名：</td>
+                    <td class="wt2"><input type="text" class="tx1 required" name="loginName"/></td>
+                    <td class="wt3"></td>
+                </tr>
+                <tr>
+                    <td class="wt1">验证码：</td>
+                    <td class="wt2"><input type="text" class="tx1 required" name="authcode"/></td>
+                    <td class="wt3"><img id="imgCode" src="../kaptcha" /> <a href="javascript:void(0);" class="u-code" id="kaptchaImage">看不清，换一张</a></td>
+                </tr>
+                <tr>
+                    <td class="wt1">&nbsp;</td>
+                    <td colspan="2"><button type="submit">下一步</button></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+<script>
+$(function(){
+    $("#kaptchaImage").click(
+           function(){
+               $('#imgCode').attr('src','../kaptcha?' + Math.floor(Math.random()*100)); 
+           }
+     );
+           $("#submitForm").validate({
+            rules: {
+                loginName: {
+                    required: true
+                },
+                authcode: {
+                    required: true,
+                    remote:{                                          //验证用户名是否存在
+                       type:"POST",
+                       url:"${secureDomain}/validateAuthCode",             //servlet
+                       data:{
+                         authcode:function(){return $("input[name='authcode']").val();}
+                       } 
+                      } 
+                }
+            },
+        messages:{    
+            authcode:{    
+               remote:"验证码不正确!"    
+              }
+        }
+        });
+});
+</script>
+</body>
+</head>

@@ -1,0 +1,149 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>发放明细 - 福利商城</title>
+</head>
+<body>
+<?php require('head#tmp.html');?>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">福利管理</a> &gt;
+		发放明细
+	</h4>
+</div>
+
+
+<form action="${dynamicDomain}/pointsGrant/pointsGrantDetail" method="post" id="pointDetailForm" name="pointDetailForm">
+<div id="g-content" class="f-cb">
+
+	<#include "/include/nav_menu_link.html">
+	<!-- 发放ID -->
+	<input type="hidden" name="distributeId" id="distributeId" value="${distributeId}"/>
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit f-cb">
+			<span class="f-ib">发放明细列表</span>
+			<a href="${dynamicDomain}/pointsGrant" class="f-fr">返回</a>
+		</h4>
+
+		<div id="g-lt-p12-3">
+
+			<script>
+			$(function(){
+				// 控制列表尾元素的样式
+				$('.j-list').find('ul:last').css('border-bottom',0);
+			});
+			</script>
+			
+			<h3><b class="f-ib">发放信息</b></h3>
+			<p class="u-desc">
+				发放名目：${itemName}<br />
+				发放时间：${pointDistrubute.createDate?string('yyyy-MM-dd HH:mm:ss')}
+			</p>
+
+			<h3><b class="f-ib">发放人员名单</b></h3>
+			<div class="u-act f-cb">
+				<h4 class="f-fl">
+					<span class="f-ib u-pub">共 <i>${pageActivity.totalCount}</i> 条员工记录</span>
+					<a href="javascript:void(0);" target="top" class="f-ib u-out">导出</a>
+				</h4>
+
+				<button type="button" class="f-fr u-btn-sch">搜索</button>
+				<input type="text" class="f-fr u-txt-sch" name="staffName" id="staffName" value="${staffName}" placeholder="工号/姓名/...">
+
+				<@fpage url="${dynamicDomain}/pointsGrant/pointsGrantDetail" totalPage=pageActivity.totalPage currentPage=pageActivity.currentPage formId="pointDetailForm" />
+			</div>
+
+			<ol class="u-tte f-cb">
+				<li class="u-w1">工号</li>
+				<li class="u-w2">姓名</li>
+				<li class="u-w3">性别</li>
+				<li class="u-w4">手机号码</li>
+				<li class="u-w5">部门</li>
+				<li class="u-w6">邮箱</li>
+				<li class="u-w7">状态</li>
+			</ol>
+
+			<div class="u-list j-list">
+				<#list pageActivity.list as distrubuteStaff>
+					<ul class="f-cb">
+						<li class="u-w1">${distrubuteStaff.workNo}</li>
+						<li class="u-w2">${distrubuteStaff.staffName}</li>
+						<li class="u-w3">
+							<#list dictionaryList as dict>
+								<#if distrubuteStaff.sex == dict.value>
+									${dict.name}
+								</#if>
+							</#list>
+						</li>
+						<li class="u-w4">${distrubuteStaff.telephone}</li>
+						<li class="u-w5">${distrubuteStaff.deptName}</li>
+						<li class="u-w6">${distrubuteStaff.email}</li>
+						<li class="u-w7">
+							<#if distrubuteStaff.status==0>
+								未领取
+							<#elseif distrubuteStaff.status==1>
+								已领取
+							<#elseif distrubuteStaff.status==2>
+								待确认
+							</#if>
+						</li>
+					</ul>
+				</#list> 
+			</div>
+
+			<div class="u-act f-cb">
+				<h5 class="f-fr">
+					<@pageform  totalPage=pageActivity.totalPage currentPage=pageActivity.currentPage formId="pointDetailForm" />
+				</h5>
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+<script type="text/javascript">
+$(function(){
+	
+	
+	//导出
+	$(".u-out").click(function(){
+		
+		$("#pointDetailForm").attr("target","top");
+		$("#pointDetailForm").attr("action","${dynamicDomain}/pointsGrant/exportPointsGrantDetail");
+		$("#pointDetailForm").submit();
+		
+		$("#pointDetailForm").attr("target","");
+		$("#pointDetailForm").attr("action","${dynamicDomain}/pointsGrant/pointsGrantDetail");
+		
+	});
+	
+	
+	//搜索
+	$(".u-btn-sch").click(function(){
+		$("#ec_p").val(1);
+		$("#pointDetailForm").submit();
+	});
+	
+	
+	
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

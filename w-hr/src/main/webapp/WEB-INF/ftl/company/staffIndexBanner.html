@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>员工首页Banner设置</title>
+	<link media="all" rel="stylesheet" href="${staticDomain}css/center.z.new.css" />
+	<script src="${staticDomain}js/jquery.form.js"></script>
+</head>
+<body>
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">账户管理</a> &gt;
+		企业基本信息
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+		<#include "/include/nav_menu_link.html">
+	
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit"><span class="f-ib"><a href="${dynamicDomain}/companyBaseInfo/showCompanyBaseInfo">基本信息设置</a> / 员工首页Banner设置</span></h4>
+		<form action="${dynamicDomain}/staffIndexBanner/saveStaffIndexBanner" method="post" id="form">
+		<div id="g-p20-1">
+			<ul class="f-cb j-bnr-lst">
+				<#list companyCategorys as companyCategory>
+				<li data-id="${companyCategory.bannerIndex}" id="${companyCategory.objectId}">
+					<img src="${adminStaticDomain}${companyCategory.bannerUrl}" style="width:302px;height:152px;"/>
+					<input type="hidden" value="${companyCategory.objectId}" name="companyCategorys[${companyCategory_index}].objectId">
+					<input type="hidden" value="${companyCategory.bannerUrl}" name="companyCategorys[${companyCategory_index}].bannerUrl">
+					<input type="hidden" value="${companyCategory.bannerIndex}" name="companyCategorys[${companyCategory_index}].bannerIndex">
+					<span class="f-cb j-do-img">
+						<a class="f-fl top" data-act="top" href="javascript:void(0);">置顶</a>
+						<a class="f-fl prev" data-act="prev" href="javascript:void(0);">&nbsp;</a>
+						<span class="f-fl">点击左右排序</span>
+						<a class="f-fl next" data-act="next" href="javascript:void(0);">&nbsp;</a>
+						<!-- <a class="f-fr delete" data-act="delete" href="javascript:void(0);">&nbsp;</a> -->
+						<a data-val="您确认删除?|0|${companyCategory.objectId}|delBanner" class="j-confirm-open f-fr delete" href="javascript:void(0);">&nbsp;</a>
+						
+					</span>
+				</li>
+				</#list>
+			</ul>
+			<script>
+			// [回调] 确认
+			function confirmSure_delBanner(_id){
+			$("#"+_id).remove();
+			$.ajax({
+				url:"${dynamicDomain}/staffIndexBanner/deleteBanner/"+_id,
+				type:"post",
+				success:function(msg){
+					if(msg.result == true){
+						winAlert("删除成功")
+					}else{
+						winAlert("删除失败")
+					}
+				}
+			})
+			// 获取图片的数目
+			var _len = $('.j-bnr-lst li').length;
+			var _num = $('.j-bnr-num');
+			if(_len == 0) _num.next('em').show();
+
+			// 显示数字
+			_num.find('i').text(_len);
+			resetIndex();
+			// do somethings...
+			}
+			</script>
+			<h5>
+				<a class="f-ib sure j-btn-sure" href="javascript:void(0);">确定</a>
+				<a data-pop="1,500,0,1,2" class="f-ib j-pop-open add" href="javascript:void(0);">添加图片</a>
+				<span class="j-bnr-num"><i></i>/5</span>
+				<em>点击添加图片</em>
+			</h5>
+		</div>
+		</form>
+	</div>
+</div>
+
+<script>
+$(function(){
+	
+	// 前移 | 后移 | 置顶 | 删除
+	$(document.body).on('click', '.j-do-img a', function(){
+
+		var _this = $(this), _act = _this.attr('data-act');
+		var _current = _this.parent('span').parent('li'),
+			_first = _current.parent().find('li:first');
+			_prev = _current.prev('li'), 
+			_next = _current.next('li');
+
+		_current.parent().find('img').removeClass('on');
+		_current.find('img').addClass('on');
+		
+		// 置顶
+		if(_act === 'top'){
+			_current.insertBefore(_first);
+			resetIndex();
+		}
+
+		// 前移
+		if(_act === 'prev'){
+			_current.insertBefore(_prev);
+			resetIndex();
+		}
+
+		// 后移
+		if(_act === 'next'){
+			_current.insertAfter(_next);
+			resetIndex();
+		}
+
+		// 删除
+		if(_act === 'delete'){
+			if(!confirm("确认永久删除？")){
+				return false;
+			}
+			var _val = _current.children(":eq(1)").val();
+			_current.remove();
+			$.ajax({
+				url:"${dynamicDomain}/staffIndexBanner/deleteBanner/"+_val,
+				type:"post",
+				success:function(msg){
+					if(msg.result == true){
+						winAlert("删除成功")
+					}else{
+						winAlert("删除失败")
+					}
+				}
+			})
+			// 获取图片的数目
+			var _len = $('.j-bnr-lst li').length;
+			var _num = $('.j-bnr-num');
+			if(_len == 0) _num.next('em').show();
+
+			// 显示数字
+			_num.find('i').text(_len);
+			resetIndex();
+			// do somethings...
+		}
+	});
+
+	// 获取图片的数目
+	var _len = $('.j-bnr-lst li').length;
+	var _num = $('.j-bnr-num');
+	if(_len == 0) _num.next('em').show();
+
+	// 显示数字
+	_num.find('i').text(_len);
+
+	// 确定[获取排列顺序]
+	$('.j-btn-sure').click(function(){
+		if($('.j-bnr-lst li').length>5){
+			winAlert("只允许最多上传5张图片");
+			return false;
+		}
+		var _lst = $('.j-bnr-lst li');
+		var _order = [];
+		if(_lst.length > 0){
+			$.each(_lst, function(i){
+				var _this = $(this), _id = _this.attr('data-id');
+				_order.push(_id);
+			});
+		}
+		$("#form").submit();
+		//alert('前后排序的ID依次是'+ _order.join(','));
+		
+		// 排列顺序见：_order
+		// console.log(_order);
+
+	});
+	$(".j-pop-open").bind("click",function(){
+		var _len = $('.j-bnr-lst li').length;
+		if(_len>=5){
+			winAlert("只允许最多上传5张图片");
+			return false;
+		}
+	});
+});
+
+function resetIndex(){
+	var _lst = $('.j-bnr-lst li');
+	$.each(_lst,function(_index,_this){
+		$(_this).attr("data-id",_index+1);
+		$(_this).children(":eq(1)").attr("name","companyCategorys["+_index+"].bannerUrl")
+		$(_this).children(":eq(2)").val(_index+1);
+		$(_this).children(":eq(2)").attr("name","companyCategorys["+_index+"].bannerIndex")
+	});
+}
+</script>
+
+<script type="text/html" id="tmp21">
+	<dl>
+		<dt>
+			<table>
+				<td>
+					<form  method='post' enctype='multipart/form-data' id='bannerForm' action="${dynamicDomain}/staffIndexBanner/updateBanner">
+						 <input type="file" name="bannerImage"/>
+					</form>
+				</td>
+				<td>
+						<input type="hidden" id="tempUrl" value="">
+						<input type="hidden" id="tempObjectId" value="">
+						 <button onclick="loadBanner()">上传</button>
+				</td>
+			</table>
+		</dt>
+		<dd>模板格式支持：xls、xlsx；大小不超过2M；</dd>
+	</dl>
+</script>
+
+<script src="${staticDomain}js/jquery.popup.plus.js"></script>
+<script>
+var base = "${adminStaticDomain}";
+// 初始化函数载体
+function popInit(_char){
+
+	var _func = {
+
+		'init21': function(){ return {'title':'添加Banner图片', 'html': $('#tmp21').html()}; }
+	};
+
+	return _func[_char];
+}
+
+// 弹窗的确定按钮回滚函数
+function popSure(_char){
+	
+	var _func = {
+
+		'sure21': function(){
+			var _lst = $('.j-bnr-lst li');
+			var _index = _lst.length+1;
+			var _value = $("#tempUrl").val()
+			var _id = $("#tempObjectId").val();
+			var _data = [_index, base+_value];
+			var _opt = '<li data-id="'+ _data[0] +'" id="'+_id+'"><img src="'+ _data[1] +'" style="width:302px;height:152px;"/>' +
+						'<input type="hidden" value="'+_value+'" name="companyCategorys['+_lst.length+'].bannerUrl" >'+
+						'<input type="hidden" value="'+_index+'" name="companyCategorys['+_lst.length+'].bannerIndex" >'+
+						'<span class="f-cb j-do-img">' +
+						'<a class="f-fl top" data-act="top" href="javascript:void(0);">置顶</a>' +
+						'<a class="f-fl prev" data-act="prev" href="javascript:void(0);">&nbsp;</a>' +
+						'<span class="f-fl">点击左右排序</span>' +
+						'<a class="f-fl next" data-act="next" href="javascript:void(0);">&nbsp;</a>' +
+						'<a data-val="您确认删除?|0|'+_id+'|delBanner" class="j-confirm-open f-fr delete" href="javascript:void(0);">&nbsp;</a>' +
+						'</span></li>';
+
+			$('.j-bnr-lst').append($(_opt));
+			
+			
+			// 获取图片的数目
+			var _len = $('.j-bnr-lst li').length;
+			var _num = $('.j-bnr-num');
+			if(_len == 0) _num.next('em').show();
+
+			// 显示数字
+			_num.find('i').text(_len);
+
+			return true; // 使用 return false; 可停止代码
+		} 
+	}
+	return _func[_char];
+}
+
+</script>
+<script>
+//上传banner图片
+	
+	function loadBanner(){
+		
+		var logoform = $("#bannerForm");
+		var options = {dataType : "json",
+					  success:function(data){
+						  if(data.result==true){
+							  winAlert("上传成功");
+							  $("#tempUrl").val(data.path);
+							  $("#tempObjectId").val(data.objectId);
+							  
+						  }else{
+							  winAlert("图片上传失败");
+						  }
+					  }
+		}
+		logoform.ajaxSubmit(options);
+		
+	}
+	
+</script>
+</body>
+</html>

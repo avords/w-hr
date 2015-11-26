@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans.xsd
+                     http://www.springframework.org/schema/context  
+        			 http://www.springframework.org/schema/context/spring-context.xsd  
+                     http://www.springframework.org/schema/tx
+                     http://www.springframework.org/schema/tx/spring-tx.xsd
+                     http://www.springframework.org/schema/aop
+                     http://www.springframework.org/schema/aop/spring-aop.xsd ">
+                     
+    <bean id="projectConfig" class="com.handpay.ibenefit.framework.ProjectConfig">
+		<property name="modelBasePackage" value="${modelBasePackage}" />
+		<property name="defaultLocaleName" value="${defaultLocaleName}" />
+		<property name="defaultSkin" value="${defaultSkin}" />
+		<property name="passwordExpired" value="${passwordExpired}" />
+		<property name="formGroup" value="${formGroup}" />
+		<property name="validateCode" value="${validateCode}" />
+		<property name="portalServerName" value="${portalServerName}" />
+	</bean>
+	
+	<bean id="globalConfig" class="com.handpay.ibenefit.framework.config.GlobalConfig">
+		<property name="sessionName" value="${sessionName}" />
+		<property name="cookieDomain" value="${cookieDomain}" />
+		<property name="cookiePath" value="${cookiePath}" />
+		<property name="loginUrl" value="${loginUrl}" />
+		<property name="refreshPermissionTime" value="${refreshPermissionTime}" />
+		<property name="rootUrl" value="${rootUrl}" />
+		<property name="loginErrorWaitTime" value="${loginErrorWaitTime}" />
+		<property name="accessControlAll" value="${accessControlAll}" />
+		<property name="adminStaticDomain" value="${adminStaticDomain}"/>
+		<property name="baseFilePath" value="${baseFilePath}"/>
+		<property name="staticDomain" value="${staticDomain}"/>
+		<property name="dynamicDomain" value="${dynamicDomain}"/>
+		<property name="payDomain" value="${payDomain}"/>
+		<property name="secureDomain" value="${secureDomain}"/>
+		<property name="tempDir" value="${tempDir}"/>
+	</bean>
+	<!-- 所有业务类配置开始 -->
+
+
+</beans>

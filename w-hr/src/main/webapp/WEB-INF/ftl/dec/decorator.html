@@ -1,0 +1,12 @@
+<#include "header.html">
+<body>
+	<#include "page_header.html">
+	${body}
+	<#include "page_footer.html">
+</body>
+<script type="text/javascript">
+<#if message??>
+winAlert("${message}");
+</#if>
+</script>
+</html>

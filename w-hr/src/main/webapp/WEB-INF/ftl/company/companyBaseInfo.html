@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>企业基本信息</title>
+	<link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+	<link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+	<link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+	<link media="all" rel="stylesheet" href="${staticDomain}css/center.z.css" />
+	<link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+	<script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+	<script src="${staticDomain}js/jquery.popup.js"></script>
+	<script src="${staticDomain}js/jquery.form.js"></script>
+</head>
+<body>
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">企业基本信息</a> &gt;
+		基本信息设置
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+<#include "/include/nav_menu_link.html">
+<form action="${dynamicDomain}/companyBaseInfo/updateCompanyInfo" method="post" id="sform">
+<input type="hidden" value="${entity.objectId}" name="objectId">
+<input type="hidden" value="${entity.attachment}" name="attachment" id="attachment">
+<input type="hidden" value="${entity.telephone}" name="telephone" id="telephone">
+	<div class="m-main f-fr">
+		<h4 class="u-tit"><span class="f-ib">基本信息设置 / <a href="${dynamicDomain}/staffIndexBanner/showStaffIndexBanner">员工首页Banner设置</a></span></h4>
+		<div id="g-add-p20">
+			<h3>1<b class="f-ib">基础信息</b></h3>
+			<fieldset class="f-cb">
+				<label class="f-fl">企业名称：</label>
+				<span class="f-fl"><input type="text" value="${entity.companyName}" name="companyName" readonly class="u-txt z-txt-w2 required"></span>
+				<i class="f-fl">*</i>
+			</fieldset>
+
+			<fieldset class="f-cb">
+				<label class="f-fl">联系电话：</label>
+				<span class="f-fl"><input type="text" value="${entity.phone}" name="phone" class="u-txt z-txt-w3 required"></span>
+				<i class="f-fl">*</i>
+			</fieldset>
+
+			<fieldset class="f-cb">
+				<label class="f-fl">联系人：</label>
+				<span class="f-fl"><input type="text" value="${entity.linker}" name="linker" class="u-txt z-txt-w3 required"></span>
+				<i class="f-fl">*</i>
+			</fieldset>
+
+			<fieldset class="f-cb">
+				<label class="f-fl">邮编：</label>
+				<span class="f-fl"><input type="text" value="${entity.zipCode}" name="zipCode" class="u-txt z-txt-w3"></span>
+			</fieldset>
+
+			<fieldset class="f-cb">
+				<label class="f-fl">联系地址：</label>
+				<span class="f-fl f-por z-slt-w2">
+					<input type="hidden" class="j-slt-val" value="1">
+					<input type="text" value="${areaInfo.province}" readonly="readonly" class="u-txt u-slt j-slt">
+					<em class="f-ib f-poa j-opt">
+						<#list provinces as province>
+						<a href="javascript:void(0);" data-val="1" class="f-ib" value='${province.objectId}' onclick="getCitys(${province.objectId})">${province.name}</a>
+						</#list>
+					</em>
+				</span><small class="f-fl z-t-w1">省</small>
+				
+				<span class="f-fl f-por z-slt-w2">
+					<input type="hidden" class="j-slt-val" value="1">
+					<input type="text" value="${areaInfo.city}" readonly="readonly" class="u-txt u-slt j-slt">
+					<em class="f-ib f-poa j-opt" id="city">
+						<#list cities as city>
+						<a href="javascript:void(0);" data-val="1" class="f-ib" value='${city.objectId}'>${city.name}</a>
+						</#list>
+					</em>
+				</span><small class="f-fl z-t-w1">市</small>
+
+				<span class="f-fl f-por z-slt-w2">
+					<input type="hidden" class="j-slt-val" value="${entity.areaId}" name="areaId">
+					<input type="text" value="${areaInfo.district}" readonly="readonly" class="u-txt u-slt j-slt" >
+					<em class="f-ib f-poa j-opt" id="dist">
+						<#list dists as dist>
+						<a href="javascript:void(0);" data-val="${dist.objectId}" class="f-ib" value='${dist.objectId}'>${dist.name}</a>
+						</#list>
+					</em>
+				</span><small class="f-fl z-t-w1">区</small>
+			</fieldset>
+
+			<fieldset class="f-cb">
+				<label class="f-fl">&nbsp;</label>
+				<span class="f-fl"><input type="text" class="u-txt z-txt-w4 required" value="${entity.addressDetail}" name="addressDetail"></span>
+				<i class="f-fl">*</i>
+			</fieldset>
+
+			<fieldset class="f-cb">
+				<label class="f-fl">电子邮箱：</label>
+				<span class="f-fl"><input type="text" class="u-txt z-txt-w5 required email" value="${entity.email}" name="email"></span>
+				<i class="f-fl">*</i>
+			</fieldset>
+
+			<fieldset class="f-cb">
+				<label class="f-fl">福利积分别名：</label>
+				<span class="f-fl"><input type="text" class="u-txt z-txt-w3 {maxlength:2} required" value="${entity.welfarePointName}" name="welfarePointName"></span>
+			</fieldset>
+			
+			<fieldset class="f-cb">
+				<label class="f-fl">企业LOGO：</label>
+				<span class="f-fl z-p-t1"><input type="hidden" value="${entity.logoId}" id="logoId" name="logoId">
+				<a href="javascript:void(0);" data-pop="logo,1,0,vam" class="f-ib u-up-btn j-pop-open" value="${entity.logoId}">上传</a></span>
+				<div style="clear:both;padding-left:115px;"><img style="padding:5px;" src="${adminStaticDomain}${entity.logoId}" id="logoImg" height="80px" width="80px"></div>
+			</fieldset>
+
+			<h3>2<b class="f-ib">企业证照</b></h3>
+			<fieldset class="f-cb">
+				<span class="f-fl z-p-t2">
+					<a href="javascript:void(0);" data-pop="banner,1,0,vam" class="f-ib u-up-btn j-pop-open" value="${entity.attachment}" name="attachmentBtn">上传</a>
+					<span id="addAttachment"></span>
+				</span>
+				<div class="uimg">
+				<#list attachments as attachment>
+					<img src="${adminStaticDomain}${attachment}" class="f-ib" />
+					<a href="javascript:void(0);" data-val="您确认删除?|0|${attachment}|delImg" class="j-confirm-open">删除</a>
+					<!-- <a class="f-ib" href="javascript:delImg('${attachment}')">删除</a> -->
+				</#list>
+				</div>
+			</fieldset>
+
+			<h3>3<b class="f-ib">补充信息</b></h3>
+			<fieldset class="f-cb">
+				<label class="f-fl">所属行业：</label>
+				<span class="f-fl f-por z-slt-w1">
+					<input type="hidden" class="j-slt-val" value="${entity.companyType}" name="companyType">
+					<input type="text" value="${companyTypeName}" readonly="readonly" class="u-txt u-slt j-slt">
+					<em class="f-ib f-poa j-opt">
+					<#list dicCompanys as dicCompany> 
+					<a href="javascript:void(0);" data-val="${dicCompany.value}" class="f-ib" onclick="putValueToInput('companyType')">${dicCompany.name}</a>
+					<input type="hidden" value="${dicCompany.value}" />
+					</#list>
+					</em>
+				</span>
+				<small class="f-fl">企业规模：</small>
+				<span class="f-fl f-por z-slt-w1">
+					<input type="hidden" class="j-slt-val" name="type">
+					<input type="text" value="${typeName}" readonly="readonly" class="u-txt u-slt j-slt">
+					<em class="f-ib f-poa j-opt">
+					<#list dicStaffs as dicStaff>
+					<a href="javascript:void(0);" data-val="${dicStaff.value}" class="f-ib" onclick="putValueToInput('staffs')">${dicStaff.name}</a>
+					<input type="hidden" value="${dicStaff.value}"  />
+					</#list>
+					</em>
+				</span>
+			</fieldset>
+			<fieldset class="f-cb">
+				<label class="f-fl">官方网站：</label>
+				<span class="f-fl"><input type="text" class="u-txt z-txt-w1" value="${entity.webSite}" name="webSite"></span>
+				<small class="f-fl">官方微博：</small>
+				<span class="f-fl"><input type="text" class="u-txt z-txt-w1" value="${entity.webMicroblog}" name="webMicroblog"></span>
+			</fieldset>
+
+			<script>
+			// [回调] 确认
+			function confirmSure_delImg(_id){
+				$.ajax({
+					url:"deleteAttachment?attachment="+_id,
+					success:function(data){
+						if(data.result){
+							window.location.reload();
+						}
+					}
+				});
+			}
+			$(function(){
+
+				// 模拟Select控件
+				$('.j-slt').click(function(){
+
+					var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+					$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+					if(_this.hasClass('z-on-slt')){
+						_this.removeClass('z-on-slt');
+						_opt.hide();
+					}else{
+						_this.addClass('z-on-slt');
+						_opt.show();
+					}
+					return false;
+				});
+
+				// 下拉项的点击事件
+				$('.j-opt > a').click(function(){
+
+					var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+					_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+					
+					return false;
+				});
+
+				$('body').click(function(e){
+					$('.j-opt').hide();
+					$('.j-slt').removeClass('z-on-slt')
+				});
+
+				// 一线城市
+				// $.each(regionData, function(o, v){
+				// 	console.log(o, v);
+				// });
+				// $('.j-opt').eq(0);
+
+			});
+			</script>
+			
+			<h5 class="u-btn"><button type="submit">提交审核</button></h5>
+		</div>
+	</div>
+</form>
+</div>
+
+
+<!-- 弹窗[上传企业LOGO] -->
+<table class="m-pop-up" id="j-pop-logo"><tr><td class="z-tac">
+	<div class="z-ib z-wid450">
+		<h4 class="u-tit">上传企业LOGO</h4>
+		<h5 class="u-close">
+			<a href="javascript:void(0);" data-pop="test1" class="j-pop-cancel">×</a>
+			<input type="hidden" class="j-pop-data" />
+		</h5>
+		<div class="pop-upload">
+			<dl>
+				<dt>
+					<table>
+					<td>
+					<form  method='post' enctype='multipart/form-data' id='logoform' action="${dynamicDomain}/companyBaseInfo/updateLogoImage">
+						 <input type="hidden" value="${entity.objectId}" name="objectId">
+						 <input type="file" name="logoImage"/>
+					</form>
+					</td>
+					<td>
+						 <button onclick="loadLogo()">上传</button>
+					</td>
+					</table>
+				</dt>
+				<dd>LOGO格式支持：jpg、png、gif。</dd>
+			</dl>
+		</div>
+		<h6 class="u-btn">
+			<a href="javascript:void(0);" class="u-rst j-pop-cancel">关闭</a>
+		</h6>
+	</div>
+</td></tr></table>
+
+<!-- 弹窗[上传企业证照] -->
+<table class="m-pop-up" id="j-pop-banner"><tr><td class="z-tac">
+	<div class="z-ib z-wid450">
+		<h4 class="u-tit">上传企业证照</h4>
+		<h5 class="u-close">
+			<a href="javascript:void(0);" data-pop="test1" class="j-pop-cancel">×</a>
+			<input type="hidden" class="j-pop-data" />
+		</h5>
+		<div class="pop-upload">
+			<dl>
+				<dt>
+					<table>
+					<td>
+					<form  method='post' enctype='multipart/form-data' id='attachmentForm' action="${dynamicDomain}/companyBaseInfo/updateAttachment">
+						<input type="hidden" value="${entity.objectId}" name="objectId">
+						<input type="file" name="attachmentFile" id="attachmentFile"/> 
+					</form>
+					</td>
+					<td>
+					<button onclick="loadAttachment()">上传</button>
+					</td>
+					</table>
+				</dt>
+				<dd>企业证照格式支持：jpg、png、gif；</dd>
+			</dl>
+		</div>
+		<h6 class="u-btn">
+			<a href="javascript:void(0);" class="u-rst j-pop-cancel">关闭</a>
+		</h6>
+	</div>
+</td></tr></table>
+<script>
+$("#sform").validate();
+$(function(){
+		var _cityFather = $("#city");
+		var _distFather = $("#dist");
+		
+		_cityFather.on("click","a",function(){
+			var _objectId = $(this).attr("value");
+			_cityFather.prev("input").val($(this).html());
+			_distFather.empty();
+			$.ajax({
+				url:"getAreaName/"+_objectId,
+				success:function(data){
+					$.each(data.areas,function(index,area){
+						if(index==0){
+							_distFather.prev("input").val(area.name);
+						}
+						var _a = "<a href='javascript:void(0);' data-val='1' class='f-ib' value='"+area.objectId+"'>"+area.name+"</a>"
+						_distFather.append(_a);
+					});
+				}
+			});
+		});
+		_distFather.on("click","a",function(){
+			var _objectId = $(this).attr("value");
+			_distFather.prev("input").val($(this).html());
+			$("[name='areaId']").val(_objectId);
+		});
+	});
+	function getCitys(objectId){
+		var _cityFather = $("#city");
+		_cityFather.empty();
+		$.ajax({
+			url:"getAreaName/"+objectId,
+			success:function(data){
+				$.each(data.areas,function(index,area){
+					if(index==0){
+						_cityFather.prev("input").val(area.name);
+					}
+					var _a = "<a href='javascript:void(0);' data-val='1' class='f-ib' value='"+area.objectId+"'>"+area.name+"</a>"
+					_cityFather.append(_a);
+				});
+				
+			}
+		});
+	}
+	
+	function getDist(objectId,name){
+		var _cityFather = $("#city");
+		_cityFather.prev("input").val(name);
+	}
+	
+	//上传logo图片
+	function loadLogo(){
+		var logoform = $("#logoform");
+		var options = {dataType : "json",
+		  success:function(data){
+			  if(data.result==true){
+				  $("#logoImg").attr("src","${adminStaticDomain}"+data.path);
+				  $("#logoId").val(data.path);
+				  winAlert("上传成功");
+			  }else{
+				  winAlert("图片上传失败");
+			  }
+		  }
+		}
+		logoform.ajaxSubmit(options);
+		
+	}
+	
+	//上传营业执照图片
+	function loadAttachment(){
+		var logoform = $("#attachmentForm");
+		var options = {dataType : "json",
+			  success:function(data){
+				  if(data.result==true){
+				  	$("#addAttachment").append('<img style="padding:5px;" src="${adminStaticDomain}'+data.path+'" height="80px" width="80px">');
+					 $("#attachmentFile").val("");
+					 $("#attachment").val(data.attachments);
+					 winAlert("上传成功");
+				  }else{
+					 winAlert("图片上传失败");
+				  }
+			  }
+		}
+		logoform.ajaxSubmit(options);
+	}
+	
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>福利DIY-STEP3 - 福利商城</title>
+    <script src="${staticDomain}js/jquery.1.8.3.min.js"></script>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/diy.z.css" />
+</head>
+<body>
+<div id="g-diy3" class="m-diy">
+
+    <h4 class="u-tt"><span class="f-ib">福利DIY</span></h4>
+
+    <div class="u-stp z-t3 f-cb">
+        <span>新建福利包</span>
+        <span>选择福利商品</span>
+        <span>结算</span>
+        <span>发放福利</span>
+    </div>
+
+    <dl>
+        <dt>福利券名称：<span>生日福利券</span></dt>
+        <dd>200元弹性套餐( 3选1 )</dd>
+    </dl>
+
+    <ol class="f-cb">
+        <li class="u-t1"><input type="checkbox" class="u-chk j-chk-all"></li>
+        <li class="u-t2">&nbsp;全选</li>
+        <li class="u-t3">&nbsp;商品信息</li>
+        <li class="u-t4">&nbsp;单价</li>
+        <li class="u-t7">&nbsp;操作</li>
+    </ol>
+
+    <div class="u-list j-list">
+        
+        <ul class="f-cb">
+            <li class="u-t1"><input type="checkbox" class="u-chk j-chk-each"></li>
+            <li class="u-t2"><a href="javascript:void(0);"><img src="${staticDomain}image/ztmp013.gif" class="f-ib"></a></li>
+            <li class="u-t3"><a href="javascript:void(0);">美国进口费列罗巧克力礼盒装T48粒</a></li>
+            <li class="u-t4"><b>1250${s_welfarePointName}</b><br>￥125.00</li>
+            <li class="u-t7">
+                <a href="javascript:void(0);" class="f-ib">删除</a>
+                <a href="javascript:void(0);" class="f-ib z-on">取消默认</a>
+            </li>
+        </ul>
+        <ul class="f-cb">
+            <li class="u-t1"><input type="checkbox" class="u-chk j-chk-each"></li>
+            <li class="u-t2"><a href="javascript:void(0);"><img src="${staticDomain}image/ztmp013.gif" class="f-ib"></a></li>
+            <li class="u-t3"><a href="javascript:void(0);">美国进口费列罗巧克力礼盒装T48粒</a></li>
+            <li class="u-t4"><b>1250${s_welfarePointName}</b><br>￥125.00</li>
+            <li class="u-t7">
+                <a href="javascript:void(0);" class="f-ib">删除</a>
+                <a href="javascript:void(0);" class="f-ib">设为默认</a>
+            </li>
+        </ul>
+        <ul class="f-cb">
+            <li class="u-t1"><input type="checkbox" class="u-chk j-chk-each"></li>
+            <li class="u-t2"><a href="javascript:void(0);"><img src="${staticDomain}image/ztmp013.gif" class="f-ib"></a></li>
+            <li class="u-t3"><a href="javascript:void(0);">美国进口费列罗巧克力礼盒装T48粒</a></li>
+            <li class="u-t4"><b>1250${s_welfarePointName}</b><br>￥125.00</li>
+            <li class="u-t7">
+                <a href="javascript:void(0);" class="f-ib">删除</a>
+                <a href="javascript:void(0);" class="f-ib">设为默认</a>
+            </li>
+        </ul>
+        <ul class="f-cb">
+            <li class="u-t1"><input type="checkbox" class="u-chk j-chk-each"></li>
+            <li class="u-t2"><a href="javascript:void(0);"><img src="${staticDomain}image/ztmp013.gif" class="f-ib"></a></li>
+            <li class="u-t3"><a href="javascript:void(0);">美国进口费列罗巧克力礼盒装T48粒</a></li>
+            <li class="u-t4"><b>1250${s_welfarePointName}</b><br>￥125.00</li>
+            <li class="u-t7">
+                <a href="javascript:void(0);" class="f-ib">删除</a>
+                <a href="javascript:void(0);" class="f-ib">设为默认</a>
+            </li>
+        </ul>
+    </div>
+
+    <form method="post" action="p7-3.hr.diy3.z.html">
+        <div class="f-cb u-btm">
+            <h4 class="f-fl">
+                <input type="checkbox" class="f-ib u-chk j-chk-all">
+                <span class="f-ib">全选</span>
+                <a href="javascript:void(0);" class="f-ib u-del">批量删除</a>
+            </h4>
+            <p class="f-fr">
+                预计支付总额：20,0000.00元，12,000${s_welfarePointName}
+            </p>
+        </div>
+
+        <div class="u-btn">
+            <a href="p7-1.hr.diy1.z.html" class="f-ib u-prev">上一步</a>
+            <button type="submit" class="f-ib u-submit">提交</button>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+$(function(){
+
+    //
+    $('.j-list > ul:last').css('border-bottom', 0);
+
+    // 全选
+    $('.j-chk-all').click(function(){
+        var _this = $(this), _isCheck = _this.is(':checked'), _bool = false;
+        if(_isCheck) _bool = true;
+        $('.j-chk-all,.j-chk-each').prop('checked', _bool);
+    });
+
+});
+</script>
+</body>
+</html>

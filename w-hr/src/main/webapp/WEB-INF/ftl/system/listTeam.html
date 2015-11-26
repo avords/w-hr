@@ -1,0 +1,341 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>项目组设置</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+     <script src="${staticDomain}js/jquery.popup.js"></script>
+</head>
+<body>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="${dynamicDomain}/member/listStaff">员工管理</a> &gt;
+		项目组设置
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">	
+	<script>var _menuIndex = 5;</script>
+
+	<div class="m-main f-fr">
+		<input type="hidden" id="title" value="添加项目组">
+		
+		<h4 class="u-tit"><span class="f-ib">项目组设置</span></h4>
+
+		<div id="g-lst-p18">
+
+			<fieldset class="f-cb u-lst-top">
+				<h4 class="f-fl">
+					<a href="javascript:void(0);" onclick="$('#ProjectTeamUserId').empty();currentProjectTeamId=null;addMember=false;$('#title').val('添加项目组');doRePopup([1,450,0,'1',33]);" class="f-ib">添加项目组</a>&nbsp;&nbsp;
+					<small>当前共有 <em>${pageSearch.totalCount}</em> 条项目组记录</small>
+				</h4>
+				<div class="f-fr">
+					<form action="${dynamicDomain }/projectTeam/listTeam" method="post" id="searchForm">
+						<span class="f-ib u-wp">
+							<input type="text" name="search_LIKES_nameOrLogin" class="f-ib u-txt-sch" placeholder="输入名称/负责账户查询..."><button type="submit" class="f-ib u-btn-sch">搜索</button>
+						</span>
+					</form>
+					<@fpage url="${dynamicDomain}/projectTeam/listTeam" totalPage=pageSearch.totalPage currentPage=pageSearch.currentPage formId="searchForm"/>
+				</div>
+			</fieldset>
+
+			<div class="u-lst z-top">
+				<ol class="f-cb">
+					<li class="z-w2">项目组名称</li>
+					<li class="z-w3">负责账户</li>
+					<li class="z-w4">成员</li>
+					<li class="z-w5">人数</li>
+					<li class="z-w6">创建时间</li>
+					<li class="z-w7">操作</li>
+				</ol>
+			</div>
+
+			<div class="u-lst z-cnt j-list">
+				<#list pageSearch.list as item>
+				<ul class="f-cb">
+					<li class="z-w2">${item.name }</li>
+					<li class="z-w3">${item.leaderName }</li>
+					<li class="z-w4 f-por">
+						<a href="javascript:void(0);" class="f-ib j-is-open">展开</a>
+						<fieldset class="u-mbr-list z-hide j-mbr-list">
+							<h6>项目组成员列表</h6>
+							<#list item.staffs as member>
+								<i>${member.userName}</i>
+							</#list>
+						</fieldset>
+					</li>
+					<li class="z-w5">${item.headCount }</li>
+					<li class="z-w6"><small>${item.createdOn?string("yyyy-MM-dd")}</small></li>
+					<li class="z-w7">
+						<a href="javascript:void(0)" onclick="$('#ProjectTeamUserId').empty();addMember=true;currentProjectTeamId=${item.objectId};doRePopup([2,850,0,'1',33]);getMember();" class="gtg">选择成员</a>&nbsp;&nbsp;
+						<a href="javascript:void(0);" onclick="$('#ProjectTeamUserId').empty();addMember=false;currentProjectTeamId=${item.objectId};getTeamInfo();$('#title').val('编辑项目组');doRePopup([1,450,0,'1',33]);" class="f-ib">修改</a>&nbsp;&nbsp;
+						<#if item.headCount=0>
+						<a href="javascript:void(0);" onclick="teamId=${item.objectId};" data-id="1" data-pop="confirm,1,doConfirm,vam" class="gdel j-pop-open">删除</a>
+						</#if>
+					</li>
+				</ul>
+			</#list>
+			</div>
+			<script>
+			$(function(){
+				//是否直接选择员工
+				addMember = false;
+				currentProjectTeamId = null;
+				
+				// 模拟Select控件
+				$(document.body).on('click', '.j-slt' ,function(){
+					var _this = $(this), _val = _this.prev('input'), _opt = _this.parent().find(".j-opt");
+					$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+					if(_this.hasClass('z-on-slt')){
+						_this.removeClass('z-on-slt');
+						_opt.hide();
+					}else{
+						_this.addClass('z-on-slt');
+						_opt.show();
+					}
+					return false;
+				});
+
+				// 下拉项的点击事件
+				$(document.body).on('click', '.j-opt > a' ,function(){
+					var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent();
+					_opt.hide().parent().find(".j-slt").removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+					return false;
+				});
+
+				$('body').click(function(e){
+					//$('.j-opt').hide();
+					$('.j-slt').removeClass('z-on-slt')
+				});
+				
+				// 是否展开
+				$('.j-is-open').click(function(){
+					$('.j-is-open').css({'z-index':1});
+					$('.j-mbr-list').css({'z-index':0});
+					var _this = $(this), _cnt = _this.next();
+					if(_this.hasClass('z-on')){
+						_this.removeClass('z-on').css({'z-index':4}).text('展开');
+						_cnt.css({'border-color':'#fff','height':12,'overflow':'hidden','z-index':3}).find('h6').hide();
+					}else{
+						_this.addClass('z-on').css({'z-index':4}).text('收起');
+						_cnt.css({'border-color':'#555','height':'auto','overflow':'auto','z-index':3}).find('h6').show();
+					}
+				});
+
+
+				// 控制列表尾元素的样式
+				$('.j-list').find('ul:last').css('border-bottom',0);
+				//处理层冲突
+				$(document).on('click', '#j-pop-up332 .j-pop-cancel', function(){
+					if(addMember){
+						$('#m-mask').hide();
+					}
+				})
+			});
+			
+			function getTeamInfo(){
+				if(currentProjectTeamId){
+					$.ajax({ 
+						type:"POST", 
+						url: "${dynamicDomain}/projectTeam/get/" + currentProjectTeamId,   
+						success: function(msg){
+							if(msg.team){
+								var team = msg.team;
+								$("#name").val(team.name);
+								$("#companyId").val(team.companyId);
+								$("#leaderId").val(team.leaderId);
+								$("#organizationId").val(team.organizationId);
+								$("#headCount1").text(team.headCount);
+								$("#headCount").val(team.headCount);
+								$("#objectId").val(team.objectId);
+								$("#remark").val(team.remark);
+								$("#leaderIdOpt a[data-val='" + team.leaderId + "']").click();
+							}
+						}   
+					});
+				}
+			}
+			
+			function getMember(){
+				if(currentProjectTeamId){
+					$.ajax({ 
+						type:"POST", 
+						url: "${dynamicDomain}/projectTeam/getMembers/" + currentProjectTeamId, 
+						success: function(msg){
+							if(msg.members){
+								var _opt = '';
+								var members = msg.members;
+								for(i=0;i<members.length;i++){
+									var m = members[i];
+									var rs = m.workNo + "|" + m.userName + "|" + m.objectId;
+									_opt += '<h5><label><input type="checkbox" value="'+ rs +'"> '+ m.userName + ' (工号：' + m.workNo + ')</label></h5>';
+								}
+								$('#j-pop51-rst').empty().append($(_opt));
+							}
+						}   
+					});
+				}
+			}
+			
+			function popInit(_char){
+				var _func = {
+					'init331': function(){ $(':input','#ProjectTeam').val('');$('#headCount1').text(0);try{$('.j-opt a')[0].click();$("#ProjectTeam").valid().resetForm();}catch(e){};return {'title':$("#title").val(), 'html': $('#tmp331').html() + "<script>$('.j-opt a')[0].click();<\/script>"}; },
+					'init332': function(){ return {'title':'选择人员', 'html': tmp332Html}; } 
+				};
+				return _func[_char];
+			}
+			
+			function popSure(_char){
+				var _func = {
+					'sure331': function(){
+						return sure331();
+					},
+					'sure332': function(){
+							var _has = {};
+							$('#j-win51-lst a').each(function(){
+								var _k = $(this).attr('data-id');
+								_has['z'+_k] = _k;
+							});
+
+							var _v = [], lst = '', _n = 0;
+							var ids = '';
+							$('#j-pop51-rst input').each(function(){
+								var _this = $(this), _val = _this.val(), _arr = _val.split('|');
+								if(typeof(_has['z'+_arr[0]]) === 'undefined'){
+									lst += '<input type="hidden" name="userId" value="'+ _arr[2] +'">';
+									ids += _arr[2] + ',';
+									_n ++;
+								};
+							});
+							$('#j-pop51-rst').empty();
+							if(addMember){
+								$.ajax({ 
+									type:"POST", 
+									url: "${dynamicDomain}/projectTeam/saveTeamMemeber",   
+									data: "userIds=" + ids + "&projectTeamId=" + currentProjectTeamId,
+									success: function(msg){
+										if(msg.result){
+											window.location.reload();
+										}
+									}   
+								});
+							}else{
+								$('#ProjectTeamUserId').empty().append($(lst));
+								$('#headCount1').html(_n);
+								$('#headCount').val(_n);
+							}
+							return true;
+					}
+				};
+				return _func[_char];
+			}
+			
+			function sure331(){
+				var items = $("input[name='userId']");
+				var userIds = "";
+				if(items){
+					items.each(function(){
+						userIds += $(this).val() + ",";
+					});
+				}
+				if($("#ProjectTeam").valid()){
+					$.ajax({ 
+						type:"POST", 
+						url: "${dynamicDomain}/projectTeam/saveTeam",   
+						data: $("#ProjectTeam").serialize() + "&userIds=" + userIds,
+						success: function(msg){
+							if(!msg.result){
+								winAlert(msg.message);
+							}else{
+								window.location.reload();
+							}
+						}   
+					});
+					return false;
+				}
+				return false;
+			}
+			
+			</script>
+		</div>
+		</form>
+	</div>
+</div>
+<div style="display: none" id="ProjectTeamUserId"></div>
+<#include "/include/select_users.html" encoding="utf-8">	
+<script type="text/html" id="tmp331">
+<div class="pop-group">
+	<form action="${dynamicDomain}/projectTeam/saveTeam" id="ProjectTeam" method="post">
+		<input type="hidden" name="objectId" id="objectId" />
+		<input type="hidden" name="companyId" id="companyId"/>
+		<input type="hidden" name="headCount" id="headCount"/>
+		<input type="hidden" name="organizationId" id="organizationId"/>
+		<dl class="f-cb">
+			<dt class="f-fl">项目组名称：</dt>
+			<dd class="f-fl"><input type="text" name="name" id="name" class="txt {required:true}" maxlength="50"/></dd>
+		</dl>
+		<dl class="f-cb">
+			<dt class="f-fl">项目组负责账户：</dt>
+			<dd class="f-fl f-por">
+				<input type="hidden" class="j-slt-val" name="leaderId" id="leaderId" value="">
+				<input type="text" value="" name="leaderIdName" readonly="readonly" class="slt txt j-slt z-on-slt" />
+				<em class="f-ib f-poa j-opt" id="leaderIdOpt">
+				<#list hrs as user>
+					<a href="javascript:void(0);" data-val="${user.objectId}" class="f-ib">${user.userName }</a>
+				</#list>
+				</em>
+			</dd>
+		</dl>
+		<dl class="f-cb">
+			<dt class="f-fl">项目组成员：</dt>
+			<dd class="f-fl">
+				<i class="f-fl">已选择 <small class="j-member-n" id="headCount1">0</small>人</i>
+				<a href="javascript:void(0);" onclick="doRePopup([2,850,0,'1',33]);getMember();if(!currentProjectTeamId){$('#j-pop51-rst').empty();}"  class="f-fl j-pop-open u-mem">选择员工</a>
+			</dd>
+		</dl>
+		<dl class="f-cb">
+			<dt class="f-fl">项目组说明：</dt>
+			<dd class="f-fl"><textarea name="remark" id="remark" maxlength="1000"></textarea></dd>
+		</dl>
+	</form>
+</div>
+</script>
+<!-- 弹窗[确认删除] -->
+<table class="m-pop-up" id="j-pop-confirm"><tr><td class="z-tac">
+	<div class="z-ib z-wid400">
+		<h4 class="u-tit">删除确认</h4>
+		<h5 class="u-close">
+			<a href="javascript:void(0);" data-pop="test1" class="j-pop-cancel">×</a>
+			<input type="hidden" class="j-pop-data" />
+		</h5>
+		<div class="pop-confirm">确认删除么？此操作不可恢复！</div>
+		<h6 class="u-btn">
+			<a href="javascript:void(0);" onclick="deleteTeam()" class="u-sub j-pop-sure">确认</a>
+			<a href="javascript:void(0);" class="u-rst j-pop-cancel">取消</a>
+		</h6>
+	</div>
+</td></tr></table>
+<script>
+	var teamId = null;
+	function deleteTeam(){
+		if(teamId){
+			$.ajax({ 
+				type:"get", 
+				url: "${dynamicDomain}/projectTeam/delete/" + teamId,   
+				success: function(msg){
+					if(msg.result){
+						window.location.reload();
+					}
+				}   
+			});
+		}
+	}
+	
+</script>
+</body>
+</html>

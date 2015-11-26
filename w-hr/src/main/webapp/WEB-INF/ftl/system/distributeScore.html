@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<title>分配账户${s_welfarePointName}</title>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="-1" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/center.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+<script src="${staticDomain}js/jquery.popup.plus.js"></script>
+</head>
+<body>
+<#include "/common/page.html">
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">账户管理</a> &gt;
+		分配账户${s_welfarePointName}
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+<form action="${dynamicDomain}/distributeScore/list">
+	<#include "/include/nav_menu_link.html">
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit"><span class="f-ib">分配账户${s_welfarePointName}</span></h4>
+
+		<div id="g-lst-p22">
+
+			<fieldset class="f-cb u-lst-top">
+				<h4 class="f-fl">
+					<!-- data-pop 参数[层级(关联ID), 宽度, 位置(0:上下居中), 是否显示确定按钮(关联确定Func), 弹窗组] -->
+					<a href="javascript:void(0);" data-pop="1,400,0,1,6" class="f-ib j-pop-open">添加${s_welfarePointName}分配</a>
+					<small>当前共有 <em>${items?size}</em> 条角色记录</small>
+				</h4>
+				<div class="f-fr">
+					<span class="f-ib u-wp">
+						<input type="text" name="search_LIKES_roleName" class="f-ib u-txt-sch" placeholder="输入角色名称查询..."><button type="submit" class="f-ib u-btn-sch">搜索</button>
+					</span>
+					<h5>
+						<@spage url="${dynamicDomain}/distributeScore/list"  totalPage=pageData.totalPage currentPage=pageData.currentPage?number formId="idUp" />
+					</h5>
+				</div>
+			</fieldset>
+
+			<div class="u-lst z-top">
+				<ol class="f-cb">
+					<li class="z-w4">分配账户</li>
+					<li class="z-w4">被配账户角色</li>
+					<li class="z-w5">被分配账户</li>
+					<li class="z-w5">分配${s_welfarePointName}</li>
+					<li class="z-w5">剩余${s_welfarePointName}</li>
+					<li class="z-w4">状态</li>
+				</ol>
+			</div>
+
+			<div class="u-lst z-cnt j-list">
+			<#list items as item>
+				<ul class="f-cb">
+						<li class="z-w4">${item.operationUserName}</li>
+						<li class="z-w4">${item.roleName}</li>
+						<li class="z-w5">${item.receiverUserName}</li>
+						<li class="z-w5">${item.distributePoint}</li>
+						<li class="z-w5">${item.suplusPoint}</li>
+						<li class="z-w4">
+						<#if item.status == 1>
+							正常
+						<#else>
+							失败
+						</#if>
+						</li>
+				</ul>
+			</#list>
+			</div>
+			
+			<div class="u-act f-cb">
+				<h5 class="f-fr">
+					<@page url="${dynamicDomain}/distributeScore/list"  totalPage=pageData.totalPage currentPage=pageData.currentPage?number formId="idDown" />
+				</h5>
+			</div>
+		</div>
+	</div>
+</form>
+</div>
+
+<script type="text/html" id="tmp61">
+<form action="${dynamicDomain}/distributeScore/saveDistributeScore" method="POST" id="DistributeScore">
+<h4>可分配${s_welfarePointName}：<i>${accountBalance}</i></h4>
+<table>
+	<tr>
+		<th>角色：</th>
+		<td>
+			<strong class="f-ib m-slt slt-w1">
+	            <input type="hidden" name="roleId" class="j-val required"/>
+	            <input type="text" value="—请选择—" readonly="readonly" class="slt j-slt">
+	            <small class="f-ib f-poa j-opt" data-linkage="name">
+	            	<#list roles as role>
+	            		<a href="javascript:void(0);" data-val="${role.objectId}" class="f-ib">${role.name}</a>
+	            	</#list>
+	            </small>
+	        </strong>
+		</td>
+	</tr>
+	<tr>
+		<th>账户：</th>
+		<td>
+			<strong class="f-ib m-slt slt-w1">
+	            <input type="hidden" name="userId" class="j-val required">
+	            <input type="text" value="—请选择—" readonly="readonly" class="slt j-slt required not_default">
+	            <small class="f-ib f-poa j-opt j-for-name">
+	            </small>
+	        </strong>
+		</td>
+	</tr>
+	<tr>
+		<th>分配${s_welfarePointName}：</th>
+		<td><input type="text" name="distributePoint" class="slt required {balance:${accountBalance}}"></td>
+	</tr>
+</table>
+</form>
+</script>
+
+<script>
+$(function(){
+	// ${s_welfarePointName}分配：角色级联姓名
+    var _type2name = ${roleUsers};
+
+	// 模拟 下拉标签[select]
+    var _onSlt = 'slt-on';
+    $(document.body).on('click', '.j-slt', function(){
+        var _this = $(this), _opt = _this.parent().find('small');
+
+        // 无下拉选择值则无效
+        if(_opt.children().length <= 0) return false;
+
+        $('.j-slt').not(this).removeClass(_onSlt).next().hide();
+
+        if(_this.hasClass(_onSlt)){
+            _this.removeClass(_onSlt);
+            _opt.hide();
+        }else{
+            _this.addClass(_onSlt);
+            _opt.show();
+        }
+
+        return false;
+    });
+    // 模拟Select元素 [下拉项(option)的点击事件]
+    $('body').on('click', '.j-opt > a', function(){
+
+        var _this = $(this), _parent = _this.parent('small'), _val = _this.attr('data-val');
+
+        _parent.hide().parent().find("input").removeClass(_onSlt).val(_this.text()).prev().val(_val);
+
+        // do somethings ....
+        var _linkage = _this.parent().attr('data-linkage');
+        if(typeof(_linkage) !== 'undefined' && _linkage != ''){
+        	var _sub = _type2name[_val];
+        	var _opt;// = '<a href="javascript:void(0);" data-val="0" class="f-ib">—请选择—</a>';
+        	for(var _i in _sub){
+        		_opt += '<a href="javascript:void(0);" data-val="'+ _i +'" class="f-ib">'+ _sub[_i] +'</a>';
+        	}
+        	// console.log();
+        	$('.j-for-'+ _linkage).html($(_opt));
+        }
+
+        return false;
+    });
+    // 模拟Select元素 [文档点击隐藏事件]
+    $(document).click(function(e){
+        $('.j-opt').hide();
+        $('.j-slt').removeClass(_onSlt)
+    });
+
+});
+
+// 初始化函数载体
+function popInit(_char){
+
+	var _func = {
+
+		'init61': function(){ return {'title':'分配${s_welfarePointName}', 'html': $('#tmp61').html()}; }
+
+	};
+	try{
+		$.ajax({
+		url : "${dynamicDomain}/queryAccountBalance?timstamp=" + (new Date()).valueOf(),
+		type : 'post',
+		dataType : 'json',
+		success : function(msg) {
+			$("#accountBalance").html(msg.accountBalance);
+		}
+	});
+	}catch(e){
+		$("#accountBalance").html(0);
+	}
+
+	return _func[_char];
+}
+// 弹窗的确定按钮回滚函数
+function popSure(_char){
+	var _func = {
+		'sure61': function(){
+			if($("#DistributeScore").valid()){
+				$("#DistributeScore").submit();
+				return true;
+			}else{
+				return false;
+			}
+			
+			// code.... 逻辑判断
+			// true ：关闭当前弹窗
+			
+		}
+	};
+
+	return _func[_char];
+}
+</script>
+</body>
+</html>

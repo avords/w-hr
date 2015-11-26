@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+	<title>系统维护</title>
+	<link media="all" rel="stylesheet" href="${staticDomain}css/system.css" />
+</head>
+<body>
+	<div class="g-content">
+	<div class="g-inc">
+		<p>我们正在对该页面进行维护，请您稍后再来！</p>
+		<div class="btn">
+			<a href="javascript:history.go(-1);" class="on">返回上一页</a>
+			<a href="${dynamicDomain}/index">返回首页</a>
+		</div>
+	</div>
+</div>
+<script>
+    $(function(){
+        var _h1 = $(window).height(),_h2 = $('.nav').height(),_h3 = $('.footer').height(),h = _h1-(_h2+_h3) ;
+        $('.g-inc').css('height',h-135+'px');
+    })
+</script>
+</body>
+</html>

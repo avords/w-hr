@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=0" />
+    <title>套餐商品详情页-福利商城</title>
+    <script src="${staticDomain}js/jquery.popup.v1.js"></script>
+    <script src="${staticDomain}js/jquery.slide.js"></script>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/detail.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/insure.hr.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.skin.css" />
+        <style type="text/css">
+        .u-desc ul li.u-sel a.z-on {
+              border: 2px solid #FF8063;
+              padding: 4px 14px;
+              color: #666;
+              background: url('${staticDomain}image/ico5.gif') no-repeat 100% 100%;
+         }
+         .u-desc ul li.u-sel a {
+              border: 1px solid #ccc;
+              padding: 5px 15px;
+              color: #666;
+              margin-left: 5px;
+         }
+         .u-info img{
+             max-width:955px;
+         }
+     </style>
+</head>
+<body>
+<#if thirdMall??>
+    <div id="g-crum">
+        您的位置：
+        <a href="${dynamicDomain}/mall/index">首页</a> <#if thirdMall??>&gt;
+        <a href="${dynamicDomain}/mall/search?firstId=${thirdMall.firstId}">${thirdMall.firstName}</a> &gt;
+        <a href="${dynamicDomain}/mall/search?secondId=${thirdMall.secondId}">${thirdMall.secondName}</a> &gt;
+        ${thirdMall.name}</#if>
+    </div>
+</#if>
+
+<div id="g-img" class="f-cb">
+    <div class="u-img f-fl">
+        <div class="u-show"><img src="${adminStaticDomain }${product.mainPicture }" width="300" height="300" id="mainPicture"></div>
+        <div class="u-slide" id="j-slide">
+            <div>
+                <ul class="f-cb j-sml">
+                      <li><img src="${adminStaticDomain }${product.mainPicture}" width="60" height="60" class="z-on"></li>
+	                  <#list subPics as item>
+	                     <li><img src="${adminStaticDomain }${item}" width="60" height="60"></li>
+	                  </#list>
+                </ul>
+            </div>
+        </div>
+        <#if subPics?size<=3>
+            <script type="text/javascript">$('#j-slide').zSlide({'auto':false,'size':'${subPics?size+1}'});</script>
+        <#else>
+            <script type="text/javascript">$('#j-slide').zSlide({'auto':false,'size':'4'});</script>
+        </#if>
+    </div>
+    <!-- 保险详情改动开始 -->
+    <div class="u-insure f-fl">
+        <h2>${product.name }</h2>
+        <p>${welfares }</p>  
+        <#if attrs?size&gt;0>   
+            <h4 class="u-sel j-sel">${attrs[0].name }:
+                 <#list attrs[0].attributeValues as it>
+                     <#if it_index==0>
+                         <a href="javascript:void(0);" data-val="${it.objectId }" class="f-ib z-on">${it.alias!it.name}
+                         <span><img src="${staticDomain }image/case0.png" class="arrow"><img src="${adminStaticDomain }${it.specPicUrl }"></span></a>
+                     <#else>
+                         <a href="javascript:void(0);" data-val="${it.objectId }" class="f-ib">${it.alias!it.name}
+                         <span><img src="${staticDomain }image/case0.png" class="arrow"><img src="${adminStaticDomain }${it.specPicUrl }"></span></a>
+                     </#if>
+                 </#list>
+             </h4>
+        </#if>  
+
+        <h5 class="j-res">已选择"${attrs[0].attributeValues[0].alias!attrs[0].attributeValues[0].name }"</h5>
+        <h6>
+            <a href="javascript:void(0);" class="f-ib u-sel j-pop-open" data-param="1" data-char="insure">立即投保</a>
+            <a href="javascript:void(0);" class="f-ib j-pop-open" data-param="1" data-char="inquiry">保险询价</a>
+        </h6>
+    </div>
+    <!-- 保险详情改动结束 -->
+
+    <div class="u-oth f-fr">
+        <dl>
+            <#if brandLogo??>
+                <dt><img src="${adminStaticDomain}${brandLogo}" style="width:210px;height:90px;"/></dt>
+                <dd class="f-tac">
+                    商品编号:<span id="skuNo"></span><br />
+                </dd>
+            <#else>
+                <dt>商品编号:<span id="skuNo"></span></dt>
+            </#if>      
+        </dl>
+    </div>
+</div>
+
+<div id="g-cnt" class="f-cb">
+    <div class="m-info f-fl">
+        <h4 class="f-cb"><a href="javascript:void(0);" class="f-fl z-on">详细说明</a></h4>
+        <div class="u-info" style="display:block;">
+            ${product.description }
+        </div>
+    </div>
+    <#if rightProduct.list?size!=0>
+        <div class="m-like f-fr">
+            <h4>其他员工喜欢的商品</h4>
+            <#list rightProduct.list as item>
+                <dl>
+                    <dt><a target="_blank" href="${dynamicDomain}/product/detail/${item.skuId}"><img src="${adminStaticDomain}${item.mainPicture}" style="width:134px;height:134px;"/></a></dt>
+                    <dd><a target="_blank" href="${dynamicDomain}/product/detail/${item.skuId}" class="f-ib f-toe">${item.name}</a><br /><i>${item.sellPrice?string('0.00')}</i> 元&nbsp;&nbsp;&nbsp;&nbsp;<i>${item.sellPrice?string('0.00')}</i> ${s_welfarePointName}</dd>
+                </dl>
+            </#list>  
+        </div>
+    </#if>
+</div>
+
+<script>
+
+// 定义弹窗对象
+var POPUP = {};
+
+// ------------------- 华丽分割线 -------------------------------
+
+// 弹窗(询价:inquiry)配置参数
+POPUP.inquiry = {
+
+    'title': '保险询价', 'width': 640, 'top': 200,
+    'content': 'inquiryContent',  'complete': 'inquiryComplete'
+};
+
+function inquiryContent(){
+    return  '<div id="j-for-inquiry" class="pop-inquiry">' +
+                '<dl class="top">' +
+                    '<dt class="f-cb"><i>提示：</i><span>保费价格为参考价格，保费价格会根据投保人的情况略有变动。</span></dt>' +
+                    '<dd>' +
+                        '<b>投保方案：</b><span class="f-ib j-whi">方案一</span>' +
+                        '<u class="f-dn"><a href="javascript:void(0);" class="f-ib" data-char="add">增加投保人员</a>' +
+                        '<a href="javascript:void(0);" class="f-ib" data-char="compute">计算保费</a></u>' +
+                    '</dd>' +
+                '</dl>' +
+                '<div class="cnt list f-dn">' +
+                    '<ul></ul>' +
+                    '<p class="f-dn">预计人均保费：<i class="f-ib">0元</i>投保人数：<i class="f-ib">0人</i>共计：<i class="f-ib">0元</i></p>' +
+                '</div>' +
+                '<div class="cnt form">' +
+                    '<dl><dt class="f-ib">投保人数：</dt><dd class="f-ib">' +
+                        '<input type="text" data-txt="投保人数" name="count" class="txt" value="1" /><em class="f-ib"></em></dd></dl>' +
+                    '<p><a href="javascript:void(0);" class="f-ib j-save">保存</a></p>' +
+                '</div>' +
+            '</div>';
+}
+
+function inquiryComplete(_param){
+
+    _param = Math.floor(_param);
+
+    var str = $('.j-sel .z-on').text();
+    var productId = '${mainProduct.productId}';
+    var attributeValueId = $('.j-sel .z-on').data('val');
+
+    var _parents = $('#j-for-inquiry');
+
+    // 方案名称
+    _parents.find('.j-whi:first').text(str);
+
+    // 模拟表单数据 ............ 实际生产需要数据库获取
+       $.ajax({
+          url:'${dynamicDomain}/insureRange/getTypes'+ '?backFunc=?',
+          type : 'post',
+          dataType : 'jsonp',
+          data :{'productId':productId,'attributeValueId':attributeValueId},
+          success : function(json) {
+            var _formJson = json;
+		    // 组装HTML代码且渲染到DOM
+		    var _opt = '';
+		    for(var k in _formJson){
+		        var item = _formJson[k];
+		
+		        var m, c, n = 0, _s = '', _on = ' z-on';
+		        for(var x in item['opt']){
+		            if(n === 0) m = x, c = item['opt'][x];
+		            if(n > 0) _on = '';
+		            _s += '<i class="j-tag-rdo f-ib'+ _on +'" data-val="'+ x +'">'+ item['opt'][x] +'</i>';
+		            n++;
+		        }
+		
+		        _opt += '<dl><dt class="f-ib">'+ item['name'] +'：</dt><dd class="f-ib">';
+		        _opt += '<input name="'+ k +'" data-txt="'+ item['name'] +'" type="hidden" data-chr="'+ c +'" value="'+ m +'">'+ _s +'</dd></dl>';
+		    }
+		    $(_opt).insertBefore(_parents.find('div.form:first p:first'));
+          }
+      });
+
+}
+// ------------------- 华丽分割线 -------------------------------
+
+// 弹窗(投保:insure)配置参数
+POPUP.insure = {
+
+    'title': '选择人员', 'width': 640, 'top': 200,
+    'content': 'insureContent',  'complete': 'insureComplete',
+    'sure': {'txt':'确定', 'func': 'insureSure'}, 'cancel': {'txt':'取消'}
+};
+
+function insureContent(){
+    return  '<div id="j-for-insure" class="pop-insure">' + 
+                '<h4 class="tab f-cb">' +
+                    '<input type="hidden" class="j-actType" value="1" />' +
+                    '<span class="z-on" data-val="1">选择人员</span>' +
+                    '<span data-val="2">导入人员</span>' +
+                '</h4>' +
+                '<div class="cnt slt">'+
+                    '<h4 class="tab1 f-cb">' + 
+                        '<span data-char="member" class="z-on">特定人员发放</span>' + 
+                        '<span data-char="all">全体员工</span>' + 
+                        '<span data-char="part">按部门发放</span>' + 
+                        '<span data-char="team">按项目组发放</span>' + 
+                    '</h4>' +
+                    '<div class="cnt1 mem-3">' +
+                        '<h6 class="f-ib">' +
+                            '<input type="radio" name="p_type" value="1" checked="checked" />&nbsp;特定人员发放&nbsp;&nbsp;&nbsp;&nbsp;' +
+                            '<input type="radio" name="p_type" value="0" />&nbsp;特定人员不发放' +
+                        '</h6>' +
+                        '<a href="javascript:void(0);" data-char="member" data-param="0" class="f-ib btn j-pop-open">选择人员</a>' +
+                        '<div id="j-slt-member"><span>请选择待发放人员！</span></div>' +
+                        '<h5 class="shw1 j-note">已选择 <i data-val="0|0">0</i> 个特定人员</h5>' +
+                    '</div>' +
+                    '<div class="cnt1 mem-1 f-dn"><span id="j-slt-all">向公司内全部在职员工发放</span><h5 class="shw1 j-note">已选择 <i data-val="0|0">全体</i> 员工</h5></div>' +
+                    '<div class="cnt1 mem-2 f-dn">' +
+                        '<a href="javascript:void(0);" data-char="part" data-param="0" class="f-ib btn j-pop-open">选择部门</a>' +
+                        '<div id="j-slt-part"><span>请选择待发放部门！</span></div>' +
+                        '<h5 class="shw1 j-note">已选择 <i data-val="0|0">0</i> 部门</h5>' +
+                    '</div>' +
+                    '<div class="cnt1 mem-4 f-dn">' +
+                        '<a href="javascript:void(0);" data-char="team" data-param="0" class="f-ib btn j-pop-open">选择项目组</a>' +
+                        '<div id="j-slt-team"><span>请选择待发放项目组！</span></div>' +
+                        '<h5 class="shw1 j-note">已选择 <i data-val="0|0">0</i> 项目组</h5>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="cnt upl f-dn">' +
+                    '<dl class="f-ib">' +
+                        '<dt><a href="${staticDomain}template/insureStaff.xls;">下载导入模板</a></dt>' +
+                        '<dd><input type="file" id="uploadFile" name="uploadFile"/><br />模板格式支持：xls；大小不超过2M</dd>' +
+                    '</dl>' +
+                '</div>' +
+                '<dl class="note"><dt style="display:none;">预计人均保费：<i>0</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;选择人员：<i>0</i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+                    '共计：<i data-char="member">0</i>&nbsp;&nbsp;&nbsp;(以核保结果为准)</dt>' +
+                    '<dd>确定参加投保人员后，需等待保险公司审核，完成保单审核后再请您进行支付！</dd>' +
+                '</dl>' +
+            '</div>';
+}
+
+function insureComplete(_param){
+
+    // ajax 计算保费 全选的保费
+    var _url = computeUrl + '?backFunc=?';
+    $.ajax({
+        async: true, url: _url, type: 'GET', dataType: 'jsonp', 
+        data : {'insure':_param, 'char':'all'}, timeout: 5000,
+        success: function(_data){
+            $('#j-slt-all').next('h5').find('i:first').attr('data-val', _data['price']+ '|' +_data['count'])
+        }
+    });
+
+    // 方案的传递
+    $('#j-for-insure a.j-pop-open').attr('data-param', _param);
+}
+
+function insureSure(_param){
+
+    var _type = $('.j-actType:first').val();
+
+    // 选择人员
+    if(_type == 1){
+
+        // 获取选择类型
+        var _chr = $('#j-for-insure > dl.note i:eq(2)').attr('data-char');
+        var _arr = [];
+        if(_chr !== 'all'){
+
+            var _list = $('#j-slt-'+_chr+' a');
+            if(_list.length > 0){
+                _list.each(function(){
+                    _arr.push($(this).attr('data-id'));
+                });
+            }
+        }
+
+        // _chr: 传递的类型 , _arr：选中的数组
+        console.log(_chr, _arr);
+
+        if(_chr !== 'all' && _arr.length <= 0) {
+            winAlert('选择内容不能为空！');
+            return false;
+        }
+
+        // ajax操作 且返回结果
+        var memberType = '';
+        if(_chr== 'member'){
+            memberType = $("input[name='p_type']:checked").val();
+        }
+        var productId = '${mainProduct.productId}';
+        var attributeValueId = $('.j-sel .z-on').data('val');
+        var optionType = _chr;
+        var value = _arr.join(',');
+        $.ajax({
+	      url:'${dynamicDomain}/insure/placeOrder',
+	      type : 'post',
+	      dataType : 'json',
+	      data :{'productId':productId,'attributeValueId':attributeValueId,'optionType':optionType,'value':value,'memberType':memberType},
+	      success : function(json) {
+	          if(json.result){
+	            // 查看核保单的ID
+	            var _id = 10;
+	            autoPopUp('ok1', true, _id);
+	          }else{
+	            // 错误条数；下载地址id
+	            var _n = json.count, _uid = '${dynamicDomain}'+json.downloadUrl; 
+	            autoPopUp('err1', true, _n + ',' + _uid);
+	          }
+	      }
+	  });
+    }
+
+    // 导入人员
+    if(_type == 2){
+        var fileName = $('#uploadFile').val();
+	    if(!fileName.endsWith('.xls')){
+	        winAlert('文件必须是.xls格式');
+	        return false;
+	    }
+        var productId = '${mainProduct.productId}';
+        var attributeValueId = $('.j-sel .z-on').data('val');
+        // 将模板文件 ajax 上传到服务器解析 且返回结果
+               $.ajaxFileUpload({  
+		            url: '${dynamicDomain}/insure/placeOrderByUpload?ajax=1&productId='+productId+'&attributeValueId='+attributeValueId,  
+		            secureuri: false,  
+		            fileElementId: 'uploadFile',  
+		            dataType: 'json',  
+		            success: function(json, status) {
+		                if(json.result){
+		                    // 查看核保单的ID
+				            var _id = 10;
+				            autoPopUp('ok1', true, _id);
+		                }else{
+		                    // 错误条数；下载地址id
+		                    if(json.count==undefined||json.count==null||json.count==''){
+		                        winAlert(json.message);
+		                    }else{
+		                        var _n = json.count, _uid = '${dynamicDomain}'+json.downloadUrl; 
+                                autoPopUp('err1', true, _n + ',' + _uid);
+		                    }
+		                }
+		            },error: function (data, status, e)//服务器响应失败处理函数
+		            {
+		                winAlert(e);
+		            }
+		        }  
+		    );
+    }
+}
+
+// ------------------- 华丽分割线 -------------------------------
+
+// 弹窗(投保:insure)中 "导入人员" 正确 提示
+POPUP.ok1 = {
+    'title': '提示', 'width': 480, 'content': 'ok1Content', 'position': 'fixed',
+    'sure': {'txt':'查看投保单', 'func': 'ok1Sure'}, 'cancel': {'txt':'关闭'}
+};
+function ok1Content(){ 
+    return '<div class="pop-ok1">保险公司完成保单核价后会与您联系，谢谢您的等待！</div>';
+}
+function ok1Sure(_id){ 
+    // 查看查看核价保单 地址
+    window.location.replace('http://baidu.com/#'+ _id);
+}
+
+// 弹窗(投保:insure)中 "导入人员" 错误 提示
+POPUP.err1 = {
+    'title': '提示', 'width': 480, 'position': 'fixed', 'content': 'err1Content', 'complete': 'err1Complete', 'cancel': {'txt':'取消投保'}
+};
+function err1Content(){ 
+    return  '<dl class="pop-err1" id="j-for-err1">' +
+                '<dt>有 <i></i> 位员工的投保信息不全，请您提醒他们尽快完善投保信息后再进行投保!</dt>' +
+                '<dd>待通知员工列表&nbsp;&nbsp;<a target="_blank" href="javascript:void(0);">下载</a></dd>' +
+            '</dl>'; 
+}
+function err1Complete(_data){
+    var _arr = _data.split(','), _ob = $('#j-for-err1');
+    var _download = _arr[1] // 下载地址
+    _ob.find('i:first').text(_arr[0]); // 出错个数
+    _ob.find('a:first').attr('href', _download);
+}
+
+// ------------------- 华丽分割线 -------------------------------
+
+$(function(){
+
+    // 选择方案鼠标hover上时状态
+    $('.j-sel a').hover(function(){
+        $(this).children('span').show();
+    },function(){
+        $(this).children('span').hide();
+    });
+
+    // 弹窗(询价:inquiry) 保存
+    var inquiry = '#j-for-inquiry', keepInquiry = {};
+    $(document.body).on('click', inquiry + ' a.j-save', function(){
+        
+        var _parent = $(inquiry);
+
+        var _tag = _parent.find('div.form:first input:first');
+        var _count = Math.floor($.trim(_tag.val()));
+        if(_count <= 0 || isNaN(_count)){
+           _tag.next().text('请输入有效的数值类型！');
+           window.setTimeout(function(){ _tag.next().text(''); }, 3000);
+           return false;
+        }
+
+        var _txt = [], _keep = [], _sfx = [];
+        _parent.find('div.form:first input').each(function(i){
+            var _this = $(this), 
+                _t = _this.attr('data-txt'), 
+                _k = _this.attr('name'), 
+                _v = Math.floor($(this).val()), 
+                _c = _this.attr('data-chr');
+            if(i === 0) _c = _count + '人';
+            _txt.push(_t + '：'+ _c);
+            _keep.push(_k + '=' + _v);
+            _sfx.push(_v);
+        });
+
+        // 显示按钮
+        _parent.find('dl.top u').show().find('a:last').removeClass('z-on');
+
+        // 去除重复
+        var _key = _sfx.join('-');
+        if(keepInquiry[_key] === undefined){
+
+            keepInquiry[_key] = _keep.join('&');
+
+            var c = 0, x;
+            for(x in keepInquiry) c++;
+
+            // 组装数据
+            var _html = '<li><u class="f-ib j-del" data-k="'+ _key +'">删除</u>' +
+                        '<i class="f-ib">'+ c +'.</i><span class="f-ib">'+ _txt.join(';&nbsp;&nbsp;') +'</span></li>'
+
+            // 渲染到DOM
+            _parent.find('div.list ul').append($(_html)).parent().show().next().hide();
+
+        }else{
+            _parent.find('div.list').show().next().hide();
+        }
+
+        
+        
+        var _prame = [];
+        for(var kkk in keepInquiry){
+            _prame.push(keepInquiry[kkk]);  
+        }
+        
+        console.log(_prame.join('|'));
+
+        // 隐藏Form部分
+        _parent.find('div.list p:first').hide()
+    });
+    
+    // 弹窗(询价:inquiry) 删除
+    $(document.body).on('click', inquiry + ' u.j-del', function(){
+
+        var _this = $(this), _parent = _this.parent();
+        var _inquiry = $(inquiry);
+
+        // 移除元素
+        _this.parent().remove();
+
+        // 移除数组
+        delete keepInquiry[_this.attr('data-k')];
+
+        var c = 0, x;
+        for(x in keepInquiry) c++;
+
+        // 显示按钮
+        if(c > 0){
+            _inquiry.find('dl.top u').show().find('a:last').removeClass('z-on');
+        }else{
+            _inquiry.find('dl.top u').show().find('a:last').addClass('z-on');
+        }
+
+        // 隐藏计算区域
+        _inquiry.find('div.list p').hide().find('i').text('0');
+    });
+
+    // 弹窗(询价:inquiry) 增加投保人员 | 计算保费
+    $(document.body).on('click', inquiry + ' .top a', function(){
+
+        var _that = $(this), _chr = _that.attr('data-char');
+
+        var _parent = $(inquiry);
+
+        // 增加投保人员
+        if(_chr === 'add'){
+            _parent.find('dl.top u').hide();
+            _parent.find('div.form').show().prev().hide().find('ul');
+        }
+
+        // 计算保费
+        if(_chr === 'compute'){
+
+            if(_that.hasClass('z-on')) return false;
+            _that.addClass('z-on');
+
+            var _ele = _parent.find('div.list p:first');
+            _ele.show();
+
+            // 存储的多个数据集
+            console.log(keepInquiry);
+            var _prame = [];
+	        for(var kkk in keepInquiry){
+	            _prame.push(keepInquiry[kkk]);  
+	        }
+	        var productId = '${mainProduct.productId}';
+            var attributeValueId = $('.j-sel .z-on').data('val');
+	        var queryPriceParam = _prame.join('&');
+	        
+            // 模拟ajax计算返回的值['预计人均保费', '投保人数']
+            $.ajax({
+	          url:'${dynamicDomain}/insure/queryPrice?productId='+productId+"&attributeValueId="+attributeValueId,
+	          type : 'post',
+	          dataType : 'json',
+	          data :queryPriceParam,
+	          success : function(json) {
+	              if(json.result){
+		            _ele.find('i:eq(0)').text(json.totalPrice/json.totalCount +'元');
+		            _ele.find('i:eq(1)').text(json.totalCount +'人');
+		            _ele.find('i:eq(2)').text(json.totalPrice +'元');
+	              }else{
+	                 winAlert(json.message);
+	                 _ele.find('i:eq(0)').text(0 +'元');
+                    _ele.find('i:eq(1)').text(0 +'人');
+                    _ele.find('i:eq(2)').text(0 +'元');
+	              }
+	          }
+	      });
+        }
+    });
+
+
+    // 弹窗(投保:insure) TAB切换
+    $(document.body).on('click', 'h4.tab > span', function(){
+
+        var _that = $(this), _parent = $('#j-for-insure'), _on = 'z-on';
+
+        if(_that.hasClass(_on)) return false;
+
+        var _val = _that.attr('data-val');
+
+         _that.addClass(_on).siblings('span').removeAttr('class').parent().find('input:first').val(_val);
+
+        var _spans = _parent.find('h4.tab > span'), _i = _spans.index(_that);
+
+        _parent.find('div.cnt').hide().eq(_i).show();
+
+        return false;
+    });
+
+    // 弹窗(投保:insure) TAB2切换
+    $(document.body).on('click', 'h4.tab1 > span', function(){
+
+        var _that = $(this), _parent = $('#j-for-insure'), _on = 'z-on';
+
+        if(_that.hasClass(_on)) return false;
+
+         _that.addClass(_on).siblings('span').removeAttr('class');
+
+        var _spans = _parent.find('h4.tab1 > span'), _i = _spans.index(_that);
+
+        _parent.find('div.cnt1').hide().eq(_i).show();
+
+        /* 计算总价格 */ 
+        // 1.获取人数
+        var _val = _parent.find('div.cnt1').eq(_i).find('.j-note i').attr('data-val'),
+            _arr = _val.split('|'), _price = _arr[0], _count = _arr[1];
+
+        // 2.获取单价
+        var _note = $('#j-for-insure .note:first i');
+        _note.eq(0).text(_arr[0] + '元');
+        _note.eq(1).text(_arr[1] + '人');
+        _note.eq(2).text((_arr[1] * _arr[0]) + '元').attr('data-char', _that.attr('data-char'));
+
+        return false;
+    });
+
+    // 弹窗选择人员 - 结果列表 - 单个删除
+    $(document.body).on('click', 'i.j-slt-del', function(){
+
+        var _parent = $(this).parent('a'), _p = _parent.parent();
+        _parent.remove();
+
+        // 级联提示信息
+        var _len = _p.find('a').length;
+        if(_len >= 0){
+            _p.next('h5').find('i:first').text(_len);
+            if(_len == 0){
+
+                _p.find('span').show();
+
+                // 计算总价清零
+                var Ele = $('#j-for-insure > dl.note i');
+                Ele.eq(0).text('0元');
+                Ele.eq(1).text('0人');
+                Ele.eq(2).text('0元');
+
+            }else{
+
+                // 计算总的保费
+                var _tag = _p.prev('a');
+                computeResult(_p, _tag.attr('data-char'), _tag.attr('data-param'));
+            }
+        }
+
+        return false;
+    });
+
+    // 小图点击
+    var _imgList = $('.j-sml > li > img');
+    _imgList.click(function(){
+        _imgList.removeClass('z-on');
+        $(this).addClass('z-on');
+    });
+    
+    // 选择方案
+    $('.j-sel').on('click', 'a', function(){
+
+        var _this = $(this), _on = 'z-on';
+
+        if(_this.hasClass(_on)) return false;
+
+        // 点击效果 赋值隐藏域
+        _this.addClass(_on).siblings('a').removeClass(_on);
+
+        // 赋值弹窗参数
+        $('.j-pop-open :lt(2)').attr('data-param', _this.attr('data-val'))
+
+        // 显示文字
+        $('.j-res').text('已选择 "'+ _this.text() +'"');
+
+        return false;
+    });
+
+    // 保险询价 的单选按钮
+    $(document.body).on('click', 'i.j-tag-rdo', function(){
+
+        var _this = $(this), _parent = _this.parent(), _on = 'z-on';
+
+        if(_this.hasClass(_on)) return false;
+
+        _parent.find('i.j-tag-rdo').removeClass(_on);
+        _this.addClass(_on);
+
+        _parent.find('input:first').val(_this.attr('data-val')).attr('data-chr', _this.text());
+    });
+    
+});
+</script>
+
+<!-- 弹窗的数据和JS事件 -->
+<script>
+var jsonData = ${jsonData};
+
+// 选择人员的员工搜索的API接口URL地址
+var searchUrl = '${dynamicDomain}/insure/searchDepartmentUsers';
+
+// 选择人员的计算保费的API接口URL地址
+var computeUrl = 'http://10.48.194.194:8000/hr/ajax.compute.php';
+
+// 注意返回值前缀($_GET['backFunc'])，以符合jsonp的格式
+// echo trim($_GET['backFunc']).'('. json_encode($array) .')';
+</script>
+   <script src="${staticDomain}js/popup.select.member.js"></script>
+</body>
+</html>

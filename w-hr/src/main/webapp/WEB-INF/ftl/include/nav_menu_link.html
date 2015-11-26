@@ -1,0 +1,47 @@
+<div class="m-menu f-fl j-menu-list">
+	<#list userMenus as userMenu>
+		<dl class="u-t${userMenu_index+2}">
+		<dt><a href="javascript:void(0);" class="f-ib j-chg-menu">${userMenu.folderName}</a></dt>
+		<dd>
+			<#list userMenu.menus as menu>
+				<a href="javascript:go('${dynamicDomain}${menu.url}','${userMenu_index}')" class="f-ib">${menu.name}</a>
+			</#list>
+		</dd>
+	</dl>
+	</#list>
+</div>
+	
+	<script>
+	var _menuIndex = 0;
+	$(function()
+	{
+		if (typeof ($.cookie('menusf')) != "undefined")
+		{
+			_menuIndex = $.cookie('menusf');
+		}
+	});
+	
+	function go(url,index){
+		_menuIndex = index
+		$.cookie('menusf', index,
+				{
+					path : '/'
+				});
+		window.location.href = url;
+	}
+	$(function(){
+		var _menuOn = 'z-on';
+		// 左侧的初始展开状态(_menuIndex 定义在起始页面)
+		$('.j-menu-list dl').eq(_menuIndex).find('dd').show().prev('dt').find('a').addClass(_menuOn);
+
+		// 左侧的菜单展开
+		$('.j-chg-menu').click(function(){
+			var _this = $(this);
+			if(_this.hasClass(_menuOn)){
+				_this.removeClass(_menuOn).parent('dt').next().slideUp();
+			}else{
+				_this.addClass(_menuOn).parent('dt').next().slideDown();
+			}
+		});
+	});
+	</script>

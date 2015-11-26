@@ -1,0 +1,204 @@
+<input type="hidden" name="objectId" id="objectId" value="${staff.objectId}">
+			<div class="u-tab f-cb j-tab">
+				<span class="f-fl z-on">添加员工</span>
+				<span class="f-fl">批量导入员工信息</span>
+			</div>
+
+			<div class="u-cnt j-cnt">
+				<fieldset>
+					<label class="f-ib">员工姓名：</label>
+					<input type="text" class="f-ib u-txt" name="staffName" value="${staff.staffName}"/>
+					<i class="f-ib">*</i>
+
+					<label class="f-ib u-pl1">员工工号：</label>
+					<input type="text" class="f-ib u-txt" name="workNo" value="${staff.workNo}"/>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib">登录账户：</label>
+					<input type="text" class="f-ib u-txt" name="loginName" value="${staff.loginName}"/>
+					<i class="f-ib">*</i>
+
+					<label class="f-ib u-pl1">员工性别：<input type="hidden" value="${staff.sex}" class="j-sex-val" name="sex"/></label>
+					<span class="f-ib u-slt-btn">
+						<#if staff.sex == "1">
+						<a href="javascript:void(0);" data-val="1" class="f-ib z-on j-slt-sex">男性</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib j-slt-sex">女性</a>
+						<#elseif staff.sex == "2">
+						<a href="javascript:void(0);" data-val="1" class="f-ib j-slt-sex">男性</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib z-on j-slt-sex">女性</a>
+						<#else>
+						<a href="javascript:void(0);" data-val="1" class="f-ib j-slt-sex">男性</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib j-slt-sex">女性</a>
+						</#if>
+					</span>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib">入职日期：</label>
+					<input type="text" readonly="readonly" class="f-ib u-txt-date" id="in-date" name="entryDay" value="${(staff.entryDay?string("yyyy-MM-dd"))}"/>
+					<i class="f-ib">*</i>
+					<label class="f-ib u-pl1">手机号码：</label>
+					<input type="text" class="f-ib u-txt" name="telephone" value="${staff.telephone}"/>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib">所属部门：</label>
+					<span class="f-ib f-por">
+						<input readonly="readonly" data-pop="1,400,0,1,7" class="f-ib u-txt dep j-pop-open" value="${staff.companyDepartment.name}" name="companyDepartment.name"/>
+						<input type="hidden" class="j-dep-val"  name="departmentId" value="${staff.departmentId}"/>
+					</span>
+					<i class="f-ib">*</i>
+					<#include "/include/select_department.html">
+					<label class="f-ib u-pl1">出生日期：</label>
+					<input type="text" readonly="readonly" class="f-ib u-txt-date" id="birthday-date" name="birthday" value="${(staff.birthday?string("yyyy-MM-dd"))}"/>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib">电子邮箱：</label>
+					<input type="text" class="f-ib u-txt" name="email" value="${staff.email}"/>
+					<i class="f-ib">&nbsp;</i>
+					
+					<label class="f-ib u-pl1">联系方式：</label>
+					<input type="text" class="f-ib u-txt" name=""/>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib z-vlt">状态：</label>
+					<dl class="f-ib u-status">
+						<#if staff.status == "1">
+						<dt class="f-ib"><input type="radio" checked="checked" class="rad j-slt-sta" name="status" value="1" /> 在职</dt>
+						<dd class="f-ib"><input type="radio" class="rad j-slt-sta" name="status" value="2" /> 离职
+							<p class="j-slt-qtype">
+								<input type="radio" class="rad" checked="checked" name="qType" /> 账户永久有效&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="radio" class="rad"  /> 账户在 <input type="text" class="f-ib txt" value="0" name="quitType"/> 天后冻结
+							</p>
+						</dd>
+						<#elseif staff.status == "2">
+						<dt class="f-ib"><input type="radio"  class="rad j-slt-sta" name="status" value="1" /> 在职</dt>
+						<dd class="f-ib"><input type="radio" checked="checked" class="rad j-slt-sta" name="status" value="2" /> 离职
+							<p class="j-slt-qtype">
+								<input type="radio" class="rad" checked="checked" name="quitType" value="1"/> 账户永久有效&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="radio" class="rad"  /> 账户在 <input type="text" class="f-ib txt" value="0" name="quitType"/> 天后冻结
+							</p>
+						</dd>
+						</#if>
+					</dl>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib z-vlt">备注：</label>
+					<div class="f-ib"><textarea name=""></textarea></div>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib">&nbsp;</label>
+					<button type="button" class="f-ib u-sub">保存</button>
+				</fieldset>
+			</div>
+			
+			<div class="u-mod j-cnt f-dn f-cb">
+				<span class="f-fl">导入人员名单：</span>
+				<i class="f-fl"><a href="javascript:void(0);" class="f-ib">选择文件</a></i>
+				<em class="f-fl"><a href="javascript:void(0);" class="f-ib">下载员工信息模板</a></em>
+			</div>
+
+			<script src="${staticDomain}/date/WdatePicker.js" charset="utf-8"></script>
+			<script>
+			$(function(){
+
+				// 状态的选择
+				$('.j-slt-sta').click(function(){
+
+					var _this = $(this), _qType = $('.j-slt-qtype');
+					if (_this.val() == '2') {
+						_qType.show();
+					}else{
+						_qType.hide();
+					}
+				});
+
+				// 性别的选择
+				var _sltSex = $('.j-slt-sex'), _valSex = $('.j-sex-val');
+				_sltSex.click(function(){
+					var _this = $(this);
+					if(_this.hasClass('z-on')){
+						return false;
+					}else{
+						_sltSex.removeClass('z-on');
+						_this.addClass('z-on');
+						_valSex.val(_this.attr('data-val'));
+					}
+				});
+
+				// 内容切换
+				var _tab = $('.j-tab span'), _cnt = $('.j-cnt');
+				_tab.click(function(){
+					var _this = $(this), _i = _this.index();
+					if(!_this.hasClass('z-on')){
+						_tab.removeClass('z-on').eq(_i).addClass('z-on');
+						_cnt.hide().eq(_i).show();
+					}
+				});
+
+				// 日期控件 
+				$('#birthday-date').click(function(){
+					WdatePicker({startDate: '1990-01-01' });
+				});
+
+				// 出生日期 
+				$('#in-date').click(function(){
+					WdatePicker({startDate: '2014-01-01' });
+				});
+
+				// 模拟Select控件
+				$('.j-slt').click(function(){
+
+					var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+					$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+					if(_this.hasClass('z-on-slt')){
+						_this.removeClass('z-on-slt');
+						_opt.hide();
+					}else{
+						_this.addClass('z-on-slt');
+						_opt.show();
+					}
+					return false;
+				});
+
+				// 下拉项的点击事件
+				$('.j-opt > a').click(function(){
+
+					var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+					_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+					
+					return false;
+				});
+
+				$('body').click(function(e){
+					$('.j-opt').hide();
+					$('.j-slt').removeClass('z-on-slt')
+				});
+				
+				
+				//todo
+				$(".u-sub").click(function(){
+					var _form = $("#form");
+					$.ajax({
+						url:"${dynamicDomain }/member/updateStaff",
+						data:_form.serialize(),
+						success:function(data){
+							_form.html(data);
+							winAlert("保存成功");
+						}
+					});
+				
+				
+				});
+			});
+			
+			
+			</script>

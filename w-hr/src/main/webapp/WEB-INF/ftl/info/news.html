@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<title>IBS首页 - HR</title>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="-1" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/center.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+<script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+<style>
+#g-lst-p23 .u-lst li.z-w2 {
+  width: 27%;
+  text-align: left;
+  padding-right: 3.5%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+</style>
+</head>
+<body>
+<#include "/common/page.html">
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">新闻公告</a>
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+<#include "/include/nav_menu_link.html">
+    <form action="${dynamicDomain }/newsNotify/list" method="post">
+	<div class="m-main f-fr">
+		<h4 class="u-tit"><span class="f-ib">新闻公告</span></h4>
+		<div id="g-lst-p23">
+			<div class="u-flt f-cb">
+				<span class="f-fl"><input type="text" name="search_LIKES_title" class="u-txt z-tw1" placeholder="标题"></span>
+				<span class="f-fl"><input type="text" name="search_GED_createDate" readonly="readonly" placeholder="创建开始时间" class="u-txt u-date" id="date-start" /></span>
+				<span class="f-fl"><input type="text" name="search_LED_createDate" readonly="readonly" placeholder="创建结束时间" class="u-txt u-date" id="date-end" /></span>
+				<script>
+				$(function(){
+					$('#date-start').click(function(){
+						WdatePicker({maxDate:'#F{$dp.$D(\'date-end\')}'});
+					});
+					$('#date-end').click(function(){
+						WdatePicker({minDate:'#F{$dp.$D(\'date-start\')}'});
+					});
+				});
+				</script>
+
+				<span class="f-fr z-lst">
+					<button type="submit" class="u-sch">查询</button>
+				</span>
+
+				<script type="text/javascript">
+				$(function(){
+
+					// 模拟Select控件
+					$('.j-slt').click(function(){
+
+						var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+						$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+						if(_this.hasClass('z-on-slt')){
+							_this.removeClass('z-on-slt');
+							_opt.hide();
+						}else{
+							_this.addClass('z-on-slt');
+							_opt.show();
+						}
+						return false;
+					});
+
+					// 下拉项的点击事件
+					$('.j-opt > a').click(function(){
+
+						var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+						_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+						
+						return false;
+					});
+
+					$('body').click(function(e){
+						$('.j-opt').hide();
+						$('.j-slt').removeClass('z-on-slt')
+					});
+
+					// 全选
+					$('.j-chk-all').click(function(){
+
+						var _this = $(this), _son = $('.j-chk-son');
+						if(_this.is(':checked')){
+							_son.prop('checked', true);
+						}else{
+							_son.prop('checked', false);
+						}
+					});
+
+					// 控制列表尾元素的样式
+					$('.j-list').find('ul:last').css('border-bottom',0);
+
+				});
+				</script>
+			</div>
+
+			<div class="u-act f-cb">
+				<h5 class="f-fr">
+					<@spage url="${dynamicDomain}/newsNotify/list"  totalPage=pageInfomation.totalPage currentPage=pageInfomation.currentPage?number formId="idUp" />
+				</h5>
+			</div>
+
+			<div class="u-lst z-top">
+				<ol class="f-cb">
+					<li class="z-w2">标题</li>
+					<li class="z-w3">类型</li>
+					<li class="z-w4">创建日期</li>
+					<li class="z-w5">有效日期</li>
+					<li class="z-w2">内容</li>
+				</ol>
+			</div>
+
+			<div class="u-lst z-cnt j-list">
+                <#list items as item>
+                  <ul class="f-cb">
+                    <li class="z-w2" title="${item.title }"><a href="${dynamicDomain}/newsNotify/detail/${item.objectId}"
+							class="f-ib">${item.title }</a></li>
+                    <li class="z-w3">
+                    	<#if item.noticeType ==1>
+                    		新闻
+                    		<#else>
+                    		公告
+                    	</#if>
+                    </li>
+                    <li class="z-w4"><small>${item.createDate?string("yyyy-MM-dd HH:mm")}</small></li>
+					<li class="z-w5">
+					<small>${item.startDate?string("yyyy-MM-dd HH:mm")}<br/>
+					${item.endDate?string("yyyy-MM-dd HH:mm")}</small></li>
+					<li class="z-w2 f-wwb" title="${item.content}">${item.content}</li>
+                  </ul>
+                </#list>
+			<div class="u-act f-cb" >
+				<h5 class="f-fr">
+					<@page url="${dynamicDomain}/newsNotify/list"  totalPage=pageInfomation.totalPage currentPage=pageInfomation.currentPage?number formId="idDown" />
+				</h5>
+			</div>
+
+		</div>
+	</div>
+</div>
+</form>
+</div>
+<script>
+function doConfirm(){
+	// code
+	return true;
+}
+</script>
+</body>
+</html>

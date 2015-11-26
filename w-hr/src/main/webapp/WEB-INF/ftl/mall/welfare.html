@@ -1,0 +1,188 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>搜索结果页面 - 福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/list.z.css" />
+    <script src="${staticDomain}js/jquery.lazyload.min.js"></script>
+    <style>
+    .j-xg-list li h4{
+        overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		width:90%;
+        
+    }
+    .j-cb-list li h4{
+       overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width:90%;
+    }
+    </style>
+</head>
+<body>
+<div id="g-sch">
+<form action="${dynamicDomain }/mall/welfare" id="mallForm" method="post">
+    <input type="hidden" name="welfareItemId" id="welfareItemId" value="${welfareItemId }">
+    <input type="hidden" name="priceZone" id="priceZone" value="${priceZone }">
+    <input type="hidden" name="wpType" id="wpType" value="${wpType }">
+    <input type="hidden" name="areaId" id="areaId" value="${areaId }">
+    <input type="hidden" name="currentPagePackage" id="currentPagePackage" value="${pagePackage.currentPage}">
+    <ol class="u-fit j-fit">
+       <li>
+            <label class="f-ib">福利主题：</label>
+              <a href="javascript:void(0);" id="welfareItemId_all" onclick="javascript:setWelfareItemId('all');" class="f-ib">全部</a>
+            <#list welfareItems as item>
+              <a href="javascript:void(0);" id="welfareItemId_${item.objectId}" onclick="javascript:setWelfareItemId('${item.objectId}');" class="f-ib">${item.itemName}</a>
+            </#list>
+        </li>
+        <li>
+            <label class="f-ib">预算范围：</label>
+            <a href="javascript:void(0);" id="priceZone_all" onclick="javascript:setPriceZone('all');" class="f-ib">全部</a>
+            <a href="javascript:void(0);" id="priceZone_0-100" onclick="javascript:setPriceZone('0-100');" class="f-ib">0~100元</a>
+            <a href="javascript:void(0);" id="priceZone_101-200" onclick="javascript:setPriceZone('101-200');" class="f-ib">101~200元</a>
+            <a href="javascript:void(0);" id="priceZone_201-300" onclick="javascript:setPriceZone('201-300');" class="f-ib">201~300元</a>
+            <a href="javascript:void(0);" id="priceZone_301-400" onclick="javascript:setPriceZone('301-400');" class="f-ib">301~400元</a>
+            <a href="javascript:void(0);" id="priceZone_401-500" onclick="javascript:setPriceZone('401-500');" class="f-ib">401~500元</a>
+            <a href="javascript:void(0);" id="priceZone_501-600" onclick="javascript:setPriceZone('501-600');" class="f-ib">501~600元</a>
+            <a href="javascript:void(0);" id="priceZone_601-700" onclick="javascript:setPriceZone('601-700');" class="f-ib">601~700元</a>
+            <a href="javascript:void(0);" id="priceZone_701-800" onclick="javascript:setPriceZone('701-800');" class="f-ib">701~800元</a>
+            <a href="javascript:void(0);" id="priceZone_801-900" onclick="javascript:setPriceZone('801-900');" class="f-ib">801~900元</a>
+            <a href="javascript:void(0);" id="priceZone_901-1000" onclick="javascript:setPriceZone('901-1000');" class="f-ib">901~1000元</a>
+            <a href="javascript:void(0);" id="priceZone_1000" onclick="javascript:setPriceZone('1000');" class="f-ib">1000元以上</a>
+        </li>
+        <li>
+            <label class="f-ib">套餐类型：</label>
+            <a href="javascript:void(0);" id="wpType_all" onclick="javascript:setWpType('all');" class="f-ib">全部</a>
+            <a href="javascript:void(0);" id="wpType_1" onclick="javascript:setWpType('1');" class="f-ib">弹性套餐</a>
+            <a href="javascript:void(0);" id="wpType_2" onclick="javascript:setWpType('2');" class="f-ib">固定套餐</a>
+        </li>
+        <li>
+            <label class="f-ib">销售城市：</label>
+            <a href="javascript:void(0);" id="areaId_all" onclick="javascript:setAreaId('all');" class="f-ib">全国</a>
+            <a href="javascript:void(0);" id="areaId_1101" onclick="javascript:setAreaId('1101');" class="f-ib">北京</a>
+            <a href="javascript:void(0);" id="areaId_3101" onclick="javascript:setAreaId('3101');" class="f-ib">上海</a>
+            <a href="javascript:void(0);" id="areaId_4401" onclick="javascript:setAreaId('4401');" class="f-ib">广州</a>
+            <a href="javascript:void(0);" id="areaId_4403" onclick="javascript:setAreaId('4403');" class="f-ib">深圳</a>
+            <a href="javascript:void(0);" id="areaId_5101" onclick="javascript:setAreaId('5101');" class="f-ib">成都</a>
+        </li>
+    </ol>
+</form>
+    <div class="u-tit f-cb u-tit3">
+          <b class="f-fl">共<i>${pagePackage.totalCount}</i> 个相关套餐</b>
+          <@singlePage url="${dynamicDomain }/mall/welfare"  totalPage=pagePackage.totalPage currentPage=pagePackage.currentPage cpName="currentPagePackage" formId="mallForm" />
+    </div>
+    <ol class="u-tc f-cb j-xg-list">
+        <#list pagePackage.list as item>
+	        <li>
+	            <em class="z-t${item.wpType}"></em>
+	            <table><tr><td><a target="_blank" href="${dynamicDomain}/welfarePackage/detail/${item.packageId}"><img style="width:372px;height:232px;" class="package" data-original="${adminStaticDomain}${item.mainPicture}" /></a></td></tr></table>
+	            <h4 title="${item.name}">
+	                <span class="f-ib"><b>￥${item.sellPrice?string('0.00')}</b><br /><a target="_blank" href="${dynamicDomain}/welfarePackage/detail/${item.packageId}">${item.name}</a></span>
+	                <!-- <a href="p6-9.hr.cart2.z.html" class="f-ib u-add">加入购物车</a>-->
+	            </h4>
+	        </li>
+        </#list>
+    </ol>
+</div>
+    
+<script type="text/javascript">
+$(function(){
+
+    // 控制列表末元素的样式
+    $('.j-cb-list > li:nth-child(5n)').css('margin-right', 0);
+    $('.j-xg-list > li:nth-child(3n)').css('margin-right', 0);
+
+    // 筛选效果
+    $('.j-fit > li > a').click(function(){
+
+        var _this = $(this);
+        var _parent = _this.parent('li');
+
+        //_parent.find('a').removeClass('z-on');
+        _this.addClass('z-on').siblings().not('label').removeClass('z-on');
+
+        if(!_this.hasClass('z-on')) ;
+        
+    });
+});
+</script>
+<script type="text/javascript" src="${staticDomain}js/jquery.drag.js"></script>
+<script type="text/javascript">$('.m-fixed').zDragging();</script>
+<script>
+$(function(){
+	$("img.package").lazyload({
+		placeholder:"${staticDomain}image/package.png",
+       	skip_invisible : false,
+       	threshold : 200
+    });
+	$("img:not(.package)").lazyload({
+		placeholder:"${staticDomain}image/product.png",
+       	skip_invisible : false,
+       	threshold : 200
+    });  
+    // 删除操作
+    $('body').on('click', '.j-g-del', function(){
+        $(this).parent().parent().parent().slideUp(300);
+    });
+
+    // 删除券
+    $('body').on('click', '.j-lst-del', function(){
+        $(this).parent().parent().slideUp(300);
+    });
+
+    // 添加到套餐
+    $('body').on('click', '.j-g-add', function(){
+
+        var _this = $(this);
+        var _html = '<dl class="f-cb">';
+            _html+= '<dt><a href="javascript:void(0);"><img src="'+ _this.attr('data-img') +'" /></a></dt>';
+            _html+= '<dd><span class="f-ib"><a href="javascript:void(0);">'+ _this.attr('data-t') +'</a><br /><i>x 1</i></span>';
+            _html+= '<em class="f-ib"><a href="javascript:void(0);" class="j-g-del">删除</a></em></dd></dl>';
+        $('.j-g-lst').append($(_html));
+    });
+     $('#searchButton').remove();
+     var str = '<button type="button" class="u-btn f-fl" id="searchButton">搜索</button>';
+     $('#searchForm').append(str);
+     $('#searchButton').click(function(){
+       var queryKeywords = $('#queryKeywords').val();
+       //$("#searchQueryW").val(queryKeywords);
+       //$('#mallForm').submit();
+       window.location.href='${dynamicDomain}/mall/search?queryKeywords='+queryKeywords;
+     });
+});
+</script>
+<script>
+        function setWelfareItemId(welfareItemId){
+            $("#welfareItemId").val(welfareItemId);
+            setPage();
+            $("#mallForm").submit();
+        }
+        function setPriceZone(zone){
+            $("#priceZone").val(zone);
+            setPage();
+            $("#mallForm").submit();
+        }
+        function setWpType(wpType){
+            $("#wpType").val(wpType);
+            setPage();
+            $("#mallForm").submit();
+        }
+        function setAreaId(areaId){
+            $("#areaId").val(areaId);
+            setPage();
+            $("#mallForm").submit();
+        }
+        $(function(){
+            $("#welfareItemId_${welfareItemId}").addClass("z-on");
+            $("#priceZone_${priceZone}").addClass("z-on");
+            $("#wpType_${wpType}").addClass("z-on");
+            $("#areaId_${areaId}").addClass("z-on");
+        });
+        function setPage(){
+          $('#currentPagePackage').val(1);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,559 @@
+<#include "/common/findPayPwd.html">
+<html lang="zh-cn">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+	<title>发放${s_welfarePointName}</title>
+	<link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+    <script src="${staticDomain}js/ajaxfileupload.js"></script>
+</head>
+<body>
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">福利管理</a> &gt;
+		发放${s_welfarePointName}
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<div class="m-main f-fr">
+		<h4 class="u-tit"><span class="f-ib">发放${s_welfarePointName}</span></h4>
+		<div id="g-add-p4" class="f-por">
+			<div class="m-acc">
+				<span class="f-ib">当前账户可用${s_welfarePointName}：</span>
+				<h2><b>${accountBalance?string("#,##0.00")}</b>&nbsp;&nbsp;${s_welfarePointName}</h2>
+				<p>企业名称：${s_user.companyName}<br>企业账号：${s_user.loginName}</p>
+			</div>
+			<h3>填写${s_welfarePointName}发放信息</h3>
+			<form action="" id="GrantPoint">
+			<input type="hidden" name="objectId" id="distributeId">
+			<fieldset class="f-cb u-stp1">
+				<label class="f-fl">发放类目：</label>
+				<span class="f-fl f-por z-slt-w1">
+					<input type="hidden" class="j-slt-val" name="welfareItemId" id="welfareItemId" value="">
+					<input type="text" class="u-txt u-slt j-slt" readonly="readonly" id="welfareItemName" name="welfareItemName" >
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">请选择</a>
+						<#list items as item>
+						<a href="javascript:void(0);" data-val="${item.objectId}" class="f-ib">${item.itemName}</a>
+						</#list>
+					</em>
+					<span id="welfareItemNameSpan"></span>
+					<i id="errorMsg" style="color: red;"></i>
+				</span>
+			</fieldset>
+
+			<fieldset class="f-cb u-stp1">
+				<label class="f-fl">发放名称：</label>
+				<span class="f-fl">
+					<input type="text" class="u-txt wt1 required" name="name" />
+				</span>
+			</fieldset>
+
+			<fieldset class="f-cb u-stp1">
+				<label class="f-fl">发放对象：</label>
+				<span class="f-fl">
+					<a href="javascript:void(0);" onclick="distributeType=null" class="f-ib u-type z-on j-slt-type">常规发放</a>
+					<a href="javascript:void(0);" onclick="distributeType=10" class="f-ib u-type j-slt-type">批量发放</a>
+				</span>
+			</fieldset>
+
+			<div id="m-slt" class="j-tab">
+				<h4 class="f-cb" id="j-tab-t">
+					<a href="javascript:void(0);" value="1">全体员工</a>
+					<a href="javascript:void(0);" value="23">特定人员</a>
+					<a href="javascript:void(0);" value="4">按照部门发放</a>
+					<a href="javascript:void(0);" value="5">按项目组</a>
+				</h4>
+				<div class="cnt j-tab-c">
+					<p class="note">向公司内全部在职员工发放(不包含冻结帐户)</p>
+				</div>
+				<div class="cnt j-tab-c">
+					<div class="f-cb tdry">
+						<span>
+							<label><input type="radio" name="p_type" checked="checked" value="2"/> 特定人员发放</label>&nbsp;&nbsp;&nbsp;&nbsp;
+							<label><input type="radio" name="p_type"/ value="3"> 特定人员不发放</label>
+						</span>
+						<a href="javascript:void(0);" data-pop="2,850,0,1,33" class="f-ib j-pop-open">选择人员</a>
+					</div>
+					<span id="j-win51-lst" class="list"><p class="note">请选择待发放的人员！</p></span>
+				</div>
+				<div class="cnt j-tab-c">
+					<p class="note"><a href="javascript:void(0);" data-pop="1,600,0,1,3" class="f-ib j-pop-open">添加部门</a></p>
+					<span id="j-win31-lst" class="list"><p class="note">请选择待发放部门！</p></span>
+				</div>
+				<div class="cnt j-tab-c">
+					<p class="note"><a href="javascript:void(0);" data-pop="1,600,0,1,4" class="f-ib j-pop-open">添加项目组</a></p>
+					<span id="j-win41-lst" class="list"><p class="note">请选择待发放项目组！</p></span>
+				</div>
+				<h5 id="j-total">已选择 <i>全体</i> 员工</h5>
+			</div>
+
+			<div class="m-mod j-tab f-cb f-dn">
+				<span class="f-fl">导入人员名单：</span>
+				<i class="f-fl"><span id="uploadFileName"></span>&nbsp;<a href="javascript:void(0);" data-pop="1,500,0,1,2" class="f-ib j-pop-open">选择文件</a></i>
+			</div>
+
+			<h5 class="u-tit5 f-cb j-tit5">
+				<label class="f-fl">每人发放${s_welfarePointName}数量：</label>
+				<em class="f-fl"><input type="text" value="" name="point" class="j-count-each required positive_integer"></em>
+			</h5>
+			
+			<fieldset class="f-cb u-stp3">
+				<label class="f-fl">立即发放：</label>
+				<span class="f-fl urdo">
+					<label><input type="radio" checked="checked" class="rad j-slt-sta required" name="now" value="0"> 是</label>&nbsp;&nbsp;&nbsp;&nbsp;
+					<label><input type="radio" class="rad j-slt-sta required" name="now" value="1"> 否</label>
+				</span>
+			</fieldset>
+
+			<fieldset class="f-cb u-stp3 j-slt-time f-dn">
+				<label class="f-fl">定时发放：</label>
+				<input type="text" readonly="readonly" class="f-fl required" id="send-date" name="distributeDate" />
+			</fieldset>
+
+			<fieldset class="f-cb u-stp3">
+				<label class="f-fl u-vt">发放说明：</label>
+				<textarea class="f-fl required" name="remark"></textarea>
+			</fieldset>
+
+			<fieldset class="f-cb u-stp3">
+				<label class="f-fl">&nbsp;</label>
+				<span class="f-fl">
+					<label><b class="f-ib j-chk z-on" value="1"></b><i class="f-ib">平台通知员工(免费)</i></label>
+					<label><b class="f-ib j-chk z-on" value="2"></b><i class="f-ib">邮件通知员工(免费)</i><br/></label>
+				</span>
+			</fieldset>
+			<!-- data-pop 参数[层级(关联ID), 宽度, 位置(0:上下居中), 是否显示确定按钮(关联确定Func), 弹窗组] -->
+			<h5 class="u-btn"><a href="javascript:void(0);" onclick="saveDistribute();"  data-pop="1,500,0,1,1" class="f-ib" id="beginDistribute">开始发放</a></h5>
+			</form>
+		</div>
+	</div>
+</div>
+<#include "/include/send_confirm.html">
+<script src="${staticDomain}/date/WdatePicker.js" charset="utf-8"></script>
+<script>
+	//发放方式
+	distributeType = 1;
+	function determineDistributeType(){
+		if(distributeType!=10){
+			var type = $("#j-tab-t .act").attr("value");
+			if(type==23){
+				distributeType = $("input[name='p_type']:checked").val();
+			}else{
+				distributeType = type;
+			}
+		}
+		return distributeType;
+	}
+	
+	function saveDistribute(){
+		var welfareItemId = $("#welfareItemId").val();
+		if(welfareItemId==''){
+			$("#errorMsg").text('请选择发放类目');
+			return false;
+		}else{
+			$("#errorMsg").text('');
+		}
+		
+		if(!$("#GrantPoint").valid()){
+			return false;
+		}
+		var data = $("#GrantPoint").serialize();
+		var type = determineDistributeType();
+		var itemIds = "";
+		data +="&distributeBy=" + type;
+		data +="&objectId=" + $("#distributeId").val();
+		var items = null;
+		if(type==2 || type ==3 ){
+			items = $("input[name='userId']");
+		}else if(type==4){
+			items = $("input[name='departmentId']");
+		}else if(type==5){
+			items = $("input[name='teamId']");
+		}
+		if(items){
+			items.each(function(){
+				itemIds+=$(this).val() + ",";
+			});
+			data +="&itemIds=" + itemIds;
+		}
+		//1:"向公司内全部在职员工发放",2:"特定人员发放",3:"特定人员不发放",4:"按部门发放",5:"按项目组发放",10:"批量发放"
+		if(type>=2 && type <= 5 && itemIds.length==0){
+			winAlert("请至少选择一个发放对象");
+			return false;
+		}else if(type == 10){
+			var fileName = $("#uploadFile").val();
+			if(!fileName){
+				winAlert("请选择导入人员名单");
+				return false;
+			}
+			fileName = /.[^.]+$/.exec(fileName);
+			if (fileName !=".xls"){
+				winAlert("请上传EXCEL文件");
+				return false;
+			}
+		}
+		var chk = $(".j-chk.z-on");
+		if(chk && chk.length>0){
+			for(i=0;i<chk.length;i++){
+				if($(chk[i]).attr("value")==1){
+					data +="&platformNotice=" + 1;
+				}else if($(chk[i]).attr("value")==2){
+					data +="&emailNotice=" + 1;
+				}
+			}
+		}
+		
+		var fileSize = getUploadFileSize("uploadFile");
+		if(fileSize!=-1 && fileSize >= 1024*1024*2){
+			winAlert("文件大小不能超过2M");
+			return false;
+		}
+		$.ajaxFileUpload({
+			url : '${dynamicDomain}/pointDistribute/saveDistribute?ajax=1&' + data,
+			secureuri : false,
+			fileElementId : 'uploadFile',
+			type:"POST",
+			dataType : 'json',
+			success : function(msg) {
+				toConfirm(msg);
+			}
+		});
+		return true;
+	}
+	
+	$(function(){
+		$("#GrantPoint").validate();
+		// 立即发放 联动 定时发放 时间
+		$('.j-slt-sta').click(function(){
+			var _i = $('.j-slt-sta').index($(this));
+			var _sltTime = $('.j-slt-time');
+			if(_i == 0){
+				_sltTime.hide();
+				$("#send-date").val("");
+			}else{
+				_sltTime.show();
+			}
+		});
+
+		// 日期控件
+		$('#send-date').click(function(){
+			WdatePicker();
+		});
+	
+		// 选项取消(删除)
+		$('body').on('click', '.j-res', function(){
+			var _this = $(this);
+			_this.parent().remove();
+		});
+	
+		// 模拟Select控件
+		$('.j-slt').click(function(){
+			var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+			$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+			if(_this.hasClass('z-on-slt')){
+				_this.removeClass('z-on-slt');
+				_opt.hide();
+			}else{
+				_this.addClass('z-on-slt');
+				_opt.show();
+			}
+			return false;
+		});
+	
+		// 模拟多选框
+		$('.j-chk').click(function(){
+			var _this = $(this);
+			if(_this.hasClass('z-on')){
+				_this.removeClass('z-on');
+			}else{
+				_this.addClass('z-on');
+			}
+		});
+	
+		// 下拉项的点击事件
+		$('.j-opt > a').click(function(){
+			var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+			_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+			var _tag = _opt.attr('data-tag');
+			if(typeof(_tag) != 'undefined' && _tag == 'sel-title'){
+				var _tit = $('.j-title'), _parent = _tit.parent().parent();
+				if(_val == '1'){
+					_parent.show();
+					_tit.focus();
+				}else{
+					_parent.hide();
+					_tit.val('');
+				}
+			}
+			return false;
+		});
+	
+		// 模拟Select控件的文档事件
+		$('body').click(function(e){
+			$('.j-opt').hide();
+			$('.j-slt').removeClass('z-on-slt')
+		});
+	
+		// 清除列表末元素的样式
+		$('.j-list').find('dl:last').css('border',0);
+		$('.j-tab-c').find('ul:last').css('border',0);
+		$('.j-tab-t').find('a:last').css('padding','0 14px');
+		$('.j-pop-list').find('dt:last').addClass('z-last');
+		$('.j-pop-list > dd').find('p:last').addClass('z-last');
+		$(".j-opt a").eq(0).click();
+	});
+</script>
+<#include "/include/select_users.html">
+<#include "/include/select_departments.html">
+<#include "/include/select_project_teams.html">
+<script>
+$(function(){
+
+	// 选择发放对象
+	var _sltType = $('.j-slt-type'), _sltCnt = $('.j-tab');
+	_sltType.click(function(){
+
+		var _this = $(this);
+		if(_this.hasClass('z-on')) return false;
+
+		var _i = _sltType.index(this);
+		_sltType.removeClass('z-on');
+		_this.addClass('z-on');
+		_sltCnt.hide().eq(_i).show();
+
+		if(_i == 1){
+			$('.j-tit5').hide();
+		}else{
+			$('.j-tit5').show();
+		}
+	});
+
+	// 特定人员的删除事件
+	$('#j-tdlst').on('click', 'a', function(){
+		var _this = $(this), _id = _this.attr('data-id');
+		_this.parent().remove();
+		return false;
+	});
+
+	// 总数统计
+	var _total = $('#j-total');
+
+	// Tab切换部分
+	var _tabTitle = $('#j-tab-t > a'), _active = 'act';
+		_tabTitle.eq(0).addClass(_active);
+
+	var _tabContent = $('.j-tab-c');
+		_tabContent.eq(0).show();
+
+	// Tab标题事件
+	_tabTitle.click(function(){
+
+		var _this = $(this);
+		if(_this.hasClass(_active)) return false;
+
+		_tabTitle.removeClass(_active);
+		_this.addClass(_active);
+
+		var _idx = _tabTitle.index(_this);
+		_tabContent.hide().eq(_idx).show();
+
+		if(_idx == 0){
+			_total.html('已选择 <i>全体</i> 员工');
+		}else if(_idx == 1){
+			_total.html('已选择 <i>'+ $('#j-win51-lst a').length +'</i> 员工');
+		}else if(_idx == 2){
+			_total.html('已选择 <i>'+ $('#j-win31-lst a').length +'</i> 部门');
+		}else if(_idx == 3){
+			_total.html('已选择 <i>'+ $('#j-win41-lst a').length +'</i> 项目组');
+		}
+	});
+
+	
+	// 删除已完成的[项目组|部门]操作
+	$(document).on('click', '#j-win51-lst .j-win-del', function(){
+		$(this).parent().remove();
+		_total.html('已选择 <i>'+ $('#j-win51-lst a').length +'</i> 员工');
+	});
+	
+	$(document).on('click', '#j-win31-lst .j-win-del', function(){
+		$(this).parent().remove();
+		_total.html('已选择 <i>'+ $('#j-win31-lst a').length +'</i> 部门');
+	});
+	
+	$(document).on('click', '#j-win41-lst .j-win-del', function(){
+		$(this).parent().remove();
+		_total.html('已选择 <i>'+ $('#j-win41-lst a').length +'</i> 项目组');
+	});
+	
+	//处理层冲突
+	$(document).on('click', '#j-pop-up332 .j-pop-cancel', function(){
+		$('#m-mask').hide();
+	})
+	$(document).on('click', '#j-pop-up332 .j-pop-sure', function(){
+		$('#m-mask').hide();
+	})
+});
+
+// 初始化函数载体
+function popInit(_char){
+	var _func = {
+		'init11': function(){ return {'title':'确认发放信息', 'html': $('#tmp11').html()}; },
+		
+		'init12': function(){ 
+
+            var _html = '<dl class="dl2 f-cb"><dt class="j-cancel" data-func="cleanPwd">手机号码：</dt>' + 
+                        '<dd><input type="text" id="sessionUserMobile" value="${s_user.mobilePhone}" readonly="readonly"/>&nbsp;<a href="javascript:void(0);" class="f-ib u-code" id="j-btn-code">获取验证码</a></dd></dl>' +
+                        '<dl class="dl2 f-cb"><dt>手机验证码：</dt>' +
+                        '<dd><input id="smsCode" type="text" />&nbsp;<a href="javascript:void(0);" class="f-ib u-code" id="j-btn-send">提交</a></dd></dl>';
+
+            return {'title':'支付密码重置', 'html': _html}; 
+        },
+        
+		'init21': function(){
+			var _html = '<a href="${dynamicDomain}/staff/exportStaffTemplate" class="mod">下载导入的模板</a>' + 
+						'<dl><dt><input type="file" id="uploadFile" name="uploadFile"/></dt>' + 
+						'<dd>模板格式支持：xls；大小不超过2M；</dd></dl>';
+						
+			return {'title':'导入员工名单', 'html': _html}; 
+		},
+		'init31': function(){ return {'title':'添加部门', 'html': tmp31Html}; },
+		'init41': function(){ return {'title':'添加项目组', 'html': tmp41Html}; },
+		'init332': function(){ return {'title':'选择人员', 'html': tmp332Html}; } 
+	};
+	return _func[_char];
+}
+
+// 弹窗的确定按钮回滚函数
+function popSure(_char){
+	var _func = {
+		'sure11': function(){
+			return confirmPay();
+		},
+		'sure12': function(){
+			return resetPassword();
+        },
+		'sure21': function(){
+			var name = $("#uploadFile").val();
+			if(name){
+				$("#uploadFileName").text(name);
+			}
+			return true;
+		},
+
+		// "添加部门" 弹窗确定按钮回调
+		'sure31': function(){
+			var _has = {};
+			var _v = [], lst = '';
+			$('#j-pop31-rst h5').each(function(){
+				var _this = $(this), _val = _this.attr('data-val'), _arr = _val.split('|');
+				if(typeof(_has['z'+_arr[0]]) === 'undefined'){
+					lst += '<a href="javascript:void(0);" data-id="'+ _arr[0] +'" class="f-ib">'+ _arr[1] 
+						+'<i class="j-win-del"><input type="hidden" name="departmentId" value="' + _arr[0] + '" data="' + _val + '"></i></a>';	
+				};
+			}).remove();
+			$('#j-win31-lst').find("a").remove();
+			$('#j-win31-lst').append($(lst)).find('p').hide();
+			$('#j-total').html('已选择 <i>'+ $('#j-win31-lst a').length +'</i> 部门');
+			return true;
+		},
+
+		// "添加项目组" 弹窗确定按钮回调
+		'sure41': function(){
+			var _has = {};
+			var _v = [], lst = '';
+			$('#j-pop41-rst h5').each(function(){
+				var _this = $(this), _val = _this.attr('data-val'), _arr = _val.split('|');
+				if(typeof(_has['z'+_arr[0]]) === 'undefined'){
+					lst += '<a href="javascript:void(0);" data-id="'+ _arr[0] +'" class="f-ib">'+ _arr[1] 
+						+'<i class="j-win-del"><input type="hidden" name="teamId" value="' + _arr[0] + '" data="' + _val + '"></i></a>';	
+				};
+			}).remove();
+			$('#j-win41-lst').find("a").remove();
+			$('#j-win41-lst').append($(lst)).find('p').hide();
+			$('#j-total').html('已选择 <i>'+ $('#j-win41-lst a').length +'</i> 项目组');
+			return true;
+		},
+
+		// "添加人员" 弹窗确定按钮回调
+		'sure332': function(){
+			var _has = {};
+			var _v = [], lst = '', _n = 0;
+			$('#j-pop51-rst input').each(function(){
+				var _this = $(this), _val = _this.val(), _arr = _val.split('|');
+				if(typeof(_has['z'+_arr[0]]) === 'undefined'){
+					lst += '<a href="javascript:void(0);" data-id="'+ _arr[0] +'" class="f-ib">'+ _arr[1] +'('+ _arr[0] 
+						+')<i class="j-win-del"><input type="hidden" name="userId" value="' + _arr[2] + '" data="' + _val + '"></i></a>';
+				};
+			});
+			$('#j-pop51-rst').empty();
+			$('#j-win51-lst').find("a").remove();
+			$('#j-win51-lst').append($(lst)).find('p').hide();
+			$('#j-total').html('已选择 <i>'+ $('#j-win51-lst a').length +'</i> 员工');
+			return true;
+		} 
+	};
+	return _func[_char];
+}
+
+function popFinish(_char){
+	var _func = {
+		'finish332': function(){
+			return finish332();
+			
+		},
+		'finish31': function(){
+			return finish31();
+		},
+		'finish41': function(){
+			return finish41();
+		}
+	}
+	return _func[_char];
+}
+
+function finish332(){
+	var selected = $("#j-win51-lst input");
+	var _opt = "";
+	selected.each(function(){
+		var _this = $(this), _val = _this.attr("data"), _arr = _val.split('|');
+		_opt += '<h5><label><input type="checkbox" value="'+ _val +'"> '+ _arr[1] + ' (工号：' + _arr[0] + ')</label></h5>';
+	});
+	$('#j-pop51-rst').empty().append($(_opt));
+	return true;
+}
+
+function finish31(){
+	var selected = $("#j-win31-lst input");
+	var _opt = "";
+	selected.each(function(){
+		var _this = $(this), _val = _this.attr("data"), _arr = _val.split('|');
+		_opt += '<h5 class="f-cb" data-val="'+ _val +'">';
+		_opt += '<span class="f-fl">'+ _arr[1] +'</span>';
+		_opt += '<a href="javascript:void(0);" class="j-pop31-del f-fr">&nbsp;</a></h5>';
+	});
+	$('#j-pop31-rst').empty().append($(_opt));
+	return true;
+}
+
+function finish41(){
+	var selected = $("#j-win41-lst input");
+	var _opt = "";
+	selected.each(function(){
+		var _this = $(this), _val = _this.attr("data"), _arr = _val.split('|');
+		_opt += '<h5 class="f-cb" data-val="'+ _val +'">';
+		_opt += '<span class="f-fl">'+ _arr[1] +'</span>';
+		_opt += '<a href="javascript:void(0);" class="j-pop31-del f-fr">&nbsp;</a></h5>';
+	});
+	$('#j-pop41-rst').empty().append($(_opt));
+	return true;
+}
+</script>
+<style>#j-pop-up11{position:absolute;top:400px;}</style>
+<@findPayPwd/>
+</body>
+</html>

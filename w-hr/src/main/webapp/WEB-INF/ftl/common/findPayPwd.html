@@ -1,0 +1,141 @@
+<#macro findPayPwd>
+<script>
+function cleanPwd(){
+        $('#resetPwd1').remove();
+        $('#resetPwd2').remove();
+        $('#smsCode').val('');
+        $('#j-btn-send').show();
+        $('#j-btn-code').removeClass('on').html('获取验证码');
+    }
+    
+function resetPassword(){
+	    var password = $('#resetPassword').val();
+        var password1 = $('#resetPassword1').val();
+        if(password==undefined){
+           winAlert('请先提交验证码');
+           return false;
+        }
+        if(password==''){
+           winAlert('密码不能为空');
+           return false;
+        }
+        if(password!=password1){
+          winAlert('两次输入的密码不一致');
+           return false;
+        }
+        if(!/^\d{6}$/.test(password)){
+               winAlert('密码必须为6位数字');
+               return false;
+            }
+        $.ajax({
+          url:'${secureDomain}/findPaymentPwd/resetPwd',
+          type : 'post',
+          async : false,
+          dataType : 'jsonp',
+          callback : 'resetPwd_callback',
+          data:{'password':password},
+          success : function(json) {
+              if(json.result){
+                 winAlert(json.message);
+                 cleanPwd();
+                 return true;
+              }else{
+                 winAlert(json.message);
+                 return false;
+              }
+          }
+      });
+}
+$(function(){
+    // 操作遮罩
+	    function dodMask(_bool){
+	        var _id = 'm-mask', _mask = $('#' + _id);
+	        if(_bool){
+	            if(_mask.length === 1){
+	                _mask.show();
+	            }else{
+	                $('<div id="'+ _id +'"></div>').appendTo('body').css({'opacity':'.2'});
+	            }
+	        }else{
+	            _mask.hide();
+	        }
+	    }
+	
+	    // 获取验证码
+	    $(document.body).on('click', '#j-btn-code', function(){
+			if(/^1\d{10}$/.test($("#userSessionMobile").val())){
+				var _this = $(this), _on = 'on', _duration = 60;
+	
+	        if(_this.hasClass(_on)) return false;
+	
+	        _this.addClass(_on).html('<i>'+ _duration +'</i> 秒后重发');
+	
+	        var _timer = _this.children('i');
+	
+	        $.ajax({
+	          url:'${secureDomain}/findPaymentPwd/getPaymentCode',
+	          type : 'post',
+	          dataType : 'jsonp',
+	          callback : 'getPaymentCode_callback',
+	          success : function(json) {
+	          }
+	       });
+	
+	        var sit = setInterval(function(){
+	            var i = parseInt(_timer.text());
+	            i--;
+	            _timer.text(i);
+	            if(i === 0){
+	                clearInterval(sit);
+	                _this.removeClass(_on).html('获取验证码');
+	            }
+	        }, 1000);
+	        }else{
+	        	winAlert("请绑定正确的手机号");
+	        }
+	    });
+	
+	    // 提交验证码
+	    $(document.body).on('click', '#j-btn-send', function(){
+	
+	        var _this = $(this), _val = _this.prev('input').val();
+	        if(_val==''){
+	            winAlert('验证码不能为空');
+	            return false;
+	        }
+	        //校验验证码
+	        var isValidateSucc = false;
+	        $.ajax({
+	          url:'${secureDomain}/findPaymentPwd/validateCode?ajax=1',
+	          type : 'post',
+	          async : false,
+	          dataType : 'jsonp',
+	          callback:"validateCode_callback",
+	          data:{'code':_val},
+	          success : function(json) {
+	              if(json.result){
+	                 _this.hide();
+	                 isValidateSucc = true;
+	                 $("table.z-pop-up").wrapAll('<form class="for-validate"></div>');
+	                 var forms = $("form.for-validate");
+	                 forms.eq(forms.length-1).validate();
+	              }else{
+	                 winAlert(json.message);
+	                 isValidateSucc = false;
+	              }
+	              if(!isValidateSucc){
+	        	         return false;
+	        	      }
+       	          // 追加输入框
+               	  var _exp = '<dl class="dl2 f-cb" id="resetPwd1"><dt>新支付密码：</dt><dd><input type="password"  class="required" id="resetPassword"/></dd></dl>' +
+                          '<dl class="dl2 f-cb" id="resetPwd2"><dt>确认新密码：</dt><dd><input type="password" class="{required:true,equalTo:\'#resetPassword\'}" id="resetPassword1"  /></dd></dl>';
+       	
+       	         _this.parent().parent().parent().append($(_exp));
+	          }
+	      });
+	        
+	    });
+    });
+</script>
+</#macro>
+

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>员工信息</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+</head>
+<body>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">账户管理</a> &gt;
+		修改员工信息
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<div class="m-main f-fr">
+		<h4 class="u-tit f-cb">
+			<span class="f-ib">修改员工</span>
+			<a href="${dynamicDomain }/member/listStaff" class="f-fr">返回</a>
+		</h4>
+
+		<div id="g-add-p19">
+		<form  method="post" id="staffForm" action="${dynamicDomain }/member/saveStaff">
+			<input type="hidden" name="objectId" id="objectId" value="${staff.objectId}">
+			<div class="u-tab f-cb j-tab">
+				<span class="f-fl z-on">修改员工</span>
+			</div>
+
+			<div class="u-cnt j-cnt">
+				<fieldset>
+					<label class="f-ib">员工姓名：</label>
+					<input type="text" class="f-ib u-txt required {maxlength:[32]}" name="userName" id="staffName" value="${user.userName}"/>
+					<i class="f-ib">*</i>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">员工工号：</label>
+					<input type="text" class="f-ib u-txt required {maxlength:[50]}" name="workNo" id="workNo" value="${staff.workNo}"/>
+					<i class="f-ib">*</i>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">登录账户：</label>
+					<span class="f-ib u-txt noborder">${user.loginName}</span>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">员工性别：<input type="hidden" value="${staff.sex}" class="j-sex-val" name="sex"/></label>
+					<span class="f-ib u-slt-btn">
+						<#if ('1'== staff.sex)>
+						<a href="javascript:void(0);" data-val="1" class="f-ib z-on j-slt-sex">男性</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib j-slt-sex">女性</a>
+						<#elseif ('2'== staff.sex)>
+						<a href="javascript:void(0);" data-val="1" class="f-ib j-slt-sex">男性</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib z-on j-slt-sex">女性</a>
+						<#else>
+						<a href="javascript:void(0);" data-val="1" class="f-ib j-slt-sex">男性</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib j-slt-sex">女性</a>
+						</#if>
+					</span>
+					<label class="f-ib u-pl1">入职日期：</label>
+					<input type="text" readonly="readonly" class="f-ib u-txt-date required" id="in-date" name="entryDay" value="${(staff.entryDay?string("yyyy-MM-dd"))}"/>
+					<i class="f-ib">*</i>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">手机号码：</label>
+					<span class="f-ib u-txt noborder">${user.mobilePhone}</span>
+					<label class="f-ib u-pl1">电子邮箱：</label>
+					<span class="f-ib u-txt noborder">${user.email}</span>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">出生日期：</label>
+					<input type="text" readonly="readonly" class="f-ib u-txt-date" id="birthday-date" name="birthday" value="<#if staff.birthday??>${(staff.birthday?string('yyyy-MM-dd'))}</#if>"/>
+					<label class="f-ib u-pl1">所属部门：</label>
+					<span class="f-ib f-por">
+						<input readonly="readonly" data-pop="1,400,0,1,7" class="f-ib u-txt dep j-pop-open required" value="${department.name}" name="companyDepartment.name"/>
+						<input type="hidden" class="j-dep-val"  name="departmentId" value="${staff.departmentId}"/>
+					</span>
+					<i class="f-ib">*</i>
+					<#include "/include/select_department.html">
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">联系方式：</label>
+					<input type="text" class="f-ib u-txt phone" name="linkPhone" value="${staff.linkPhone}"/>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">状态：</label>
+					<label><input type="radio" class="rad j-slt-sta" name="status" value="1" /> 在职</label>
+					<label><input type="radio" class="rad j-slt-sta" name="status" value="2" /> 离职</label>
+					<p class="f-ib j-slt-qtype">
+						<label class="f-ib">离职日期：</label>
+						<input type="text" readonly="readonly" class="f-ib u-txt-date" id="leave-date" size="12" name="leaveDate" value="${(staff.leaveDate?string("yyyy-MM-dd"))}"/>
+						<label><input type="radio" class="rad required" name="quitType" value="1"/> 账户永久有效</label>&nbsp;&nbsp;
+						<label><input type="radio" class="rad required" name="quitType" value="0"/>账户在 <input type="text" style="width:30px;" class="f-ib u-txt integer required" value="${days?default(0)}" name="days"/> 天后冻结</label>
+					</p>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib z-vlt">备注：</label>
+					<div class="f-ib"><textarea name="remark" class="{maxlength:[500]}">${staff.remark}</textarea></div>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib">&nbsp;</label>
+					<button type="submit" class="f-ib u-sub">保存</button>
+				</fieldset>
+			</div>
+			
+			<div class="u-mod j-cnt f-dn f-cb">
+				<span class="f-fl">导入人员名单：</span>
+				<i class="f-fl"><a href="javascript:void(0);" class="f-ib">选择文件</a></i>
+				<em class="f-fl"><a href="javascript:void(0);" class="f-ib">下载员工信息模板</a></em>
+			</div>
+			<script src="${staticDomain}/date/WdatePicker.js" charset="utf-8"></script>
+		</form>	
+		</div>
+	</div>
+</div>
+<script>
+			$("#staffForm").validate();
+			$(document).ready(function() {
+			
+				$("#workNo").rules("add", {
+					remote : {
+						url : "${dynamicDomain}/member/isUnique?ajax=1&objectId=${staff.objectId}",
+						type : "post",
+						dataType : "json"
+					},
+					messages : {
+						remote : "该工号已存在"
+					}
+				});
+			});
+			$(function(){
+				// 状态的选择
+				$('.j-slt-sta').click(function(){
+
+					var _this = $(this), _qType = $('.j-slt-qtype');
+					if (_this.val() == '2') {
+						_qType.show();
+					}else{
+						_qType.hide();
+					}
+				});
+
+				// 性别的选择
+				var _sltSex = $('.j-slt-sex'), _valSex = $('.j-sex-val');
+				_sltSex.click(function(){
+					var _this = $(this);
+					if(_this.hasClass('z-on')){
+						return false;
+					}else{
+						_sltSex.removeClass('z-on');
+						_this.addClass('z-on');
+						_valSex.val(_this.attr('data-val'));
+					}
+				});
+
+				// 内容切换
+				var _tab = $('.j-tab span'), _cnt = $('.j-cnt');
+				_tab.click(function(){
+					var _this = $(this), _i = _this.index();
+					if(!_this.hasClass('z-on')){
+						_tab.removeClass('z-on').eq(_i).addClass('z-on');
+						_cnt.hide().eq(_i).show();
+					}
+				});
+
+				// 日期控件 
+				$('#birthday-date').click(function(){
+					WdatePicker({maxDate: '%y-%M-%d'});
+				});
+
+				// 入职日期 
+				$('#in-date').click(function(){
+					WdatePicker({value: '%y-%M-%d'});
+				});
+				
+				$('#leave-date').click(function(){
+					WdatePicker();
+				});
+
+				// 模拟Select控件
+				$('.j-slt').click(function(){
+
+					var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+					$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+					if(_this.hasClass('z-on-slt')){
+						_this.removeClass('z-on-slt');
+						_opt.hide();
+					}else{
+						_this.addClass('z-on-slt');
+						_opt.show();
+					}
+					return false;
+				});
+
+				// 下拉项的点击事件
+				$('.j-opt > a').click(function(){
+
+					var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+					_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+					
+					return false;
+				});
+
+				$('body').click(function(e){
+					$('.j-opt').hide();
+					$('.j-slt').removeClass('z-on-slt')
+				});
+
+				$("[name='status'][value='${staff.status}']").attr("checked",true).click();
+				$("[name='quitType'][value='${staff.quitType}']").attr("checked",true).click();
+				if("${days}"!="" && '${staff.quitType}'== '1'){
+					$("[name='quitType'][value='0']").attr("checked",true).click();
+				}else{
+					$("[name='quitType'][value='1']").attr("checked",true).click();
+				}
+			});
+			</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<script src="${staticDomain}js/jquery.confirm.js"></script>
+<div id="g-top">
+    <div class="m-top f-cb">
+        <p class="u-top-l f-fl">
+            <a href="${dynamicDomain }/index" class="f-ib">账户首页</a>
+            <a href="${dynamicDomain }/mall/index" class="f-ib">福利商城</a>
+        </p>
+        <p class="u-top-r f-fr f-tar">
+            欢迎：${s_fullName }
+            <!--<a href="${dynamicDomain }/mall/unfinishedWelfare" class="f-ib">未完成福利(<b>1</b>)</a>-->
+            <span id="m-shop">
+                <a href="${dynamicDomain }/mall/cart" class="u-con f-ib cart-count" id="j-show">购物车(<b id="cartProductCount">0</b>)</a>
+                <span class="m-u f-ib f-dn">购物车中还没有商品，赶紧选购吧！</span>
+            </span>
+            <a href="javascript:void(0);" data-val="您确认退出?|0|0|1" class="j-confirm-open">退出</a>
+        </p>
+    </div>
+</div>
+<script>
+// [回调] 确认
+function confirmSure_1(_id){
+	window.location.href="${dynamicDomain}/login/in/out";
+}
+</script>
+<div id="g-logo" class="f-cb f-por">
+    <div class="u-logo f-poa">
+    <#if s_companyFunctionShowLogo>
+    <a href="http://www.ibenefit.com.cn" target="_blank"><img src="${staticDomain}image/logo2.gif" /></a>
+    </#if></div>
+    <div class="u-name f-fl"><a href="${dynamicDomain }/mall/index"><img src="${staticDomain}image/name.gif" /></a></div>
+    <div class="u-search f-fl">
+      <form action="${dynamicDomain}/mall/search" method="get">
+        <fieldset class="f-cb" id="searchForm">
+            <input type="text" class="u-txt f-fl" placeholder="" name="queryKeywords" id="queryKeywords" value="${queryKeywords?default('')}"/>
+            <button type="submit" class="u-btn f-fl" id="searchButton">搜索</button>
+        </fieldset>
+      </form>
+        <p>
+            <#list hotwords as item>
+              <a href="${dynamicDomain }/mall/search?queryKeywords=${item.name}" class="f-ib z-on">${item.name}</a>
+            </#list>
+        </p>
+    </div>
+    <dl class="u-code f-fr">
+        <dt><img src="${staticDomain}image/gw.char.png" /></dt>
+        <dd>扫一扫</dd>
+    </dl>
+</div>
+
+<div id="g-nav">
+    <div class="u-nav">
+        <a href="${dynamicDomain }/mall/index" id="subject_index" class="f-ib">首页</a>
+        <a href="${dynamicDomain }/mall/season" id="subject_season" class="f-ib">当季特供</a>
+        <a href="${dynamicDomain }/mall/welfare" id="subject_welfare" class="f-ib">福利套餐</a>
+        <#list themes as item>
+            <a href="${dynamicDomain }/mall/subject/${item.value}" id="subject_${item.value}" class="f-ib">${item.name }</a>
+        </#list>
+    </div>
+</div>
+<script>
+$(function(){
+  queryCartCount();
+  $('#subject_${subject?default('')}').addClass('z-on');
+});
+</script>

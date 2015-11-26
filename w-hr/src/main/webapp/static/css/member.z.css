@@ -1,0 +1,80 @@
+/* Tony.zeng <intval@163.com> */
+
+/* <member> */
+body{background:url('../image/zbg-m.png') no-repeat 100% 0;}
+
+#g-crl{height: 5px; width: 100%; overflow: hidden;}
+#g-crl li{float:left;height: 5px;background-color: #009d4f; width: 12.5%;}
+#g-crl li.z2{background:#76bd23;}
+#g-crl li.z3{background:#c2e08a;}
+#g-crl li.z4{background:#fcc7b4;}
+#g-crl li.z5{background:#e3cd00;}
+#g-crl li.z6{background:#6ecb99;}
+#g-crl li.z7{background:#00aebc;}
+#g-crl li.z8{background:#a577a7;}
+
+#g-main{height: 460px; background:#f07b52 url('../image/zico-m.gif') repeat-x 0 100%; }
+
+#g-main .u-logo{ width: 168px; height: 185px; margin: 0 auto;padding: 40px 0 80px;}
+#g-main .u-pop1{width: 625px; height: 365px;} /* reg success */
+#g-main .u-pop2{width: 625px; height: 455px;} /* reg form */
+#g-main .u-pop3{width: 835px; height: 420px;} /* login form */
+#g-main .m-fm{margin: 0 auto; position: relative;}
+#g-main .u-fm{background-color:#fff; position: absolute; left: 0; top: 0;}
+
+#g-main ul.u-ico{width: 560px; margin: 0 auto; text-align: center;padding-top: 62px;padding-bottom: 25px;}
+#g-main ul.u-ico li{width: 140px; float: left;}
+#g-main ul.u-ico li span{display: block; font-size: 14px; color: #fff; padding-top: 18px;}
+
+/* login company */
+
+#g-main .u-login{width: 346px; padding-left: 62px; height: 272px; border-right: 1px solid #ccc;margin-top: 66px;}
+#g-main .u-login h4{ font-size: 18px; height: 56px;}
+#g-main .u-login fieldset{ height: 42px; padding-bottom: 23px;}
+#g-main .u-login fieldset.u-fp{ height: 42px; padding-bottom: 23px; text-align: right;padding-right: 55px; height: 18px;}
+#g-main .u-login fieldset input{vertical-align: middle;border:1px solid #d4d7df;border-radius: .25em; width: 235px; height:20px;line-height: 20px; padding: 9px 5px;font-size: 14px;}
+#g-main .u-login fieldset span{height: 40px; line-height: 40px; font-size: 14px; padding-right: 10px;}
+#g-main .u-login fieldset a{color: #e86335;}
+#g-main .u-login fieldset a:hover{color: #08b2f9;}
+#g-main .u-login fieldset button{width: 284px;height: 44px;line-height: 44px;text-align: center;color: #fff;cursor: pointer;font-size: 15px;background-color: #e86335;}
+
+#g-main .u-other{width: 420px;}
+#g-main .u-other dl{padding:148px 0 15px 64px;}/*68*/
+#g-main .u-other dl dt{width: 138px;}
+#g-main .u-other dl dt img{width: 99px;}
+#g-main .u-other dl dd{width: 190px; line-height: 25px; font-size: 15px;padding-top: 25px;color: #666;}
+#g-main .u-other fieldset{padding-top: 31px; text-align: right; padding-right: 50px; display: none;}
+#g-main .u-other fieldset a{width: 160px;height: 44px;line-height: 44px;text-align: center;color: #fff;font-size: 15px;background-color: #00b18a;}
+#g-main .u-other fieldset a:hover{background-color: #00d18a;}
+#g-main .u-other fieldset a.u-ty{background-color: #4e9d30;}
+#g-main .u-other fieldset a.u-ty:hover{background-color: #4e9030;}
+#g-main .u-other fieldset span{padding-right: 20px;line-height: 44px; font-size: 15px; color: #666;}
+#g-main .u-other fieldset span i{color: #ff5200;}
+
+/* <reg success> */
+#g-main .u-reg-succ{ text-align: center;}
+#g-main .u-reg-succ dl dt{font-size: 34px;color: #5aaa44;padding-top: 76px;}
+#g-main .u-reg-succ dl dd{font-size: 18px;color: #666;line-height: 32px; padding-top: 50px;}
+#g-main .u-reg-succ h4{padding-top: 68px;}
+#g-main .u-reg-succ h4 a{width: 244px;height: 44px;line-height: 44px; text-align: center;color: #fff; font-size: 15px;background-color:#e86335;margin: 0 18px;}
+#g-main .u-reg-succ h4 a.u-go{width: 244px;height: 44px;line-height: 44px; text-align: center;color: #fff; font-size: 15px;background-color:#5aaa44;}
+
+/* <reg form> */
+#g-main .u-reg-form h4{font-size: 18px; text-align: center;line-height: 40px;height: 40px;padding-top: 6px;}
+#g-main .u-reg-form fieldset{padding-top:12px;*padding-top:10px;}
+#g-main .u-reg-form fieldset input{vertical-align: middle;}
+#g-main .u-reg-form label{width: 185px; text-align: right; padding-right: 10px; font-size: 14px; color: #666; line-height: 34px;}
+#g-main .u-reg-form input.u-txt{font-size:13px;border:1px solid #e1e2e3;height:18px;line-height:18px;padding:7px 5px;width: 235px;}
+#g-main .u-reg-form input.u-slt{width:74px;padding:7px 28px 7px 12px;background:url('../image/zico25.gif') no-repeat 95% 50%;}
+#g-main .u-reg-form span.u-pad-r{margin-right: 15px;}
+#g-main .u-reg-form em{top:26px; left:0; border:1px solid #e1e2e3; background-color: #fff; width: 114px; max-height:175px; overflow:hidden;overflow-y:auto; display: none;}
+#g-main .u-reg-form em a{width:100px;padding-left: 12px;background-color:#fff; font-size: 13px; line-height: 25px; color: #666;}
+#g-main .u-reg-form em a:hover{background-color:#1e90ff; color: #fff;}
+#g-main .u-reg-form i{line-height: 34px;color: #f00; padding-left:8px;}
+#g-main .u-reg-form h6{background:url('../image/zico-m5.gif') no-repeat;height: 49px;;padding-left: 32px;padding-top:17px ; font-size: 13px; color: #999;top:28px;left:444px;}
+#g-main .u-reg-form b{ width:16px;height:34px;background:url('../image/zicor0.gif') no-repeat 0 50%; cursor: pointer;}
+#g-main .u-reg-form b.z-on{background-image:url('../image/zicor1.gif');}
+#g-main .u-reg-form small{line-height: 34px;padding: 0 10px 0 5px; font-size: 13px;color: #999;}
+#g-main .u-reg-form h5{text-align: center;}
+#g-main .u-reg-form .u-submit{cursor: pointer;width: 244px;height: 44px;line-height: 44px; text-align: center;color: #fff; font-size: 15px;background-color:#e86335;}
+#g-main .u-reg-form .u-msg{font-size:13px; color: #f00; padding: 8px 0 10px 195px;}

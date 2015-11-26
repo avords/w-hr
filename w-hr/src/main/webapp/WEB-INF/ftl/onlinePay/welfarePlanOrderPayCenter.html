@@ -1,0 +1,307 @@
+<#include "/common/findPayPwd.html">
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>年度订单支付</title>
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/excel.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+</head>
+<body id="p16-2">
+<div id="p16-2">
+<form action="${payDomain}/onlinePay/welfarePaySetPayment" method="post" id="payForm">
+<div id="g-crum2">
+    <h4>
+        <a href="javascript:void(0);">账户首页</a> &gt;
+        <a href="javascript:void(0);">信息管理</a> &gt;
+        添加|修改福利计划
+    </h4>
+</div>
+
+<div id="g-content" class="f-cb">
+
+    <#include "/include/nav_menu_link.html">
+    <script>var _menuIndex = 1;</script>
+
+    <div class="m-main f-fr">
+        
+        <h4 class="u-tit f-cb">
+            <span class="f-ib">年度福利计划设置</span>
+        </h4>
+
+        <div id="g-step" class="f-cb">
+            <a href="javascript:void(0);" class="u-c21">计划信息</a>
+            <a href="javascript:void(0);">制定计划</a>
+            <a href="javascript:void(0);">额度分配</a>
+            <a href="javascript:void(0);">员工选择</a>
+            <a href="javascript:void(0);" class="u-c12">确定选择</a>
+            <a href="javascript:void(0);" class="u-c13">订单支付</a>
+            <a href="javascript:void(0);" class="u-c31">付款详情</a>
+        </div>
+
+        <h3>订单支付</h3>
+
+        <div class="g-ok">  
+            <p>收银台</p>          
+            <span class="one">订单提交成功，请您尽快付款！</span>
+        </div>
+
+        <div class="g-table">
+            <table>
+                <thead>
+                    <tr class="f-cb">
+                        <td class="z-t1"><em class="j-all"></em></td>
+                        <td class="z-t2">订单编号</td>
+                        <td class="z-t3">子计划名称</td>
+                        <td class="z-t2" >选择员工数</td>
+                        <td class="z-t2">支付状态</td>
+                        <td>应付（元）</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <#list welfareSubPlans as subPlan>
+		               <#if subPlan.status==0>
+			                <tr class="f-cb">
+		                        <td class="z-t1"><em class="j-select" data-val="${subPlan.orderId}"></em></td>
+		                        <td class="z-t2">${subPlan.order.generalOrderNo}</td>
+		                        <td class="z-t3">${subPlan.name}</td>
+		                        <td class="z-t2">${subPlan.headCount}</td>
+		                        <td class="z-t2"><#if subPlan.status==0>待支付<#elseif subPlan.status==1>已支付</#if></td>
+		                        <td class="z-t4">${subPlan.payableAmount?string('0.00')}</td>
+	                        </tr>
+		              </#if>
+		            </#list>
+                </tbody>
+            </table>
+            <p class="f-fwb">应付总额：<em class="total-amount">0.00 </em>元</p>                          
+        </div>
+
+        <div class="g-pay">
+            <ul>
+                <li class="on f-cb" data-val="1_1">                     
+                    <span class="u-s1 j-up-pay">${s_welfarePointName}支付</span>
+                    <span class="u-s2 integral-pay">可用 <em>${surplusScore?string('0.00')} ${s_welfarePointName}</em>
+                    </span>
+                    <!-- 当去掉  <b class="no-have">(余额不足，请充值后支付)</b> 这个标签时为余额充足时的状态 -->
+                    <span class="u-s3">支付：<em class="total-amount">0.00 元</em></span>
+                </li>
+
+                <li class="m-li2 f-cb" data-val="1_2">                  
+                    <span class="u-s1 j-up-pay">在线支付<span></span></span>
+                    <span class="u-s2 u-s"><img src="${staticDomain}image/zpic04.gif" class="f-ib" width="66" height="18"/></span>
+                    <span class="u-s3 u-s">支付：<em class="total-amount">0.00 元</em></span>
+                </li>
+
+                <li class="f-cb m-li3" data-val="2">                  
+                    <span class="u-s1 j-up-pay">线下支付</span>                 
+                    <span class="u-s3 u-s">支付：<em class="total-amount">0.00 元</em></span>
+                    <span class="u-s3 u-s z-in">
+                        <i></i>
+                        <p>
+                            <b>支付安全提醒：</b><br>本平台支付宝账号信息如下：<br>
+                            账户名称：上海瀚之友信息技术服务有限公司 <br>接收账号：zijin1@99wuxian.com
+                        </p>
+                    </span>
+                </li>               
+            </ul>
+        </div>
+
+        <div class="g-ft">
+            <span id="payPwdSpan">支付密码：<input type="password" id="payPassword" style="vertical-align:middle;"><input type="text" style="display:none"/><a href="javascript:void(0);" data-pop="1,400,220,1,8" class="txt j-pop-open z-right">忘记支付密码？</a></span> <br>
+            <a href="javascript:void(0);" class="z-left j-now-pay">立即支付</a>         
+        </div>
+    </div>
+</div>
+<input type="hidden" name="orderIds" id="orderIds">
+<input type="hidden" name="payWay" id="payWay">
+<input type="hidden" name="payPassword" id="payPwd">
+</form>
+<@findPayPwd/>
+</div>
+<script>
+
+        //复选框部分
+        var _select = $('.j-select'),_all = $('.j-all');
+
+        _select.click(function(){
+
+            var _this = $(this);
+            
+            if(_this.hasClass(_on)){
+                _this.removeClass(_on);
+            }else{
+                _this.addClass(_on);
+            }
+            
+            calculateAmount();
+        });
+
+        _all.click(function(){
+
+            var _this = $(this);
+
+            if(_this.hasClass(_on)){
+                _this.removeClass(_on);
+                _select.removeClass(_on);
+            }else{
+                _this.addClass(_on);
+                _select.addClass(_on);
+            }       
+            calculateAmount();
+        });
+
+
+
+
+
+     //支付切换部分
+     var  _on = 'on';
+     var _uPay = $('.j-up-pay');
+    function switchContent(obj){
+        var _this = obj, _parent = _this.parent();
+
+        //if(_parent.hasClass(_on)) return false;
+
+        var _i  = _uPay.index(_this);
+
+        _parent.addClass(_on).siblings().removeClass(_on).find('span:gt(0)').hide();
+        _this.siblings().show();
+
+        $('.g-pay:first').css('padding-bottom', (_i === 2 ? 170 : 0));
+
+        if(_i === 0 && _this.next().find('b').length > 0){
+            $('.j-now-pay').addClass('not');
+        }else{
+            $('.j-now-pay').removeClass('not');
+        }
+        if(_i === 0){
+            $('#payPwdSpan').show();
+        }else{
+            $('#payPwdSpan').hide();
+        }
+    }
+    function switchPay(){
+        _uPay.click(function(){
+            var obj = $(this);
+            switchContent(obj);
+        });
+    }
+
+     // 初始化函数载体
+function popInit(_char){
+    var _func = {
+        'init81': function(){ 
+
+            var _html = '<dl class="dl2 f-cb"><dt class="j-cancel" data-func="cleanPwd">手机号码：</dt>' + 
+                        '<dd><input type="text" id="userSessionMobile" value="${s_user.mobilePhone}" readonly="readonly"/>&nbsp;<a href="javascript:void(0);" class="f-ib u-code" id="j-btn-code">获取验证码</a></dd></dl>' +
+                        '<dl class="dl2 f-cb"><dt>手机验证码：</dt>' +
+                        '<dd><input id="smsCode" type="text" />&nbsp;<a href="javascript:void(0);" class="f-ib u-code" id="j-btn-send">提交</a></dd></dl>';
+
+            return {'title':'支付密码重置', 'html': _html}; 
+        }
+    };
+    return _func[_char];
+}
+
+// 弹窗的确定按钮回滚函数
+function popSure(_char){
+    var _func = {
+        'sure81': function(){
+            return resetPassword();
+        }
+    };
+    return _func[_char];
+}
+
+function popFinish(_char){
+    var _func = {
+    }
+    return _func[_char];
+}
+
+function calculateAmount(){
+  var totalAmount = 0;
+  $('.j-select.on').each(function(){
+     var amount = $(this).parent().siblings(".z-t4").text();
+     totalAmount = totalAmount+parseFloat(amount);
+  });
+  $('.total-amount').text(totalAmount.toFixed(2));
+  //判断积分是否够
+  var obj = $('.integral-pay').find('b');
+  if(obj.length!=0){
+      obj.remove();
+  }
+  var surplusScore = '${surplusScore}';
+  if(parseFloat(surplusScore)<parseFloat(totalAmount)){
+      var obj1 = $('.integral-pay').find('b');
+      if(obj1.length==0){
+         $('.integral-pay').append('<b class="no-have">(余额不足，请充值后支付)</b>');
+      }
+  }
+  switchContent($('.j-up-pay:first'));
+}
+$(function(){
+   switchPay();
+   $('.j-now-pay').click(function(){
+       var obj = $(this);
+       if(obj.hasClass('not')){
+           return false;
+       }
+       //得到订单id,得到支付方式
+       var orderId = '';
+       $('.j-select.on').each(function(){
+	     orderId = orderId + $(this).data('val')+',';
+	   });
+	   if(orderId.length>0){
+	       orderId = orderId.substring(0,orderId.length-1);
+	   }else{
+	       winAlert('请选择一个订单支付');
+	       return false;
+	   }
+	   var payWay = $('.g-pay').find('.on').data('val');
+	   if(orderId.length<=0){
+	       winAlert('请选择一个子计划进行支付');
+	       return false;
+	   }
+	   var payPassword = $('#payPassword').val();
+	   //验证支付密码是否正确
+        var verify = false;
+        if(payWay=='1_2'||payWay=='2'){
+            verify = true;
+        }else{
+            $.ajax({
+	          url:'${payDomain}/onlinePay/validatePaymentPwd',
+	          type : 'post',
+	          async : false,
+	          dataType : 'json',
+	          data:{'password':payPassword},
+	          success : function(json) {
+	              if(json.result){
+	                 verify = true;
+	              }else{
+	                 verify = false
+	              }
+	          }
+	      });
+        }
+	   
+      if(!verify){
+        winAlert('支付密码错误！');
+        return false;
+      }
+      //将数据写入隐藏域提交表单
+      $('#orderIds').val(orderId);
+      $('#payWay').val(payWay);
+      $('#payPwd').val(payPassword);
+      $('#payForm').submit();
+   });
+});
+</script>
+</body>
+</html>

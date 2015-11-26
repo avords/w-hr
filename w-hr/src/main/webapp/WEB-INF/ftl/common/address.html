@@ -1,0 +1,546 @@
+<#macro address action="" formId="" >
+<!-- 新增收获地址 -->
+<form  id="addressForm" action="#" method="post">
+	<table class="m-pop-up" id="j-pop-addr" style="z-index: 1001; position: absolute; top: 100px;">
+		<tbody>
+			<tr>
+				<td class="z-tac z-vam">
+					<div class="z-ib u-addr">
+						<h4>
+							新增收货地址<a href="javascript:void(0);" class="j-cls-addr">&times;</a>
+						</h4>
+						<dl class="f-cb">
+							<dt>所在地区<span style="color: red;">*</span></dt>
+							<dd>
+								<strong class="f-ib m-slt slt-w3"> 
+									<input type="hidden" class="j-val" value="" id="obj_id" /> 
+									<input type="hidden" class="j-val" value="0" id="provinceIdInput" /> 
+									<input type="text" value="省" readonly="readonly" class="slt j-slt" id="j_showProvince" /> 
+									<small class="f-ib f-poa j-opt">
+											<#list provinces?sort_by("name")?reverse as province> <a
+											href="javascript:void(0);" data-val="${province.objectId}"
+											class="f-ib" onclick="loadCity(${province.areaCode});">${province.name}</a>
+											</#list>
+									</small>
+								</strong> 
+								<strong class="f-ib m-slt slt-w3"> 
+									<input type="hidden" class="j-val" value="0" id="cityIdInput" /> 
+									<input type="text" value="市" readonly="readonly" class="slt j-slt" id="j_showCity"> 
+									<small class="f-ib f-poa j-opt" id="j_citys"> </small>
+								</strong> 
+								<strong class="f-ib m-slt slt-w3"> 
+									<input type="hidden" class="j-val" value="0" id="countyIdInput" /> 
+									<input type="text" value="区" readonly="readonly" class="slt j-slt" id="j_showCounty" />
+									<small class="f-ib f-poa j-opt" id="j_countys"> </small>
+								</strong>
+								<span style="display: none;"   class="error" id="addrMsg"></span>
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>详细地址<span style="color: red;">*</span></dt>
+							<dd>
+								<textarea id="j_receiptAddress"  maxlength="32"  class="required" ></textarea>
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>邮政编码</dt>
+							<dd>
+								<input type="text" class="f-ib u-txt isZipCode" id="j_receiptZipcode" name="receiptZipcode" value="" maxlength="10"/>
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>邮箱</dt>
+							<dd>
+								<input id="j_receiptEmail"  class="email " name="receiptEmail" type="text" maxlength="32">
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>收货人姓名<span style="color: red;">*</span></dt>
+							<dd>
+								<input id="j_receiptContacts" class="required " name="receiptContacts" maxlength="16" type="text" >
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>联系电话</dt>
+							<dd>
+								<input id="j_receiptTelephone" type="text" class="tel" name="receiptTelephone" maxlength="20"/>
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>手机号码<span style="color: red;">*</span></dt>
+							<dd>
+								<input id="j_receiptMoblie" type="text" class="required mobile"  name="receiptMoblie" maxlength="18"  />
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>&nbsp;</dt>
+							<dd class="u-rdo">
+								<input type="checkbox" id="j_isDefault" name="isDefault"/> 设为默认地址
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>&nbsp;</dt>
+							<dd>
+								<button type="button" onclick="saveAddr();" id="saveBtn">提交</button>
+							</dd>
+						</dl>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+<script type="text/javascript">
+var addrsSize = 0;
+var action;
+$(function(){
+	action = '${action}';
+	// 模拟Select元素 [显示选项的点击事件]
+    var _tagSlt = $('.j-slt'), _onSlt = 'slt-on';
+    _tagSlt.click(function(){
+        var _this = $(this), _opt = _this.next('small');
+
+        // 无下拉选择值则无效
+        if(_opt.children().length <= 0) return false;
+
+        _tagSlt.not(this).removeClass(_onSlt).next().hide();
+
+        if(_this.hasClass(_onSlt)){
+            _this.removeClass(_onSlt);
+            _opt.hide();
+        }else{
+            _this.addClass(_onSlt);
+            _opt.show();
+        }
+
+        return false;
+    });
+    // 模拟Select元素 [下拉项(option)的点击事件]
+    $('body').on('click', '.j-opt > a', function(){
+
+        var _this = $(this), _parent = _this.parent('small'), _val = _this.attr('data-val');
+
+        _parent.hide().prev().removeClass(_onSlt).val(_this.text()).prev().val(_val);
+
+        // do somethings ....
+
+        return false;
+    });
+    // 模拟Select元素 [文档点击隐藏事件]
+    $(document).click(function(e){
+        $('.j-opt').hide();
+        $('.j-slt').removeClass(_onSlt)
+    });
+	
+	// 关闭收货地址弹窗
+    $('.j-cls-addr').click(function(){
+        doMask(false);
+        $('#j-pop-addr').hide();
+    });
+	
+	// 开启收货地址弹窗
+    $('.j-new-addr').click(function(){
+    	var addrsSize = $('.j-addr-dl').length;
+    	if(addrsSize>=10){
+         	//$("#newAddrMsg").html("收货地址最多保留10条！");
+         	//$("#newAddrMsg").show();
+         	 winAlert("收货地址最多保留10条！");
+             return;
+         }else{
+         	$("#newAddrMsg").html("");
+         	$("#newAddrMsg").hide();
+         }
+         
+    	doMask(true);
+    	initAddr();
+		$('#j-pop-addr').show();
+    });
+})
+
+//操作遮罩
+function doMask(_bool){
+	var _id = 'm-mask', _mask = $('#' + _id);
+	if(_bool){
+		if(_mask.length === 1){
+			_mask.show();
+		}else{
+			$('<div id="'+ _id +'"></div>').appendTo('body').css({'opacity':'.2'});
+		}
+	}else{
+		_mask.hide();
+	}
+}
+	
+//初始化表单
+function initAddr(){
+	$("#j_showCity").val('市');
+	$("#j_showCounty").val('区');
+	$("#j_showProvince").val('省');
+	$("#j_citys").html('');
+	$("#j_countys").html('');
+	$("#obj_id").val('');
+	$("#provinceIdInput").val('');
+	$("#cityIdInput").val('');
+	$("#countyIdInput").val('');
+	$("#j_receiptAddress").val('');
+	$("#j_receiptZipcode").val('');
+	$("#j_receiptContacts").val('');
+	$("#j_receiptTelephone").val('');
+	$("#j_receiptMoblie").val('');
+	$("#j_receiptEmail").val('');
+	$("#j_isDefault").attr("checked",false);
+}
+	
+//编辑收货地址
+function edit(objId){
+	$("span.error").hide();
+	$.ajax({
+  			url: "${dynamicDomain}/receiveAddr/showGoodsReceiptAddr/"+objId,
+  			type : 'post',
+  			dataType : 'json',
+  			success :function (data) {
+  				if(data != null && data.receiptAddr != null){
+  					var receiptAddr = data.receiptAddr;
+  					$("#obj_id").val(receiptAddr.objectId);
+  					$("#provinceIdInput").val(receiptAddr.provinceId);
+  					$("#j_showProvince").val(receiptAddr.provinceName);
+  					$("#cityIdInput").val(receiptAddr.cityId);
+  					$("#j_showCity").val(receiptAddr.cityName);
+  					if(receiptAddr.areaId == '8201' || receiptAddr.areaId == '8202'){
+  						$("#countyIdInput").val('');
+  						$("#j_showCounty").val('');
+  	   					$("#j_showCounty").hide();
+  					}else{
+  						$("#countyIdInput").val(receiptAddr.areaId);
+  	   					$("#j_showCounty").val(receiptAddr.areaName);
+  					}
+  					$("#countyIdInput").val(receiptAddr.areaId);
+  					$("#j_showCounty").val(receiptAddr.areaName);
+  					$("#j_receiptAddress").val(receiptAddr.receiptAddress);
+  					if (receiptAddr.receiptZipcode==0) {
+  						$("#j_receiptZipcode").val('');
+  					}else{
+	  					$("#j_receiptZipcode").val(receiptAddr.receiptZipcode);
+  					}
+  					$("#j_receiptEmail").val(receiptAddr.receiptEmail);
+  					$("#j_receiptContacts").val(receiptAddr.receiptContacts);
+  					$("#j_receiptTelephone").val(receiptAddr.receiptTelephone);
+  					$("#j_receiptMoblie").val(receiptAddr.receiptMoblie);
+  					if(receiptAddr.isDefault != null && receiptAddr.isDefault == 1 ){
+   						$("#j_isDefault").attr("checked",true);
+  					}else{
+  						$("#j_isDefault").attr("checked",false);
+  					}
+  					doMask(true);
+  					$('#j-pop-addr').show();
+  				}
+  			}
+	
+  		});
+}
+	
+function confirmSure_del(_id){
+	$.ajax({
+			url: "${dynamicDomain}/receiveAddr/delAddr/"+_id,
+			type : 'post',
+			dataType : 'json',
+			success :function (data) {
+				if(data != null && data.flag != null){
+					if(data.flag){
+                	if (action!=null) {
+   						$('#${formId}').attr('action', action);
+              		  	$('#${formId}').submit();
+                	}else{
+   						var url = '${dynamicDomain}/${path}';
+                        window.location.href = url;
+                	}
+					}else{
+						if(data.msg != '' && data.msg != null ){
+							winAlert(data.msg);
+						}else{
+							winAlert("删除地址失败！");
+						}
+					}
+				}
+			}
+	
+		});
+}
+//[回调] 取消
+function confirmCancel_del(_id){
+	//
+}
+
+function del(objId){
+	if(confirm("确定要删除该收货地址吗？")){
+		$.ajax({
+   			url: "${dynamicDomain}/receiveAddr/delAddr/"+objId,
+   			type : 'post',
+   			dataType : 'json',
+   			success :function (data) {
+   				if(data != null && data.flag != null){
+   					if(data.flag){
+                    	if (action!=null) {
+	   						$('#${formId}').attr('action', action);
+	              		  	$('#${formId}').submit();
+                    	}else{
+	   						var url = '${dynamicDomain}/${path}';
+	                        window.location.href = url;
+                    	}
+   					}else{
+   						if(data.msg != '' && data.msg != null ){
+   							winAlert(data.msg);
+   						}else{
+   							winAlert("删除地址失败！");
+   						}
+   					}
+   				}
+   			}
+		
+   		});
+	}
+  }
+	
+function setDefault(objId){
+	$.ajax({
+  			url: "${dynamicDomain}/receiveAddr/setDefault/"+objId,
+  			type : 'post',
+  			dataType : 'json',
+  			success :function (data) {
+  				if(data != null && data.result != null){
+  					if(data.result){
+  						//loadAddrs();
+                        if (action!=null) {
+	   						$('#${formId}').attr('action', action);
+	              		  	$('#${formId}').submit();
+                    	}else{
+	   						var url = '${dynamicDomain}/${path}';
+	                        window.location.href = url;
+                    	}
+  					}else{
+  						winAlert("设置默认地址失败！");
+  					}
+  				}
+  			}
+	
+  		});
+  }
+	
+	
+function loadAddrs(){
+	var addrsHtml = "";
+	$.ajax({
+		url: "${dynamicDomain}/receiveAddr/loadaddrs",
+		type : 'post',
+		dataType : 'json',
+		success :function (data) {
+			if(data != null && data.addrs != null){
+					var addrs  = data.addrs;
+					addrsSize = addrs.length;
+					for(var i=0;addrs.length&&i<addrs.length;i++){
+						var addr = addrs[i];
+						var connect = addr.receiptMoblie;
+						addrsHtml+="<tr>";
+						addrsHtml+="<td>"+addr.receiptContacts+"</td>";
+						addrsHtml+="<td>"+addr.provinceName+"-"+addr.cityName+"-"+addr.areaName+"</td>";
+						addrsHtml+="<td>"+addr.receiptAddress+"</td>";
+						addrsHtml+="<td>"+addr.receiptZipcode+"</td>";
+						addrsHtml+="<td>"+addr.receiptEmail+"</td>";
+						if(isEmpty(addr.receiptMoblie)){
+							connect = addr.receiptTelephone;
+						}
+						addrsHtml+="<td>"+connect+"</td>";
+						addrsHtml+="<td class=\"td5\">";
+						addrsHtml+="<a href=\"javascript:void(0);\" onclick=\"edit("+addr.objectId+");\" class=\"f-ib\">修改</a> ";
+						addrsHtml+="<a href=\"javascript:void(0);\" onclick=\"del("+addr.objectId+");\" class=\"f-ib rm\">删除</a> ";
+
+						if(addr.isDefault != null && addr.isDefault == 1 ){
+							addrsHtml+="<span class=\"f-ib\">默认地址</span>";
+						}else{
+							addrsHtml+="<a href=\"javascript:void(0);\" onclick=\"setDefault("+addr.objectId+");\" class=\"f-ib\">设为默认</a>";
+						}
+						addrsHtml+="</td>";
+						addrsHtml+="</tr> ";
+				}
+				$("#j_addr_tbody").html(addrsHtml);
+			}
+		}
+
+	});
+}
+	
+function loadCity(provinceCode){
+	var cityHtml = "";
+	$("#j_showCity").val('市');
+	$("#j_showCounty").val('区');
+	$("#j_citys").html('');
+	$("#j_countys").html('');
+	$.ajax({
+  			url: "${dynamicDomain}/receiveAddr/getAreaChildren/"+provinceCode,
+  			type : 'post',
+  			dataType : 'json',
+  			success :function (data) {
+  				if(data != null && data.areas != null){
+  						var areas  = data.areas;
+  						for(var i=0;areas.length&&i<areas.length;i++){
+  							var city = areas[i];
+  							cityHtml+="<a href=\"javascript:void(0);\" data-val=\""+city.objectId+"\" onclick=\"loadCounty('"+city.areaCode+"');\" class=\"f-ib\">"+city.name+"</a>";
+				}
+  					$("#j_citys").html(cityHtml);
+  				}
+  			}
+	
+  		});
+}
+	
+function loadCounty(cityCode){
+	if(cityCode == '8201' || cityCode == '8202'){
+		$("#j_showCounty").val('');
+		$("#j_countys").html('');
+		$("#j_showCounty").hide();
+	}else{
+		$("#j_showCounty").show();
+		var countyHtml = "";
+		$("#j_showCounty").val('区');
+		$("#j_countys").html('');
+		$.ajax({
+   			url: "${dynamicDomain}/receiveAddr/getAreaChildren/"+cityCode,
+   			type : 'post',
+   			dataType : 'json',
+   			success :function (data) {
+   				if(data != null && data.areas != null){
+					var areas  = data.areas;
+					for(var i=0;areas.length&&i<areas.length;i++){
+						var county = areas[i];
+						countyHtml+="<a href=\"javascript:void(0);\" data-val=\""+county.objectId+"\" class=\"f-ib\">"+county.name+"</a>";
+					}
+					$("#j_countys").html(countyHtml);
+				}
+   			}
+		
+   		});
+	}
+	
+}
+	
+//保存收货地址
+function saveAddr(){
+	if(verifyForm()){
+		if($("#addressForm").valid()){
+			ajaxSubmit();
+		}
+	}
+}
+	
+	
+function ajaxSubmit(){
+	var objectId = $("#obj_id").val();
+	var provinceId = $("#provinceIdInput").val();
+	var provinceName = $("#j_showProvince").val();
+	var cityId = $("#cityIdInput").val();
+	var cityName = $("#j_showCity").val();
+	var areaId = $("#countyIdInput").val();
+	var areaName = $("#j_showCounty").val();
+	var receiptAddress = $("#j_receiptAddress").val();
+	var receiptZipcode = $("#j_receiptZipcode").val();
+	var receiptEmail = $("#j_receiptEmail").val();
+	var receiptContacts = $("#j_receiptContacts").val();
+	var receiptTelephone = $("#j_receiptTelephone").val();
+	var receiptMoblie = $("#j_receiptMoblie").val();
+	var isDefault = $("#j_isDefault").attr("checked");
+	var isDefaultVal = 2;
+	if(isDefault){
+		isDefaultVal = 1;
+	}
+	$("#saveBtn").attr("disabled","disabled");
+	$.ajax({
+		url: "${dynamicDomain}/receiveAddr/saveAddr",
+		type : 'post',
+   		data:{    
+   			objectId : objectId,    
+   			provinceId : provinceId,    
+   			provinceName : provinceName,    
+   			cityId : cityId,    
+   			cityName : cityName,    
+   			areaId : areaId,    
+   			areaName : areaName,    
+   			receiptAddress : receiptAddress,    
+   			receiptZipcode : receiptZipcode,    
+   			receiptEmail : receiptEmail,    
+   			receiptContacts : receiptContacts,    
+   			receiptTelephone : receiptTelephone,    
+   			receiptMoblie : receiptMoblie,    
+   			isDefault : isDefaultVal    
+   			},	
+  			dataType : 'json',
+  			success :function (data) {
+  			   $("#saveBtn").removeAttr("disabled");
+  				if(data != null && data.result != null){
+  					if(data.result){
+  						doMask(false);
+  						if (action!=null) {
+	   						$('#${formId}').attr('action', action);
+	              		  	$('#${formId}').submit();
+                    	}else{
+	   						var url = '${dynamicDomain}/${path}/${addrCount}';
+	                        window.location.href = url;
+                    	}
+                        //window.location.reload();
+  						$('#j-pop-addr').hide();
+  					}
+			}
+  			}
+	
+	});
+}
+	
+function verifyForm(){
+	var provinceId = $("#provinceIdInput").val();
+	var provinceName = $("#j_showProvince").val();
+	if(isEmpty(provinceId) || isEmpty(provinceName)){
+		$("#addrMsg").show();
+		$("#addrMsg").html("请选择省份");
+		return false;
+	}else{
+		$("#addrMsg").hide();
+		$("#addrMsg").html("");
+	}
+	
+	var cityId = $("#cityIdInput").val();
+	var cityName = $("#j_showCity").val();
+	
+	if(isEmpty(cityId) || isEmpty(cityName)){
+		$("#addrMsg").show();
+		$("#addrMsg").html("请选择城市");
+		return false;
+	}else{
+		$("#addrMsg").hide();
+		$("#addrMsg").html("");
+	}
+	var areaId = $("#countyIdInput").val();
+	var areaName = $("#j_showCounty").val();
+	if(isEmpty(areaId) || isEmpty(areaName)){
+		var display_country =$('#j_showCounty').css('display');
+		if(display_country != 'none'){
+			$("#addrMsg").show();
+			$("#addrMsg").html("请选择区县");
+			return false;
+		}
+	}else{
+		$("#addrMsg").hide();
+		$("#addrMsg").html("");
+	}
+	return true;
+}
+	
+function isEmpty(obj){
+	if(obj != null && obj != "" && typeof(obj) != "undefined"){
+		return false;
+	}else{
+		return true;
+	}
+	
+}
+</script>
+</#macro>
+

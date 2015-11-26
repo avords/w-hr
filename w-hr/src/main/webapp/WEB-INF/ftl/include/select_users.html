@@ -1,0 +1,221 @@
+<script>
+tmp332Html = '<div class="pop-51">' +
+			'<table>' +
+			'<tr>' +
+			'<td>' +
+			'<h6>选择部门：</h6>' +
+			'<div class="lft" id="j-pop51-slt"></div>' +
+			'</td>' +
+			'<td>' +
+			'<h2 class="f-cb">' +
+			'<input type="text" placeholder="工号 / 姓名" /><a href="javascript:void(0);" id="j-pop51-sch">搜索</a>' +
+			'</h2>' +
+			'<h6 style="padding-left: 30px;">待选人员：</h6>' +
+			'<div class="wait" id="j-pop51-wat"></div>' +
+			'</td>' +
+			'<td>' +
+			'<div class="ctr">' +
+			'<a href="javascript:void(0);" data-type="all" class="j-pop51-add f-ib u-top">全部 &gt;&gt;</a>' +
+			'<a href="javascript:void(0);" data-type="some" class="j-pop51-add f-ib u-top usp">添加 &gt;</a>' +
+			'<a href="javascript:void(0);" data-type="some" class="j-pop51-del f-ib u-btm">&lt; 移除</a>' +
+			'<a href="javascript:void(0);" data-type="all" class="j-pop51-del f-ib u-btm">&lt;&lt; 全部</a>' +
+			'</div>' +
+			'</td>' +
+			'<td>' +
+			'<h6>已选人员：</h6>' +
+			'<div class="rgt" id="j-pop51-rst"></div>' +
+			'</td>' +
+			'</tr>' +
+			'</table>' +
+			'</div>';
+</script>
+<script>
+$(function(){
+	//Json 数据 51
+	// z1...数字部分 是唯一标识
+	_pepJson = {};
+	// Json 数据 部门对应员工
+	// z1...数字部分 是唯一标识; 8001|张总 前部分是工号
+	_pep2depJson = {};
+	//加载部门数据
+	$.ajax({ 
+		type:"GET", 
+		url: "${dynamicDomain}/companyDepartment/getDepartments",   
+		success: function(msg){
+			if(msg.treeNode){
+				tmp332Html = tmp332Html.replace('<div class="lft" id="j-pop51-slt"></div>','<div class="lft" id="j-pop51-slt">' + msg.treeNode+ '</div>');
+			}
+			var depts = msg.departments;
+			_pepJson = {};
+			if(depts){
+				try{
+					for(i=0;i<depts.length;i++){
+						_pepJson["z" + depts[i].objectId]={'name':depts[i].name,'pid':depts[i].parentId};
+					}
+				}catch(e){
+				}
+			}
+		}   
+	});
+	
+	//加载部门员工数据
+	$.ajax({ 
+		type:"GET", 
+		url: "${dynamicDomain}/staff/getDepartmentUsers?ajax=1&date=" + (new Date()).valueOf(),   
+		success: function(msg){  
+			_pep2depJson = eval("(" + msg + ")");
+		}   
+	});
+	
+	$(document).on('click', '#j-pop51-slt i', function(){
+		var _this = $(this);
+		if(_this.text() === '-'){
+			_this.text('+').parent().next('div').hide();
+		}else{
+			_this.text('-').parent().next('div').show();
+		}
+		return false;
+	});
+
+	
+	// 缓存存储
+	var _tempPep = {};
+
+	// 添加[人员]操作
+	$(document).on('click', '.j-pop51-add', function(){
+		// 分辨 全部 或 多个操作
+		var _type = $(this).attr('data-type');
+		// 先获取当前预操作项
+		var _all = _type === 'all' ? $('#j-pop51-wat input') : $('#j-pop51-wat input:checked');
+		if(_all.length <= 0) return false;
+		// 重置所有部门多选框为未选状态
+		$('#j-pop51-slt input').prop('checked', false);
+		// 清除缓存数据
+		_tempPep = {};
+		// 先获取已存在的数组 以免重复
+		var _has = {};
+		$('#j-pop51-rst input').each(function(){
+			var _val = $(this).val(), _arr = _val.split('|');
+			_has['z'+_arr[0]] = _val;
+		});
+		// 仅仅 全部移除的操作
+		if(_type === 'all') $('#j-pop51-wat').empty();
+		// 结合已有数据 重新新的数据(忽略重复)
+		var _temp = {};
+		$.each(_all, function(){
+			var _this = $(this), _val = _this.val(), _arr = _val.split('|');
+			// 忽略已经存在的[保留新的]
+			if(typeof(_has['z'+_arr[0]]) === 'undefined') _temp['z' + _arr[0]] = _val;
+			// 仅仅 多个移除的操作
+			if(_type === 'some') _this.parent().parent().remove();
+		});
+
+		// 利用新的数据生成HTML
+		var _opt = '';
+		$.each(_temp, function(i, rs){
+			var _id = i.substr(1);
+			var _arr = rs.split('|');
+			_opt += '<h5><label><input type="checkbox" value="'+ rs +'"> '+ _arr[1] + ' (工号：' + _id + ')</label></h5>';
+		});
+
+		// 追加到已有的部分[因为过滤了重复]
+		$('#j-pop51-rst').append($(_opt));
+	});
+
+	// 移除[人员]操作
+	$(document).on('click', '.j-pop51-del', function(){
+		// 分辨 全部 或 多个操作
+		var _type = $(this).attr('data-type');
+		// 先获取当前预操作项
+		var _all = _type === 'all' ? $('#j-pop51-rst input') : $('#j-pop51-rst input:checked');
+		if(_all.length <= 0) return false;
+		// 先获取已存在的数组 以免重复
+		var _has = {};
+		$('#j-pop51-wat input').each(function(){
+			var _val = $(this).val(), _arr = _val.split('|');
+			_has['z'+_arr[0]] = _val;
+		});
+
+		// 仅仅 全部移除的操作
+		if(_type === 'all') $('#j-pop51-rst').empty();
+		// 结合已有数据 重新新的数据(忽略重复)
+		var _temp = {};
+		$.each(_all, function(){
+			var _this = $(this), _val = _this.val(), _arr = _val.split('|');
+			// 忽略已经存在的[保留新的]
+			if(typeof(_has['z'+_arr[0]]) === 'undefined') _temp['z' + _arr[0]] = _val;
+			// 仅仅 多个移除的操作
+			if(_type === 'some') _this.parent().parent().remove();
+		});
+
+		// 利用新的数据生成HTML
+		var _opt = '';
+		$.each(_temp, function(i, rs){
+			var _id = i.substr(1);
+			var _arr = rs.split('|');
+			_opt += '<h5><label><input type="checkbox" value="'+ rs +'"> '+ _arr[1] + ' (工号：' + _id + ')</label></h5>';
+		});
+
+		// 追加到已有的部分[因为过滤了重复]
+		$('#j-pop51-wat').append($(_opt));
+	});
+
+	// 搜索[人员]操作
+	$(document).on('click', '#j-pop51-sch', function(){
+		// 输入框的值
+		var _str = $.trim($(this).prev('input').val());
+		if(_str!=null && _str.length>0){
+			handleSearch(_str);
+		}
+	});
+
+	// [人员]操作 : 部门的级联选择
+	$(document).on('click', '#j-pop51-slt input', function(){
+		var _this = $(this), _val = _this.val(), _arr = _val.split('-');
+		var _id = _val.split('-')[0], _checked = _this.is(':checked');
+		// 部门对应下的人员
+		var _pep = _pep2depJson['z' + _id];
+		if(typeof(_pep) !== 'undefined'){
+			for(var _i in _pep){
+				var _rs = _pep[_i], _vi = _rs.split('|')[0];
+				if(_checked){
+					_tempPep['z' + _vi] = _rs;
+				}else{
+					delete _tempPep['z' + _vi];
+				}
+			}
+
+			var _opt = '';
+			$.each(_tempPep, function(i, vrs){
+				var _rs = vrs.split('|');
+				_opt += '<h5><label><input type="checkbox" value="'+ vrs +'"> '+ _rs[1] + ' (工号：' + _rs[0] + ')</label></h5>';
+			});
+			
+			$('#j-pop51-wat').html($(_opt));
+		}
+	});
+});
+
+function handleSearch(key){
+	$.ajax({ 
+		type:"GET", 
+		url: "${dynamicDomain}/staff/searchDepartmentUsers?ajax=1&keywords=" + key,
+		success: function(msg){
+			var _jsonDate = eval("(" + msg + ")");;
+			var _searchPep = {};
+			for(var _i in _jsonDate){
+				var _rs = _jsonDate[_i], _vi = _rs.split('|')[0];
+				_searchPep['z' + _vi] = _rs;
+			}
+
+			var _opt = '';
+			$.each(_searchPep, function(i, vrs){
+				var _rs = vrs.split('|');
+				_opt += '<h5><label><input type="checkbox" value="'+ vrs +'"> '+ _rs[1] + ' (工号：' + _rs[0] + ')</label></h5>';
+			});
+
+			$('#j-pop51-wat').html($(_opt));
+		}   
+	});
+}
+</script>

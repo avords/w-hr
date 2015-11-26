@@ -1,0 +1,591 @@
+<#include "/common/order.html">
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>订单管理 - 福利商城</title>
+    <script src="${staticDomain}js/jquery.alert.js" charset="utf-8"></script>
+    <script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+        
+</head>
+<body>
+	<div id="g-crum2">
+		<h4>
+			<a href="${dynamicDomain}/index">账户首页</a> &gt;
+			<a href="javascript:void(0);">福利管理</a> &gt;
+			福利订单
+		</h4>
+	</div>
+<form method="post" action="${dynamicDomain}/welfareOrder" id="welfareOrderForm" name="welfareOrderForm" >
+	<div id="g-content" class="f-cb">
+		
+		<#include "/include/nav_menu_link.html">
+		<script>var _menuIndex = 0;</script>
+	
+		<div class="m-main f-fr">
+			<h4 class="u-tit"><span class="f-ib"><em>全部订单</em> | 订单列表</span></h4>
+	
+			<div id="g-list-p14">
+			<input type="hidden" id="subOrderId" name="subOrderId"/>
+				<div class="u-flt f-cb">
+	
+					<span class="f-fl">
+						<input type="text" class="u-txt z-tw1" placeholder="订单编号" name="search_EQS_subOrderNo" value="${pageActivity.paramMap.subOrderNo}">
+					</span>
+	
+					<span class="f-fl"><input type="text" readonly="readonly" placeholder="下单开始时间" name="search_GED_bookingDate" class="u-txt u-date" id="date-start" value="<#if pageActivity.paramMap.bookingDateAfter??>${pageActivity.paramMap.bookingDateAfter?string('yyyy-MM-dd')}</#if>"></span>
+					<span class="f-fl"><input type="text" readonly="readonly" placeholder="下单截至时间" name="search_LED_bookingDate" class="u-txt u-date" id="date-end" value="<#if pageActivity.paramMap.bookingDateBefore??>${pageActivity.paramMap.bookingDateBefore?string('yyyy-MM-dd')}</#if>"></span>
+					
+	
+					<span class="f-fl f-por">
+						<input type="hidden" class="j-slt-val" value="${pageActivity.paramMap.paymentWay}" name="search_EQI_paymentWay">
+						<#if pageActivity.paramMap.paymentWay?? >
+								<#if pageActivity.paramMap.paymentWay==1 >
+									<input type="text" value="线下支付" readonly="" class="u-txt u-slt j-slt">
+									<#else>
+									<input type="text" value="线上支付" readonly="" class="u-txt u-slt j-slt">
+								</#if>
+							<#else>
+							<input type="text" value="付款方式" readonly="" class="u-txt u-slt j-slt">
+						</#if>
+						
+						<em class="f-ib f-poa j-opt">
+							<a href="javascript:void(0);" data-val="" class="f-ib">付款方式</a>
+							<a href="javascript:void(0);" data-val="1" class="f-ib">线下支付</a>
+							<a href="javascript:void(0);" data-val="2" class="f-ib">线上支付</a>
+						</em>
+					</span>
+	
+					<span class="f-fl f-por">
+						<input type="hidden" class="j-slt-val" value="${pageActivity.paramMap.orderType}" name="search_EQI_orderType">
+						
+						<#if pageActivity.paramMap.orderType?? >
+								<#if pageActivity.paramMap.orderType==1 >
+									<input type="text" value="购买积分" readonly="" class="u-txt u-slt j-slt">
+								<#elseif pageActivity.paramMap.orderType==2 >
+									<input type="text" value="积分购买" readonly="" class="u-txt u-slt j-slt">
+								<#elseif pageActivity.paramMap.orderType==3 >
+									<input type="text" value="福利兑换" readonly="" class="u-txt u-slt j-slt">
+								<#elseif pageActivity.paramMap.orderType==4 >
+									<input type="text" value="现金购买" readonly="" class="u-txt u-slt j-slt">
+								<#elseif pageActivity.paramMap.orderType==5 >
+									<input type="text" value="年度福利" readonly="" class="u-txt u-slt j-slt">
+								</#if>
+							<#else>
+							<input type="text" value="订单类型" readonly="" class="u-txt u-slt j-slt">
+						</#if>
+						
+						<em class="f-ib f-poa j-opt">
+							<a href="javascript:void(0);" data-val="" class="f-ib">订单类型</a>
+							<a href="javascript:void(0);" data-val="1" class="f-ib">购买积分</a>
+							<a href="javascript:void(0);" data-val="2" class="f-ib">积分购买</a>
+							<a href="javascript:void(0);" data-val="3" class="f-ib">福利兑换</a>
+							<a href="javascript:void(0);" data-val="4" class="f-ib">现金购买</a>
+							<a href="javascript:void(0);" data-val="5" class="f-ib">年度福利</a>
+						</em>
+					</span>
+	
+					<span class="f-fl f-por">
+						<input type="hidden" class="j-slt-val" value="${pageActivity.paramMap.subOrderState}" name="search_EQI_subOrderState">
+						<@welfareOrderStatusSelected subOrderStatus='${pageActivity.paramMap.subOrderState}' />
+						<em class="f-ib f-poa j-opt">
+							<@welfareOrderStatusSelect />
+						</em>
+					</span>
+	
+					
+					<#if isCompanyAdmin == true>
+						<span class="f-fl f-por">
+							<input type="hidden" class="j-slt-val" value="${pageActivity.paramMap.userId}" name="search_INS_userId">
+							
+							<#if pageActivity.paramMap.userId?? >
+								<#if isAll == '1'>
+									<input type="text" value="操作账户" readonly="readonly" class="u-txt u-slt j-slt">
+								<#else>
+									<#list allHres as user>
+										<#if user.objectId== pageActivity.paramMap.userId>
+											<input type="text" value="${user.userName}" readonly="readonly" class="u-txt u-slt j-slt">
+										</#if>
+									</#list>
+								</#if>	
+							<#else>
+								<input type="text" value="操作账户" readonly="readonly" class="u-txt u-slt j-slt">
+							</#if>
+							<em class="f-ib f-poa j-opt">
+								<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>
+								<#list allHres as user>
+									<a href="javascript:void(0);" data-val="${user.objectId}" class="f-ib">${user.userName}</a>
+								</#list>
+							</em>
+						</span>
+					</#if>
+					
+					
+	
+	
+	
+					<span class="f-fr z-lst">
+						<button type="button" class="u-sch">查询</button>
+					</span>
+	
+					
+				</div>
+	
+				<div class="u-act f-cb">
+					<h4 class="f-fl">
+						<input type="checkbox" class="f-ib j-chk-all" /> <span class="f-ib">全选</span>
+						<a href="javascript:void(0);" class="f-ib batchPay">批量支付</a>
+					</h4>
+					<h5 class="f-fr">
+						<@fpage url="${dynamicDomain}/welfareOrder" totalPage=pageActivity.totalPage currentPage=pageActivity.currentPage formId="welfareOrderForm" />
+					</h5>
+				</div>
+				
+				<table class="u-tte">
+					<tr>
+						<td class="u-w1">商品</td>
+						<td class="u-w2a">数量</td>
+						<td class="u-w2">单价(元)</td>
+						<td class="u-w3">兑换金额(元)</td>
+						<td class="u-w4">申请人</td>
+						<td class="u-w5">交易状态</td>
+						<td class="u-w6">操作</td>
+					</tr>
+				</table>
+	
+	
+				<#list pageActivity.list as subOrder>
+					<div class="dlst">
+					<p>
+						<#if subOrder.subOrderState ==1 && subOrder.paymentWay == 2 && subOrder.orderType !='1'>
+							<input type="checkbox" name="checkbox" value="${subOrder.objectId}" class="f-ib j-chk-son" />
+						</#if>
+						
+						<span class="f-ib">订单号：${subOrder.subOrderNo}</span>
+						<span class="f-ib">下单时间：${subOrder.bookingDate?string('yyyy-MM-dd HH:mm:ss')}
+						</span>
+						<span class="f-ib">操作账户：${subOrder.userName}</span>
+						<!-- <a href="javascript:void(0);" data-val="" class="f-ib deletSubOrder">删除订单</a> -->
+						<a href="javascript:void(0);" data-val="您确认删除订单?|0|${subOrder.objectId}|deletSubOrder" class="j-confirm-open">删除订单</a>
+					</p>
+					<table class="flst">
+						<tr>
+							<td class="wt0">
+								<table class="slst">
+									<#list subOrder.orderProductList as orderSku>
+											<#if orderSku.orderProductType =='1' || orderSku.orderProductType =='2'>
+												<tr>
+													<td class="wt1">
+														<a href="${dynamicDomain}/welfarePackage/detail/${orderSku.productId}" target="top">
+														<img class="listImg" src="${adminStaticDomain}${orderSku.imgUrl}" /></a>
+													</td>
+													<td class="wt2">
+														<a href="${dynamicDomain}/welfarePackage/detail/${orderSku.productId}" target="top" class="f-ib">${orderSku.name}</a>
+													</td>
+													<td class="wt3">${orderSku.productCount}</td>
+													<td>${orderSku.productPrice?string(',##0.00')}</td>
+												</tr>
+											<#elseif orderSku.orderProductType =='3'>
+												<#if orderSku_index gt 0>
+													<tr class="lne">
+												<#else>
+													<tr>
+												</#if>
+												
+													<td class="wt1">
+														<a href="${dynamicDomain}/product/detail/${orderSku.productId}" target="top"><img class="listImg" src="${adminStaticDomain}${orderSku.imgUrl}" /></a>
+													</td>
+													<td class="wt2">
+														<a href="${dynamicDomain}/product/detail/${orderSku.productId}" target="top" class="f-ib">${orderSku.name}</a>
+													</td>
+													<td class="wt3">${orderSku.productCount}</td>
+													<td>${orderSku.productPrice?string(',##0.00')}</td>
+												</tr>
+											<#else>
+												<tr>
+													<td class="wt1-2">
+														<span class="f-ib">${orderSku.name}</span>
+													</td>
+													<td class="wt3">${orderSku.productCount}</td>
+													<td>${orderSku.productPrice?string(',##0.00')}</td>
+												</tr>
+											</#if>
+									</#list>
+								</table>
+							</td>
+							<td class="wt4">
+								<b>${subOrder.payableAmount?string(',##0.00')}</b><br />
+								<@paymentWay payWay='${subOrder.paymentWay}' />
+							</td>
+							<td class="wt5">${subOrder.userName}</td>
+							<td class="wt6"><@orderStatus status='${subOrder.subOrderState}' /></td>
+							<td >
+								<@hrOrderOption status='${subOrder.subOrderState}' subOrderId='${subOrder.objectId}' orderProdType='${subOrder.orderProdType}' orderGrantType='${subOrder.orderGrantType}' paymentWay='${subOrder.paymentWay}'/>
+								<#if subOrder.totalFileName?? >
+									<br>
+									<a href="${adminStaticDomain}${subOrder.totalRepport}" class="u-s3">下载总检报告</a><br />
+								</#if>
+								
+							</td>
+						</tr>
+					</table>
+				</div>
+				</#list>
+	
+				<div class="u-act f-cb">
+					<@pageform  totalPage=pageActivity.totalPage currentPage=pageActivity.currentPage formId="welfareOrderForm" />
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	<!-- 批量支付的订单号 -->
+	<input type="hidden" value="" name="subOrderIds" id="subOrderIds"/>
+	
+	
+	
+</form>
+
+<!-- 线下发放的弹窗 -->
+<div class="m-pop u-pop1">
+	<h4>线下发放确认<a href="javascript:void(0);" class="f-ib j-pop-close"></a></h4>
+
+	<fieldset class="f-cb u-pop-f1">
+		<label class="f-fl">支付密码：</label>
+		<span class="f-fl"><input type="password" class="u-txt" id="password" name="password" /></span>
+	</fieldset>
+	<fieldset class="f-cb u-pop-f1">
+		<p>提醒：若您选择线下发放后，将不能再进行线上发放操作。</p>
+	</fieldset>
+	<fieldset class="f-cb u-pop-f1">
+		<label class="f-fl">&nbsp;</label>
+		<span class="f-fl">
+			<button type="button" class="u-sub confirmGrant" >确认发放</button>
+			<button type="reset" class="u-reset j-pop-close">取消</button>
+		</span>
+	</fieldset>
+</div>
+
+	<script>
+	function confirmSure_cancelSubOrder(subOrderId){
+		var _this = $(this);
+		var data = {} ;
+		data.subOrderId = subOrderId;
+		data = jQuery.param(data) ;
+		var url = "${dynamicDomain}/welfareOrder/cancelSubOrder";
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			data: data,
+			url: url ,
+			success: function(response){
+				if(response.result=='success'){
+					winAlert("取消订单成功");
+				}else{
+					winAlert("取消订单失败");
+				}
+			}
+		});
+	}
+	function confirmSure_deletSubOrder(subOrderId){
+		var _this = $(this);
+		var data = {} ;
+		data.subOrderId = subOrderId;
+		data = jQuery.param(data) ;
+		var url = "${dynamicDomain}/welfareOrder/deleteSubOrder";
+		$.ajax({
+			type: "post",
+			dataType: 'json',
+			data: data,
+			url: url ,
+			success: function(response){
+				if(response.code=='0'){
+					winAlert("删除订单成功");
+				}else{
+					winAlert("删除订单失败");
+				}
+			}
+		});
+}
+		$(function(){
+			$(function(){
+				$('#date-start').click(function(){
+					WdatePicker({maxDate:'#F{$dp.$D(\'date-end\')}'});
+				});
+				$('#date-end').click(function(){
+					WdatePicker({minDate:'#F{$dp.$D(\'date-start\')}'});
+				});
+			});
+			
+			// 弹窗
+			$('.j-btn-dline').click(function(){
+				openMask(true);
+				openPop(true,250);
+			});
+			
+			// 模拟Select控件
+			$('.j-slt').click(function(){
+	
+				var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+	
+				$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+	
+				if(_this.hasClass('z-on-slt')){
+					_this.removeClass('z-on-slt');
+					_opt.hide();
+				}else{
+					_this.addClass('z-on-slt');
+					_opt.show();
+				}
+				return false;
+			});
+	
+			// 下拉项的点击事件
+			$('.j-opt > a').click(function(){
+				var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+				_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+				return false;
+			});
+	
+			$('body').click(function(e){
+				$('.j-opt').hide();
+				$('.j-slt').removeClass('z-on-slt')
+			});
+	
+			// 全选
+			$('.j-chk-all').click(function(){
+				var _this = $(this), _son = $('.j-chk-son');
+				if(_this.is(':checked')){
+					_son.prop('checked', true);
+				}else{
+					_son.prop('checked', false);
+				}
+			});
+	
+			// 控制列表输出尾元素样式
+			$('.j-tb-list').find('tr:last').addClass('z-lst');
+	
+			
+			$('body').on('click','.j-pop-close',function(){
+				openMask(false);
+				openPop(false);
+			});
+			
+			
+			
+			
+			
+			//查询
+			$(".u-sch").click(function(){
+				$("#ec_p").val(1);
+				$("#welfareOrderForm").submit();
+			});
+			
+			
+			
+			
+			//积分 立即支付
+			$('body').on('click', '.aliPayNow', function(){
+				var act = $("#welfareOrderForm").attr("action");
+				var subOrderId = $(this).attr("data-val");
+				$('#subOrderId').val(subOrderId) ;
+				
+				$("#welfareOrderForm").attr("action","${dynamicDomain}/points/onlinePaySetPayment");
+				$("#welfareOrderForm").attr("target","top");
+				$("#welfareOrderForm").submit();
+				$("#welfareOrderForm").attr("action",act);
+				$("#welfareOrderForm").attr("target","");
+			});
+			
+			
+			
+			
+			// 选项取消订单
+			$('body').on('click', '.cancel', function(){
+				if(!confirm("确认取消此订单？")){
+					return;
+				}
+				var _this = $(this);
+				var subOrderId = _this.attr("data-val");
+				var data = {} ;
+				data.subOrderId = subOrderId;
+				data = jQuery.param(data) ;
+				var url = "${dynamicDomain}/welfareOrder/cancelSubOrder";
+				$.ajax({
+					type: "POST",
+					dataType: 'json',
+					data: data,
+					url: url ,
+					success: function(response){
+						if(response.result=='success'){
+							winAlert("取消订单成功");
+						}else{
+							winAlert("取消订单失败");
+						}
+					}
+				});
+			});
+			
+			
+			
+			
+			//批量支付
+			$(".batchPay").click(function(){
+				var subOrderIds = "";
+				$('input[name="checkbox"]:checked').each(function(){ 
+					 subOrderIds+=$(this).val()+",";
+				});
+				if(subOrderIds == ''){
+					return;
+				}
+				$("#subOrderIds").val(subOrderIds);
+				$("#welfareOrderForm").attr("action","${payDomain}/onlinePay/orderPayCenter?subOrderIds="+$("#subOrderIds").val());
+				$("#welfareOrderForm").attr("target","top");
+				$("#welfareOrderForm").submit();
+				$("#welfareOrderForm").attr("action","${dynamicDomain}/welfareOrder");
+				$("#welfareOrderForm").attr("target","");
+				
+			});
+			
+			// 确定和关闭操作
+			$(document).on('click', '.j-pop-cancel', function(){
+				$("#welfareOrderForm").submit();
+			});
+			
+			
+			//查看详情
+			$(document).on('click', '.showDetail', function(){
+				var subOrderId = $(this).attr("data-val");
+				document.location.href = "${dynamicDomain}/grantWelfare/viewOrderInfo/"+subOrderId;
+			});
+			
+			
+			
+			
+			// 窗口缩放控制位置
+			var _mPop = '.m-pop';
+			$(window).resize(function(){
+				if(!$(_mPop).is(':hidden')){
+					centerPop(_mPop, 250);
+				}
+			});
+
+			// 开启弹窗
+			function openPop(_bool, _myh){
+				_myh = _myh || 0;
+				if(!_bool){
+					$(_mPop).hide();
+				}else{
+					centerPop(_mPop, _myh);
+				}
+			}
+
+			// 弹窗位置居中
+			function centerPop(_ob, _myh){
+
+				var _pop = $(_ob), _h = _pop.height(), _w = _pop.width();
+				var _win = $(window), _wh = _win.height(), _ww = _win.width();
+				var _mh = _myh == 0 ? (((_wh - _h) / 2) - _myh) : _myh;
+				var _css = {'top':_mh , 'left':(_ww - _w) / 2};
+
+				_pop.css(_css).show();
+			}
+
+			// 开启遮罩
+			function openMask(_bool){
+				var _mask = $('#g-mask');
+				if(_bool){
+					if(_mask.length === 1){
+						_mask.show();
+					}else{
+						$('<div id="g-mask"></div>').appendTo('body').css('opacity','.2');
+					}
+				}else{
+					_mask.hide();
+				}
+			}
+
+			//点击线下发放
+			$(document).on('click', '.sureButton', function(){
+				var subOrderId = $(this).attr("data-val");
+				$("#password").val("") ;
+				$('#subOrderId').val(subOrderId) ;
+			});
+
+			var pwd = "";
+			function getPwd(obj){
+				if(obj){
+					pwd = $(obj).val();
+				}
+				return pwd;
+			}
+
+			
+			
+				
+
+			//线下发放确认
+			$(document).on('click', '.confirmGrant', function(){
+				var subOrderId = $('#subOrderId').val() ;
+				var pwd = $("#password").val();
+				if(subOrderId && pwd){
+					$.ajax({
+				          url:'${dynamicDomain}/grantWelfare/confirmPayOffline',
+				          type : 'post',
+				          async : true,
+				          dataType : 'json',
+				          data : "subOrderId=" + subOrderId + "&password=" +pwd,
+				          success : function(json) {
+				              if(json.result==1){
+				                 openMask(false);
+				    			 openPop(false);
+				                 //document.location.href = "${dynamicDomain}/grantWelfare/exportCardInfo/"+subOrderId;
+				                 document.location.href = "${dynamicDomain}/grantWelfare/exportCardInfo?subObjectId="+subOrderId+"&password="+pwd ;
+				              }else if(json.result==0){
+				            	  winAlert("支付密码错误");
+				              }
+				              return false;
+				          }
+				      });
+				}
+				return false;
+			});
+			
+		});
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</script>
+
+</body>
+</html>

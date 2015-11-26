@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<title>管理中心首页-福利商城</title>
+<style type="text/css">
+.u-crum2{max-width:1200px;min-width:1002px;margin:auto;background-color:#f4f4f4;border:1px solid #d9d9d9;border-width:1px 0;margin-bottom:15px;height:35px;line-height:35px;} 
+.u-crum2 h4{max-width:1140px;min-width:942px;padding-left:60px;margin:0 auto;background:url('${staticDomain}image/zico56.gif') no-repeat 26px 50%;color:#666;font-size: 14px;}
+.u-crum2 h4 a{color:#666;}
+.u-crum2 h4 a:hover{color:#08b2f9;}
+.u-home-cnt .u-ms a {width: 89.8%;padding: 15px 0 0 10%;height: 32px;border-bottom: 2px solid #ff9d00;margin-right: 1px;position: relative;font-size: 1.2em;color: #666;}
+.u-home-cnt .u-ms a.z-m1 {background: #fff url('${staticDomain}/image/zico49.gif') no-repeat 7% 48%;}
+.u-home-cnt .u-ms a i {position: absolute;top: 13px;right: 75%;width: 17px;height: 17px;line-height: 17px;font-size: 12px;background: url('${staticDomain}/image/zico52.gif') no-repeat;text-align: center;color: #fff;}
+</style>
+</head>
+<body>
+
+<div class="u-crum2">
+	<h4 class="z-bgw">
+		<a href="javascript:void(0);">首页</a>
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb" style="background-color:#f0f0f0;">
+	<#include "/include/nav_menu_link.html">
+	<div class="m-main f-fr f-cb">
+		
+		<div class="u-home-cnt f-fl">
+			<#if s_companyFunctionShowWelfare&&COMPANY_INDEX_WELFARE> 
+			<h4 class="u-tle">待办事项</h4>
+			<div class="f-cb u-ms">
+				<a href="${dynamicDomain}/grantWelfare/queryWelfareList" class="f-fl z-m1">待发放福利券<i>${num}</i></a>
+				<!-- <a href="javascript:void(0)" class="f-fl z-m2">年度福利计划</a>
+				<a href="javascript:void(0)" class="f-fl z-m3">福利兑换申请</a> -->
+			</div>
+			</#if>
+			
+			<div class="m-anim f-cb">
+				<h4 class="u-tle">员工福利</h4>
+				<#if s_companyFunctionShowWelfare&&COMPANY_INDEX_WELFARE> 
+				<div class="u-anim f-fl">
+				<#list items as item>
+					<#if (item_index==0)>
+					<dl class="f-cb">
+						<dt class="z-ico"><a href="javascript:void(0);" data-bcr="f16c6f" class="j-show-btn"><img src="${staticDomain}image/zico-t3.gif" /></a></dt>
+						<#if (item.items?? && item.items?size>0)>
+						<#list item.items as subItem>
+						<#if (subItem_index)<3>
+						<#if subItem_index==2>
+							<dd class="z-lst">
+						<#else>
+							<dd>
+						</#if>
+						 
+						    <#if subItem??>
+							<a target="_blank" href="${dynamicDomain}/mall/search?welfareItemId=${subItem.objectId}"><img
+								src="${adminStaticDomain}${subItem.benefitImg}" style="width:42px;height:43px;"/><br /> <em
+								class="f-ib">${subItem.itemName}</em></a>
+							</#if>	
+							</dd>
+						</#if>
+						</#list>
+						</#if>
+						<#if (item.items?? && item.items?size>3)>
+						<dt class="z-dwn">
+							<a href="javascript:void(0);" data-bcr="f16c6f" class="j-show-ico"><img src="${staticDomain}image/zico53.gif" /></a>
+							<fieldset class="f-cb j-ico-list z-top">
+								<#list item.items as subItem>
+								   
+								    <#if subItem?? >
+										<a href="${dynamicDomain}/mall/search?welfareItemId=${subItem.objectId}">
+										<img src="${adminStaticDomain}${subItem.benefitImg}" style="width:42px;height:43px;"/><br /> 
+										<em class="f-ib">${subItem.itemName}</em></a>
+								    </#if>
+								    		 
+									</#list>
+							</fieldset>
+						</dt>
+						</#if>
+					</dl>
+					<#elseif (item_index)==1>
+					<dl class="f-cb">
+						<dt class="z-ico"><a href="javascript:void(0);" data-bcr="fea92a" class="j-show-btn"><img src="${staticDomain}image/zico-t2.gif" /></a></dt>
+						<#if (item.items?? && item.items?size>0) >
+						<#list item.items as subItem>
+						<#if (subItem_index)<3>
+						<#if subItem_index==2>
+							<dd class="z-lst">
+						<#else>
+							<dd>
+						</#if>
+						    <#if subItem?? >
+								<a target="_blank" href="${dynamicDomain}/mall/search?welfareItemId=${subItem.objectId}"><img
+									src="${adminStaticDomain}${subItem.benefitImg}" style="width:42px;height:43px;"/><br /> <em
+									class="f-ib">${subItem.itemName}</em></a>
+							</#if>	
+							</dd>
+						</#if>
+						</#list>
+						</#if>
+						
+						<#if (item.items?? && item.items?size>3)>
+						<dt class="z-dwn">
+						  
+							<a href="javascript:void(0);" data-bcr="fea92a" class="j-show-ico"><img src="${staticDomain}image/zico53.gif" /></a>
+							<fieldset class="f-cb j-ico-list z-top">
+								<#list item.items as subItem>
+								     <#if subItem?? >
+										<a href="${dynamicDomain}/mall/search?welfareItemId=${subItem.objectId}">
+										<img src="${adminStaticDomain}${subItem.benefitImg}" style="width:42px;height:43px;"/><br /> 
+										<em class="f-ib">${subItem.itemName}</em></a>
+									  </#if> 
+									</#list>
+							</fieldset>
+							
+						</dt>
+						</#if>
+					</dl>
+					<#elseif (item_index)==2>
+					<dl class="f-cb">
+						<dt class="z-ico"><a href="javascript:void(0);" data-bcr="3ac7b4" class="j-show-btn"><img src="${staticDomain}image/zico-t1.png" /></a></dt>
+						<#if (item.items?? && item.items?size>0)>
+						<#list item.items as subItem>
+						<#if (subItem_index)<3>
+						<#if subItem_index==2>
+							<dd class="z-lst">
+						<#else>
+							<dd>
+						</#if>
+						 <#if subItem?? >
+							<a target="_blank" href="${dynamicDomain}/mall/search?welfareItemId=${subItem.objectId}"><img
+								src="${adminStaticDomain}${subItem.benefitImg}" style="width:42px;height:43px;"/><br /> <em
+								class="f-ib">${subItem.itemName}</em></a>
+							</#if>	
+							</dd>
+						</#if>
+						</#list>
+						</#if>
+						
+						<#if (item.items?? && item.items?size>3)>
+						<dt class="z-dwn">
+							<a href="javascript:void(0);" data-bcr="3ac7b4" class="j-show-ico"><img src="${staticDomain}image/zico53.gif" /></a>
+							<fieldset class="f-cb j-ico-list z-btm">
+								<#list item.items as subItem>
+								     <#if subItem?? >
+										<a href="${dynamicDomain}/mall/search?welfareItemId=${subItem.objectId}">
+										<img src="${adminStaticDomain}${subItem.benefitImg}" style="width:42px;height:43px;"/><br /> 
+										<em class="f-ib">${subItem.itemName}</em></a> 
+									 </#if>
+									</#list>
+								<!-- <p class="f-cb"><a href="javascript:void(0);">定制年度计划</a></p> -->
+							</fieldset>
+						</dt>
+						</#if>
+					</dl>
+					</#if>
+					</#list>
+					</div>
+				<#else>
+					<div class="no-info u-anim f-fl"></div>
+				</#if>
+				<div class="u-ott f-fr">
+					<dl><dt>可用${s_welfarePointName}</dt><dd><b>${accountBalance?string('0.00')}</b>${s_welfarePointName}</dd></dl>
+					<h5>
+						<#if COMPANY_INDEX_BUY_POINTS>
+							<a href="${dynamicDomain}/points" class="f-ib u-buy">购买</a>
+						</#if>
+						<#if COMPANY_INDEX_DISTRIBUTE>
+							<a href="${dynamicDomain}/pointDistribute" class="f-ib u-pay">发放</a>
+						</#if>
+					</h5>
+					<h6>
+						<a href="${dynamicDomain}/mall/index"><img src="${staticDomain}image/zpic07.gif" /></a>
+					</h6>
+				</div>
+			</div>
+			<#if s_companyFunctionShowExcitation&&COMPANY_INDEX_EXCITATION> 
+			<h4 class="u-tle">员工激励</h4>
+			<div class="f-cb u-ygl">
+				<fieldset class="f-fl u-lft">
+					<span class="f-ib">奖励设定</span>
+					<h6>正在进行：<b class="f-ib"><div id="queryUnderway">0</div></b> 个</h6>
+					<h5>已经结束：<b class="f-ib"><div id="queryFinished">0</div></b> 个</h6>
+					<p>
+						<a href="${dynamicDomain}/excitationActivity/createActivity" class="f-ib">设定</a>
+						<a href="${dynamicDomain}/excitationActivity/queryActivityList" class="f-ib txt">查看</a>
+					</p>
+				</fieldset>
+				<fieldset class="f-fr u-rgt">
+					<span class="f-ib">奖励发放</span>
+					<h5>
+						今年已经发放<br />
+						<b class="f-ib"><div id="grantCount">0</div></b>个<br />
+						<small>(<em id="grantTotal">0</em>${s_welfarePointName})</small>
+					</h5>
+					<p>
+						<a href="${dynamicDomain}/grantExcitationReward/grantReward" class="f-ib">发放</a>
+						<a href="${dynamicDomain}/pointsGrant?search_EQI_distributeType=2" class="f-ib txt">查看</a>
+					</p>
+				</fieldset>
+			</div>
+			</#if>
+			<!--<#if s_companyFunctionShowReport>
+			<h4 class="u-tle">统计报表</h4>
+			<div class="f-cb u-tbb">
+				<dl class="f-fl">
+					<dt class="f-ib"><span>福利发放</span><h6><img src="${staticDomain}image/ztmp021.gif" /></h6></dt>
+					<dd class="f-ib">
+						<a href="javascript:void(0);" class="f-ib">1月</a><br />
+						<a href="javascript:void(0);" class="f-ib">2月</a><br />
+						<a href="javascript:void(0);" class="f-ib">3月</a><br />
+						<a href="javascript:void(0);" class="f-ib">4月</a><br />
+						<a href="javascript:void(0);" class="f-ib">5月</a><br />
+						<a href="javascript:void(0);" class="f-ib">6月</a>
+					</dd>
+				</dl>
+				<dl class="f-fr">
+					<dt class="f-ib"><span>激励发放</span><h6><img src="${staticDomain}image/ztmp021.gif" /></h6></dt>
+					<dd class="f-ib">
+						<a href="javascript:void(0);" class="f-ib">1月</a><br />
+						<a href="javascript:void(0);" class="f-ib">2月</a><br />
+						<a href="javascript:void(0);" class="f-ib">3月</a><br />
+						<a href="javascript:void(0);" class="f-ib">4月</a><br />
+						<a href="javascript:void(0);" class="f-ib">5月</a><br />
+						<a href="javascript:void(0);" class="f-ib">6月</a>
+					</dd>
+				</dl>
+			</div>
+			</#if>
+			
+			 <#if COMPANY_INDEX_INFOMATION||COMPANY_INDEX_QUESTIONNAIRE||COMPANY_INDEX_DEPARTMENT||COMPANY_INDEX_STAFF||COMPANY_INDEX_PERMISSION>
+			<h4 class="u-tle">快捷直通车</h4>
+			<ul class="u-ztc f-cb">
+				<#if COMPANY_INDEX_INFOMATION>
+					<li><a href="${dynamicDomain}/infomation/addNotice"><img src="${staticDomain}image/zztc1.gif" /><br />发布公告</a></li>
+				</#if>
+				<#if COMPANY_INDEX_QUESTIONNAIRE>
+					<li><a href="${dynamicDomain}/questionnaire/page"><img src="${staticDomain}image/zztc2.gif" /><br />问卷调查</a></li>
+				</#if>
+				<#if COMPANY_INDEX_DEPARTMENT>
+					<li><a href="${dynamicDomain}/companyDepartment/department"><img src="${staticDomain}image/zztc3.gif" /><br />公司架构</a></li>
+				</#if>
+				<#if COMPANY_INDEX_STAFF>
+					<li><a href="${dynamicDomain}/member/listStaff"><img src="${staticDomain}image/zztc4.gif" /><br />员工信息</a></li>
+				</#if>
+				<#if COMPANY_INDEX_PERMISSION>
+					<li><a href="${dynamicDomain}/role/listRole"><img src="${staticDomain}image/zztc6.gif" /><br />分配权限</a></li>
+				</#if>
+			</ul>
+			</#if> -->
+		</div>
+
+		<div class="u-home-lft f-fr">
+				<#if (infos?? && infos?size gt 0)>
+				<dl class="u-note">
+					<dt>
+						<span class="f-ib">平台消息</span><a href="${dynamicDomain }/newsNotify/list"
+							class="f-ib">更多</a>
+					</dt>
+					<#list infos as info>
+					<dd>
+						<i class="f-ib z-c2">${info_index+1}</i>
+						<a href="${dynamicDomain}/newsNotify/detail/${info.objectId}"
+							class="f-ib" title="${info.title}">${info.title}</a>
+					</dd>
+					</#list>
+				</dl>
+				</#if>
+				<#if (specialRecommend?? && specialRecommend?size gt 0)>
+					<dl class="u-adv">
+						<dt>特别推荐</dt>
+						 <#list specialRecommend as item>
+							<dd>
+								<#if item.url??>
+									<a href="${item.url}" >
+								<#else>
+							 		 <a href="javascript:void(0);">
+								</#if>
+							 	<img src="${adminStaticDomain}${item.picturePath}" style="width:185px;height:85px;"/></a></dd>
+						</#list>
+					</dl>
+				</#if>
+		</div>
+		<script type="text/javascript">
+		$(function(){
+
+			// 最尾元素的样式控制
+			$('.u-ms > a:last').css('margin-right',0);
+
+			$('.j-ico-list').find('a:nth-child(3n)').addClass('z-lst');
+
+			// 按钮的显示
+			$('.j-show-ico').hover(
+				function(){
+					var _this = $(this), _bcr = '#' + _this.attr('data-bcr');
+					var _parent = _this.parent().parent();
+					_parent.find('dt.z-dwn').addClass('f-por');
+					_parent.find('fieldset').css('border-color', _bcr).show(300);
+				},
+				function(){}
+			);
+
+			// 按钮的显示
+			var _lst = $('.j-ico-list');
+			$('.j-show-btn').click(function(){
+
+					var _this = $(this), _bcr = '#' + _this.attr('data-bcr');
+					var _parent = _this.parent().parent();
+					_parent.find('dt.z-dwn').addClass('f-por');
+					_lst.hide();
+					_parent.find('fieldset').css('border-color', _bcr).show(300);
+			});
+
+			// $(document).click(function(){ 
+			// 	_lst.hide();
+			// 	return false;
+			//});
+
+			//按钮的隐藏
+			$('.j-ico-list').hover(
+				function(){},
+				function(){
+					$(this).hide();
+					$(this).parent().removeClass('f-por');
+				}
+			);
+
+			// 返回顶部
+			var _toTop = $('.j-to-top');
+			$('.j-to-top').click(function(){
+				$('html,body').animate({scrollTop:0}, 200);
+			});
+			$(window).scroll(function(){
+				if($(this).scrollTop() > 200){
+					_toTop.fadeIn(500);
+				}else{
+					_toTop.fadeOut(50);
+				}
+			});
+
+			// 窗口缩放控制位置
+			var _mPop = '#m-stp4';
+			$(window).resize(function(){
+				if(!$(_mPop).is(':hidden')){
+					centerPop(_mPop, 150);
+				}
+			});
+
+			// 开启弹窗
+			function openPop(_bool, _myh){
+				_myh = _myh || 0;
+				if(!_bool){
+					$(_mPop).hide();
+				}else{
+					centerPop(_mPop, _myh);
+				}
+			}
+
+
+
+			// 新增弹窗
+			// $('.j-btn-add').click(function(){
+			// 	openMask(true);
+			// 	openPop(true, 150);
+			// });
+
+			// 弹窗关闭
+			$('body').on('click','.j-pop-close',function(){
+				openMask(false);
+				openPop(false);
+			});
+		});
+
+		// 弹窗位置居中
+		function centerPop(_ob, _myh){
+
+			var _pop = $(_ob), _h = _pop.height(), _w = _pop.width();
+			var _win = $(window), _wh = _win.height(), _ww = _win.width();
+			var _mh = _myh == 0 ? (((_wh - _h) / 2) - _myh) : _myh;
+			var _css = {'top':_mh , 'left':(_ww - _w) / 2};
+
+			_pop.css(_css).show();
+		}
+
+		// 开启遮罩
+		function openMask(_bool){
+			var _mask = $('#g-mask');
+			if(_bool){
+				if(_mask.length === 1){
+					_mask.show();
+				}else{
+					$('<div id="g-mask"></div>').appendTo('body').css('opacity','.2');
+				}
+			}else{
+				_mask.hide();
+			}
+		}
+		
+		$(document).ready(function(){
+				try{
+					$.ajax({
+						url : "${dynamicDomain}/queryActivity?timstamp=" + (new Date()).valueOf(),
+						type : 'post',
+						dataType : 'json',
+						success : function(msg) {
+							$("#queryUnderway").html(msg.underway);
+							$("#queryFinished").html(msg.finished);
+						}
+					});
+				}catch(e){
+					$("#queryUnderway").html(0);
+					$("#queryFinished").html(0);
+				}
+				
+				try{
+					$.ajax({
+					url : "${dynamicDomain}/queryCurrentYearGrant?timstamp=" + (new Date()).valueOf(),
+					type : 'post',
+					dataType : 'json',
+					success : function(msg) {
+						$("#grantCount").html(msg.grantCount);
+						$("#grantTotal").html(msg.grantTotal);
+					}
+				});
+				}catch(e){
+					$("#grantCount").html(0);
+					$("#grantTotal").html(0);
+				}
+				
+		});
+		</script>
+	</div>
+</div>
+<a href="javascript:void(0);" id="u-to-top" class="j-to-top"><img src="${staticDomain}image/zico-top.gif" /></a>
+</body>
+</html>

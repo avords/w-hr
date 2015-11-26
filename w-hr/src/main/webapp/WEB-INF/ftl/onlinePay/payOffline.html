@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>订单结算 - 福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/center.z.css" />
+	<link media="all" rel="stylesheet" href="${staticDomain}css/gw.main.v1.css" />
+	<link media="all" rel="stylesheet" href="${staticDomain}css/common.css" / >
+    <link media="all" rel="stylesheet" href="${staticDomain}css/order.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+     <script>
+    $(function(){
+      $('body').css({'background-color':'#fff'});
+    });
+    </script>
+</head>
+<body>
+
+
+
+<form action="${dynamicDomain}/buyWelfare/onlinePaySetPayment" method="post" id="onlinePayForm" target="_blank">
+<div id="g-pay-chk">
+	
+	<h4 class="f-cb">
+		<!--<a href="javascript:void(0);" class="f-fl"><img src="${staticDomain}image/gw.logo.t.png" /></a>-->
+		<span class="f-fl">收银台</span>
+	</h4>
+	
+	
+
+	<p class="u-desc">
+	
+		<div id="g-inte-crt">
+	
+			<div class="u-info">
+				<span class="f-ib">本平台开户行信息：</span>
+				 <fieldset>
+					<dl>
+						<dt>光大银行</dt>
+						<dd>户名：上海瀚乾信息技术服务有限公司</dd>
+						<dd>开户行：光大银行上海浦东二支行</dd>
+						<dd>账号：76260188000108765</dd>
+					</dl>
+					<!-- <dl class="u-ln">
+						<dt>招商银行</dt>
+						<dd>开户行：招商银行 上海分行 黄浦支行</dd>
+						<dd>账号：12345678909888</dd>
+					</dl> -->
+				</fieldset>
+			</div>
+
+		<dl class="u-desc">
+			<dd>订单提交成功，请您尽快付款！<br /></dd>
+			<dd>请您在提交订单后<strong id="DD"></strong>天 <strong id="HH"></strong>时 <strong id="MM"></strong>分 <strong id="SS"></strong>秒内完成支付，否则订单会自动取消。<br /></dd>
+			<dd>订单编号:
+				<#list subOrderList as subOrder>
+	            ${subOrder.subOrderNo}
+	            </#list>
+            </dd>
+			<dd>支付金额：<b>￥${totalAmount?string('0.00')}元</b></dd>
+			<dd>公司信息：${s_companyName}</dd>
+		</dl>
+	
+	
+		<!-- 线下支付 -->
+			<h6>您的订单已经生成，您选择的是线下支付！</h6>
+			<p>
+				1. 请向本平台的对公账号汇款，并保留支付凭证。<br />
+				2. 我们核实后会立即为您处理。
+			</p>
+		</div>
+	</p>
+	
+
+	
+</div>
+</form>
+<script>
+  EndTimeMsg = ${surplusTime/1000}
+  function show() {
+    h = Math.floor(EndTimeMsg / 60 / 60);
+    m = Math.floor((EndTimeMsg - h * 60 * 60) / 60);
+    s = Math.floor((EndTimeMsg - h * 60 * 60 - m * 60));
+    document.getElementById("DD").innerHTML = parseInt(h/24);
+    document.getElementById("HH").innerHTML = h;
+    document.getElementById("MM").innerHTML = m;
+    document.getElementById("SS").innerHTML = s;
+    EndTimeMsg--;
+    if (EndTimeMsg < 0)
+    {
+        document.getElementById("DD").innerHTML = "0";
+        document.getElementById("HH").innerHTML = "00";
+        document.getElementById("MM").innerHTML = "00";
+        document.getElementById("SS").innerHTML = "00";;
+    }
+  }
+$(function(){
+ setInterval("show()", 1000)
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<decorators defaultdir="/">
+	<excludes>
+		<pattern>*ajax=1*</pattern>
+		<pattern>/login/*</pattern>
+		<pattern>/findLoginPwd/*</pattern>
+		<pattern>/decorator*</pattern>
+		<pattern>/mallDecorator*</pattern>
+		<pattern>*/guide*</pattern>
+		<pattern>*/initPassword*</pattern>
+		<pattern>*/bind*</pattern>
+		<pattern>*/setPayPassword*</pattern>
+		<pattern>/findLoginPwd/*</pattern>
+		<pattern>*/system/fail</pattern>
+		<pattern>*/system/success</pattern>
+		<pattern>/pageNotFound</pattern>
+		<pattern>/noPermission</pattern>
+	</excludes>
+	<decorator name="decorator" page="decorator.html">
+		<pattern>/*</pattern>
+	</decorator>
+	<decorator name="mallDecorator" page="mallDecorator.html">
+        <pattern>/mall/*</pattern>
+        <pattern>/product/detail/*</pattern>
+        <pattern>/product/skuDetail/*</pattern>
+        <pattern>/welfarePackage/detail/*</pattern>
+        <pattern>/cart/*</pattern>
+    </decorator>
+</decorators>

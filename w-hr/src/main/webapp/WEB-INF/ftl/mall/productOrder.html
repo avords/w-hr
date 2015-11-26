@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>订单生成</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+	<link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+	<link media="all" rel="stylesheet" href="${staticDomain}css/common.css" />
+	<script src="${staticDomain}js/jquery.1.8.3.min.js"></script>
+	<script src="${staticDomain}js/jquery.twbsPagination.js"></script>
+	<script src="${staticDomain}js/jquery.alert.js"></script>
+    <script type="text/javascript" src="${staticDomain}js/func.js"></script>
+</head>
+<body id="y6-2">
+<script>
+		var _iNav = 0;
+		 $(function(){
+		      $('.u-addr.mystyle').css({'width':'220px','border':'0px solid #fb983a'});
+		      $('body').css({'background-color':'#fff'});
+		    });
+</script>
+<form method="post" action="${dynamicDomain}/product/generateOrder" id="productOrderForm" name="buyWelfareForm" >
+<div id="gy-crum" class="lyt">
+	您的位置：
+	<a href="javascript:void(0);" class="sp1">商城首页</a> &gt;
+	<a href="javascript:void(0);">${s_welfarePointName}商城</a> &gt;
+	<a href="javascript:void(0);">购物车</a> &gt;
+	确认订单
+</div>
+
+<div id="gy-order" class="lyt">
+
+	<h4>1<b class="f-ib">商品清单</b></h4>
+	<div class="u-stp4">
+		<ol class="f-cb">
+			<li class="u-t2">&nbsp;商品信息</li>
+			<li class="u-t3">&nbsp;</li>
+			<li class="u-t4">&nbsp;单价</li>
+			<li class="u-t5">数量</li>
+			<li class="u-t6">&nbsp;小计</li>
+		</ol>
+		<div class="u-list j-list">
+			<ul class="f-cb">
+				<li class="u-t2"><a href="javascript:void(0);"><img src="${dynamicDomain}${sku.product.mainPicture}" class="f-ib"></a></li>
+				<li class="u-t3"><a href="javascript:void(0);">${sku.name}</a></li>
+				<li class="u-t4"><b>${sku.sellPrice?string('0.00')}${s_welfarePointName}</b><br>￥${sku.sellPrice?string('0.00')}</li>
+				<li class="u-t5">${count}</li>
+				<li class="u-t6">${totalMoney?string('0.00')}${s_welfarePointName}</li>
+			</ul>
+			<p class="f-cb">
+				<a href="javascript:void(0);" class="f-ib">返回继续购物</a>
+				<span>商品数量：共 <i>${count}</i> &nbsp;件 | 需支付总额：<i>${totalMoney?string('0.00')}</i> &nbsp;${s_welfarePointName}</span>
+			</p>
+		</div>
+	</div>
+
+	<h4>2<b class="f-ib">收货地址</b></h4>
+	<div class="u-stp1 f-cb">
+	<#list receiptAddrList as item>
+		<#if item_index < 4>
+				<#if item.isDefault =='1'>
+					<dl class="j-addr-dl z-on">
+						<input type="hidden" class="receiptContacts" value="${item.receiptContacts}"/>
+						<input type="hidden" class="receiptMobile" value="${item.receiptMoblie}"/>
+						<input type="hidden" class="receiptTelephone" value="${item.receiptTelephone}"/>
+						<input type="hidden" class="receiptZipcode" value="${item.receiptZipcode}"/>
+						<input type="hidden" class="receiptAddress" value="${item.provinceName}${item.cityName}${item.receiptAddress}"/>
+						<input type="hidden" class="receiptEmail" value="${item.receiptEmail}"/>
+					
+						<dt><b class="f-ib">${item.receiptContacts?default('&nbsp;')}</b><i class="f-ib">${item.receiptMobile?default('&nbsp;')}</i></dt>
+						<dd class="uu-addr mystyle">
+							${item.provinceName}-${item.cityName}-${item.areaName}<br />
+							${item.receiptAddress}
+						</dd>
+						<dd class="uu-set j-set">
+							<h5>
+								<a href="javascript:void(0);" class="z-dab j-to-default">默认地址</a> |
+								<a href="javascript:void(0);" onclick="edit(${item.objectId});">修改</a> |
+                                <a href="javascript:void(0);" onclick="del(${item.objectId});">删除</a>
+							</h5>
+						</dd>
+					</dl>
+				<#else>
+					<dl class="j-addr-dl">
+						<input type="hidden" class="receiptContacts" value="${item.receiptContacts}"/>
+						<input type="hidden" class="receiptMobile" value="${item.receiptMobile}"/>
+						<input type="hidden" class="receiptTelephone" value="${item.receiptTelephone}"/>
+						<input type="hidden" class="receiptZipcode" value="${item.receiptZipcode}"/>
+						<input type="hidden" class="receiptAddress" value="${item.provinceName}${item.cityName}${item.receiptAddress}"/>
+						<input type="hidden" class="receiptEmail" value="${item.receiptEmail}"/>
+					
+					
+						<dt><b class="f-ib">${item.receiptContacts?default('&nbsp;')}</b><i class="f-ib">${item.receiptMobile?default('&nbsp;')}</i></dt>
+						<dd class="uu-addr mystyle">
+							${item.provinceName}-${item.cityName}-${item.areaName}<br />
+							${item.receiptAddress}
+						</dd>
+						<dd class="uu-set j-set">
+							<h5>
+								<a href="javascript:void(0);" onclick="setDefault(${item.objectId});">设为默认地址</a> |
+								<a href="javascript:void(0);" onclick="edit(${item.objectId});">修改</a> |
+								<a href="javascript:void(0);" onclick="del(${item.objectId});">删除</a>
+							</h5>
+						</dd>
+					</dl>
+				</#if>
+			<#else>
+				<fieldset class="f-cb j-more-list f-fl">
+					<dl class="j-addr-dl">
+						<input type="hidden" class="receiptContacts" value="${item.receiptContacts}"/>
+						<input type="hidden" class="receiptMobile" value="${item.receiptMobile}"/>
+						<input type="hidden" class="receiptTelephone" value="${item.receiptTelephone}"/>
+						<input type="hidden" class="receiptZipcode" value="${item.receiptZipcode}"/>
+						<input type="hidden" class="receiptAddress" value="${item.provinceName}${item.cityName}${item.receiptAddress}"/>
+						<input type="hidden" class="receiptEmail" value="${item.receiptEmail}"/>
+						
+						<dt><b class="f-ib">${item.receiptContacts?default('&nbsp;')}</b><i class="f-ib">${item.receiptMobile?default('&nbsp;')}</i></dt>
+						<dd class="uu-addr mystyle">
+							${item.provinceName}-${item.cityName}-${item.areaName}<br />
+							${item.receiptAddress}
+						</dd>
+						<dd class="uu-set j-set">
+							<h5>
+								<a href="javascript:void(0);" onclick="setDefault(${item.objectId});">设为默认地址</a> |
+                                <a href="javascript:void(0);" onclick="edit(${item.objectId});">修改</a> |
+                                <a href="javascript:void(0);" onclick="del(${item.objectId});">删除</a>
+							</h5>
+						</dd>
+					</dl>
+				</fieldset>
+			</#if>
+		</#list>
+		</fieldset>
+	</div>
+	<p class="u-stp1-b">
+		<a href="javascript:void(0);" class="f-ib u-more j-addr-more">查看更多地址</a>
+		<a href="javascript:void(0);" class="f-ib u-add j-new-addr"> + 新增地址</a>
+	</p>
+
+	<h4>3<b class="f-ib">收货时间</b><input type="hidden" class="j-rdo-v1" /></h4>
+	<div class="u-stp2">
+		<ul>
+			<li><i class="f-ib m-rdo j-rdo" data-i="1">时间不限</i></li>
+			<li><i class="f-ib m-rdo j-rdo" data-i="2">只工作日送货</i></li>
+			<li><i class="f-ib m-rdo rdo-on j-rdo" data-i="3">只双休、节假日送货</i></li>
+		</ul>
+	</div>
+
+	<p class="u-stp5">
+		<span class="f-ib">商品金额：<b>${totalMoney?string('0.00')}</b> ${s_welfarePointName}</span><br />
+		<span class="f-ib">运费：免费</span><br />
+		<span class="f-ib">订单总金额：<b>${totalMoney?string('0.00')}</b> ${s_welfarePointName}</span><br />
+		<a href="javascript:void(0);" class="f-ib buyProductSubmit" >开始支付</a>
+	</p>
+		<input type="hidden" name="receiptContacts" id="receiptContacts" value=""/>
+		<input type="hidden" name="receiptMobile" id="receiptMobile" value=""/>
+		<input type="hidden" name="receiptTelephone" id="receiptTelephone" value=""/>
+		<input type="hidden" name="receiptZipcode" id="receiptZipcode" value=""/>
+		<input type="hidden" name="receiptAddress" id="receiptAddress" value=""/>
+		<input type="hidden" name="receiptEmail" id="receiptEmail" value=""/>
+		<input type="hidden" name="payableAmount" id="payableAmount" value="${totalMoney}"/>
+		<input type="hidden" name="skuId" id="receiptContacts" value="${sku.objectId}"/>
+		<input type="hidden" name="skuName" id="skuName" value="${sku.name}"/>
+		<input type="hidden" name="paymentWay" id="paymentWay" value=2 />
+		<input type="hidden" name="onlinePayChannels" id="onlinePayChannels" value=1 />
+		<input type="hidden" name="count" id="count" value="${count}" />
+</div>
+</form>
+<script>
+$(function(){
+
+	// 模拟checkbox控件
+	$('.j-tg-chk').click(function(){
+
+		var _this = $(this);
+		if(_this.hasClass('z-on')){
+			_this.removeClass('z-on');
+			$('.j-is-check').val(0);
+		}else{
+			_this.addClass('z-on');
+			$('.j-is-check').val(1);
+		}
+	});
+
+	// 模拟radio控件
+	var _tagRadio = $('.j-tg-rad');
+	_tagRadio.click(function(){
+
+		var _this = $(this);
+
+		if(_this.hasClass('z-on')){
+			return false;
+		}else{
+			_tagRadio.removeClass('z-on');
+			_this.addClass('z-on');
+			// 单选的隐藏域赋值
+			$('.j-is-need').val(_this.attr('data-val'));
+		}
+	});
+
+	// 选择支付方式
+	var _selPay = $('.j-sel-pay');
+	_selPay.click(function(){
+		_selPay.removeClass('z-on').siblings('i').hide();;
+		$(this).addClass('z-on').siblings('i').show();
+		$("#paymentWay").val($(this).attr("data-val"));
+		
+	});
+
+	// 展开和隐藏更多收货地址
+	$('.j-addr-more').click(function(){
+
+		var _this = $(this), _more = $('.j-more-list');
+		if(_this.hasClass('z-on')){
+			_this.removeClass('z-on').text('查看更多地址');
+			_more.slideUp();
+		}else{
+			_this.addClass('z-on').text('隐藏更多地址');
+			_more.slideDown();
+		}
+	});	
+
+	// 收获地址的变化效果
+	var _addrList = $('.j-addr-dl');
+	_addrList.hover(
+		function(){
+			var _this = $(this);
+			if(!_this.hasClass('z-on')){
+				_this.addClass('z-hov');
+			}
+		},
+		function(){
+			var _this = $(this);
+			if(!_this.hasClass('z-on')){
+				_this.removeClass('z-hov');
+			}
+		}
+		
+	// 点击设置为临时发货地址
+	).click(function(){ 
+
+		var _this = $(this);
+
+		if(_this.hasClass('z-on')) return false;
+		// 先取消所有的选中样式
+		_addrList.removeClass('z-on');
+		// 当前设置为选中样式
+		_this.addClass('z-on').removeClass('z-hov');
+		
+		
+		//隐藏域 收货地址 设置 值信息
+		$("#receiptContacts").val(_this.children(".receiptContacts").val());
+		$("#receiptMobile").val(_this.children(".receiptMobile").val());
+		$("#receiptTelephone").val(_this.children(".receiptTelephone").val());
+		$("#receiptZipcode").val(_this.children(".receiptZipcode").val());
+		$("#receiptAddress").val(_this.children(".receiptAddress").val());
+		$("#receiptEmail").val(_this.children(".receiptEmail").val());
+		
+		//发票信息
+		$("#invoiceAddress").val(_this.children(".receiptAddress").val());
+		$("#invoiceContacts").val(_this.children(".receiptContacts").val());
+		$("#invoiceTelephone").val(_this.children(".receiptMobile").val());
+	});
+	
+	
+	//初始化收货地址
+	
+	function initReceipt(){
+		_addrList.each(function(i) {
+			var _this = $(this);
+			if(_this.hasClass('z-on')){
+				//隐藏域 收货地址 设置 值信息
+				$("#receiptContacts").val(_this.children(".receiptContacts").val());
+				$("#receiptMobile").val(_this.children(".receiptMobile").val());
+				$("#receiptTelephone").val(_this.children(".receiptTelephone").val());
+				$("#receiptZipcode").val(_this.children(".receiptZipcode").val());
+				$("#receiptAddress").val(_this.children(".receiptAddress").val());
+				$("#receiptEmail").val(_this.children(".receiptEmail").val());
+				
+				//发票信息
+				$("#invoiceAddress").val(_this.children(".receiptAddress").val());
+				$("#invoiceContacts").val(_this.children(".receiptContacts").val());
+				$("#invoiceTelephone").val(_this.children(".receiptMobile").val());
+			}
+        });
+	}
+	initReceipt();
+
+	// 设置为默认收获地址
+	var _toDefault = $('.j-to-default');
+	_toDefault.click(function(){
+		
+		var _this = $(this);
+
+		if(_this.hasClass('z-dab')) return false;
+
+		// 改掉上届选中的文字
+		_toDefault.filter('.z-dab').removeClass('z-dab').text('设为默认');
+
+		// 先取消所有的选中样式
+		_addrList.removeClass('z-on');
+
+		// 当前设置为选中样式
+		_this.text('默认地址').addClass('z-dab').parents('dl').addClass('z-on').removeClass('z-hov').insertBefore($('.j-addr-dl:first'));
+
+	});	
+	
+	$(".buyProductSubmit").click(function(){
+		var totalMoney = "${totalMoney}";
+		$("#payableAmount").val(totalMoney);
+		$("#productOrderForm").submit();
+	});
+	
+});
+</script>
+<!-- 新增收获地址 -->
+   <table class="m-pop-up" id="j-pop-addr" style="z-index: 1001; position: absolute; top: 100px;">
+        <tbody>
+            <tr>
+                <td class="z-tac z-vam">
+                    <div class="z-ib u-addr">
+                        <h4>
+                            新增收货地址<a href="javascript:void(0);" class="j-cls-addr">&times;</a>
+                        </h4>
+                        <dl class="f-cb">
+                            <dt>所在地区</dt>
+                            <dd>
+                                <strong class="f-ib m-slt slt-w3"> 
+                                    <input type="hidden" class="j-val" value="" id="obj_id" /> 
+                                    <input type="hidden" class="j-val" value="0" id="provinceIdInput" /> 
+                                    <input type="text" value="省" readonly="readonly" class="slt j-slt" id="j_showProvince" /> 
+                                    <small class="f-ib f-poa j-opt">
+                                            <#list provinces?sort_by("name")?reverse as province> <a
+                                            href="javascript:void(0);" data-val="${province.objectId}"
+                                            class="f-ib" onclick="loadCity(${province.areaCode});">${province.name}</a>
+                                            </#list>
+                                    </small>
+                                </strong> 
+                                <strong class="f-ib m-slt slt-w3"> 
+                                    <input type="hidden" class="j-val" value="0" id="cityIdInput" /> 
+                                    <input type="text" value="市" readonly="readonly" class="slt j-slt" id="j_showCity"> 
+                                    <small class="f-ib f-poa j-opt" id="j_citys"> </small>
+                                </strong> 
+                                <strong class="f-ib m-slt slt-w3"> 
+                                    <input type="hidden" class="j-val" value="0" id="countyIdInput" /> 
+                                    <input type="text" value="区" readonly="readonly" class="slt j-slt" id="j_showCounty" />
+                                    <small class="f-ib f-poa j-opt" id="j_countys"> </small>
+                                </strong>
+                            </dd>
+                        </dl>
+                        <dl class="f-cb">
+                            <dt>详细地址</dt>
+                            <dd>
+                                <textarea id="j_receiptAddress"></textarea>
+                            </dd>
+                        </dl>
+                        <dl class="f-cb">
+                            <dt>邮政编码</dt>
+                            <dd>
+                                <input id="j_receiptZipcode" type="text" />
+                            </dd>
+                        </dl>
+                        <dl class="f-cb">
+                            <dt>收货人姓名</dt>
+                            <dd>
+                                <input id="j_receiptContacts" type="text" />
+                            </dd>
+                        </dl>
+                        <dl class="f-cb">
+                            <dt>联系电话</dt>
+                            <dd>
+                                <input id="j_receiptTelephone" type="text"
+                                    placeholder="手机、电话号码必须填写一项" />
+                            </dd>
+                        </dl>
+                        <dl class="f-cb">
+                            <dt>手机号码</dt>
+                            <dd>
+                                <input id="j_receiptMoblie" type="text"
+                                    placeholder="手机、电话号码必须填写一项" />
+                            </dd>
+                        </dl>
+                        <dl class="f-cb">
+                            <dt>&nbsp;</dt>
+                            <dd class="u-rdo">
+                                <input type="checkbox" id="j_isDefault" /> 设为默认地址
+                            </dd>
+                        </dl>
+                        <dl class="f-cb">
+                            <dt>&nbsp;</dt>
+                            <dd>
+                                <button type="button" onclick="saveAddr();">提交</button>
+                            </dd>
+                        </dl>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+ <script>
+var addrsSize = 0;
+$(function(){
+    var _menu = $('.j-slt-menu > a');
+    _menu.click(function(){
+
+        var _this = $(this), _on = 'on';
+
+        if(_this.hasClass(_on)) return false;
+
+        _menu.removeClass(_on);
+        _this.addClass(_on);
+
+        var _i = $('.j-slt-menu > a').index(_this);
+        $('.j-slt-cnt').eq(_i).show().siblings().hide();
+        if(_this.attr("id") == 'showAddr'){
+        }
+    });
+
+    // 修改支付密码
+    $('.j-edit-pay').click(function(){
+        $('.j-slt-cnt').hide();
+        $('.j-slt-epay').show();
+    });
+
+    // 模拟Select元素 [显示选项的点击事件]
+    var _tagSlt = $('.j-slt'), _onSlt = 'slt-on';
+    _tagSlt.click(function(){
+        var _this = $(this), _opt = _this.next('small');
+
+        // 无下拉选择值则无效
+        if(_opt.children().length <= 0) return false;
+
+        _tagSlt.not(this).removeClass(_onSlt).next().hide();
+
+        if(_this.hasClass(_onSlt)){
+            _this.removeClass(_onSlt);
+            _opt.hide();
+        }else{
+            _this.addClass(_onSlt);
+            _opt.show();
+        }
+
+        return false;
+    });
+    // 模拟Select元素 [下拉项(option)的点击事件]
+    $('body').on('click', '.j-opt > a', function(){
+
+        var _this = $(this), _parent = _this.parent('small'), _val = _this.attr('data-val');
+
+        _parent.hide().prev().removeClass(_onSlt).val(_this.text()).prev().val(_val);
+
+        // do somethings ....
+
+        return false;
+    });
+    // 模拟Select元素 [文档点击隐藏事件]
+    $(document).click(function(e){
+        $('.j-opt').hide();
+        $('.j-slt').removeClass(_onSlt)
+    });
+
+    // 关闭收货地址弹窗
+    $('.j-cls-addr').click(function(){
+        doMask(false);
+        $('#j-pop-addr').hide();
+    });
+
+    // 开启收货地址弹窗
+    $('.j-new-addr').click(function(){
+        if(addrsSize>=10){
+            alert("收货地址最多保留10条！请删除后添加！");
+            return;
+        }
+        doMask(true);
+        initAddr();
+        $('#j-pop-addr').show();
+    });
+    
+});
+    //操作遮罩
+    function doMask(_bool){
+        var _id = 'm-mask', _mask = $('#' + _id);
+        if(_bool){
+            if(_mask.length === 1){
+                _mask.show();
+            }else{
+                $('<div id="'+ _id +'"></div>').appendTo('body').css({'opacity':'.2'});
+            }
+        }else{
+            _mask.hide();
+        }
+    }
+    function initAddr(){
+        $("#j_showCity").val('市');
+        $("#j_showCounty").val('区');
+        $("#j_showProvince").val('省');
+        $("#j_citys").html('');
+        $("#j_countys").html('');
+        $("#obj_id").val('');
+        $("#provinceIdInput").val('');
+        $("#cityIdInput").val('');
+        $("#countyIdInput").val('');
+        $("#j_receiptAddress").val('');
+        $("#j_receiptZipcode").val('');
+        $("#j_receiptContacts").val('');
+        $("#j_receiptTelephone").val('');
+        $("#j_receiptMoblie").val('');
+        $("#j_isDefault").attr("checked",false);
+    }
+    function edit(objId){
+        $.ajax({
+            url: "${dynamicDomain}/receiveAddr/showGoodsReceiptAddr/"+objId,
+            type : 'post',
+            dataType : 'json',
+            success :function (data) {
+                if(data != null && data.receiptAddr != null){
+                    var receiptAddr = data.receiptAddr;
+                    $("#obj_id").val(receiptAddr.objectId);
+                    $("#provinceIdInput").val(receiptAddr.provinceId);
+                    $("#j_showProvince").val(receiptAddr.provinceName);
+                    $("#cityIdInput").val(receiptAddr.cityId);
+                    $("#j_showCity").val(receiptAddr.cityName);
+                    $("#countyIdInput").val(receiptAddr.areaId);
+                    $("#j_showCounty").val(receiptAddr.areaName);
+                    $("#j_receiptAddress").val(receiptAddr.receiptAddress);
+                    $("#j_receiptZipcode").val(receiptAddr.receiptZipcode);
+                    $("#j_receiptContacts").val(receiptAddr.receiptContacts);
+                    $("#j_receiptTelephone").val(receiptAddr.receiptTelephone);
+                    $("#j_receiptMoblie").val(receiptAddr.receiptMoblie);
+                    if(receiptAddr.isDefault != null && receiptAddr.isDefault == 1 ){
+                        $("#j_isDefault").attr("checked",true);
+                    }
+                    doMask(true);
+                    $('#j-pop-addr').show();
+                }
+            }
+        
+        });
+    }
+    function del(objId){
+        if(confirm("确定要删除该收货地址吗？")){
+            $.ajax({
+                url: "${dynamicDomain}/receiveAddr/delAddr/"+objId,
+                type : 'post',
+                dataType : 'json',
+                success :function (data) {
+                    if(data != null && data.flag != null){
+                        if(data.flag){
+                            var url = '${dynamicDomain}/${path}';
+                            window.location.href = url;
+                        }else{
+                            if(data.msg != '' && data.msg != null ){
+                                alert(data.msg);
+                            }else{
+                                alert("删除地址失败！");
+                            }
+                        }
+                    }
+                }
+            
+            });
+        }
+      }
+    function setDefault(objId){
+        $.ajax({
+            url: "${dynamicDomain}/receiveAddr/setDefault/"+objId,
+            type : 'post',
+            dataType : 'json',
+            success :function (data) {
+                if(data != null && data.result != null){
+                    if(data.result){
+                        var url = '${dynamicDomain}/${path}';
+                            window.location.href = url;
+                    }else{
+                        alert("设置默认地址失败！");
+                    }
+                }
+            }
+        
+        });
+      }
+      
+    function loadCity(provinceCode){
+        var cityHtml = "";
+        $("#j_showCity").val('市');
+        $("#j_showCounty").val('区');
+        $("#j_citys").html('');
+        $("#j_countys").html('');
+        $.ajax({
+            url: "${dynamicDomain}/receiveAddr/getAreaChildren/"+provinceCode,
+            type : 'post',
+            dataType : 'json',
+            success :function (data) {
+                if(data != null && data.areas != null){
+                        var areas  = data.areas;
+                        for(var i=0;areas.length&&i<areas.length;i++){
+                            var city = areas[i];
+                            cityHtml+="<a href=\"javascript:void(0);\" data-val=\""+city.objectId+"\" onclick=\"loadCounty('"+city.areaCode+"');\" class=\"f-ib\">"+city.name+"</a>";
+                    }
+                    $("#j_citys").html(cityHtml);
+                }
+            }
+        
+        });
+    }
+    
+    function loadCounty(cityCode){
+        var countyHtml = "";
+        $("#j_showCounty").val('区');
+        $("#j_countys").html('');
+        $.ajax({
+            url: "${dynamicDomain}/receiveAddr/getAreaChildren/"+cityCode,
+            type : 'post',
+            dataType : 'json',
+            success :function (data) {
+                if(data != null && data.areas != null){
+                        var areas  = data.areas;
+                        for(var i=0;areas.length&&i<areas.length;i++){
+                            var county = areas[i];
+                            countyHtml+="<a href=\"javascript:void(0);\" data-val=\""+county.objectId+"\" class=\"f-ib\">"+county.name+"</a>";
+                }
+                    $("#j_countys").html(countyHtml);
+                }
+            }
+        
+        });
+    }
+    
+    function saveAddr(){
+        if(verifyForm()){
+            var objectId = $("#obj_id").val();
+            var provinceId = $("#provinceIdInput").val();
+            var provinceName = $("#j_showProvince").val();
+            var cityId = $("#cityIdInput").val();
+            var cityName = $("#j_showCity").val();
+            var areaId = $("#countyIdInput").val();
+            var areaName = $("#j_showCounty").val();
+            var receiptAddress = $("#j_receiptAddress").val();
+            var receiptZipcode = $("#j_receiptZipcode").val();
+            var receiptContacts = $("#j_receiptContacts").val();
+            var receiptTelephone = $("#j_receiptTelephone").val();
+            var receiptMoblie = $("#j_receiptMoblie").val();
+            var isDefault = $("#j_isDefault").attr("checked");
+            var isDefaultVal = 2;
+            if(isDefault){
+                isDefaultVal = 1;
+            }
+            $.ajax({
+                url: "${dynamicDomain}/receiveAddr/saveAddr",
+                type : 'post',
+                data:{    
+                    objectId : objectId,    
+                    provinceId : provinceId,    
+                    provinceName : provinceName,    
+                    cityId : cityId,    
+                    cityName : cityName,    
+                    areaId : areaId,    
+                    areaName : areaName,    
+                    receiptAddress : receiptAddress,    
+                    receiptZipcode : receiptZipcode,    
+                    receiptContacts : receiptContacts,    
+                    receiptTelephone : receiptTelephone,    
+                    receiptMoblie : receiptMoblie,    
+                    isDefault : isDefaultVal    
+                    },  
+                dataType : 'json',
+                success :function (data) {
+                    if(data != null && data.result != null){
+                        if(data.result){
+                            doMask(false);
+                            var url = '${dynamicDomain}/${path}';
+                            window.location.href = url;
+                            $('#j-pop-addr').hide();
+                        }
+                    }
+                }
+            
+            });
+        }
+    }
+    
+    
+    function verifyForm(){
+        var provinceId = $("#provinceIdInput").val();
+        var provinceName = $("#j_showProvince").val();
+        if(isEmpty(provinceId) || isEmpty(provinceName)){
+            alert("请选择省份");
+            return false;
+        }
+        
+        var cityId = $("#cityIdInput").val();
+        var cityName = $("#j_showCity").val();
+        
+        if(isEmpty(cityId) || isEmpty(cityName)){
+            alert("请选择城市");
+            return false;
+        }
+        
+        var areaId = $("#countyIdInput").val();
+        var areaName = $("#j_showCounty").val();
+        
+        if(isEmpty(areaId) || isEmpty(areaName)){
+            alert("请选择区县");
+            return false;
+        }
+        var receiptAddress = $("#j_receiptAddress").val();
+        if(isEmpty(receiptAddress)){
+            alert("请输入详细地址！");
+            return false;
+        }else{
+            if(receiptAddress.length>64){
+                alert("详细地址过长，最大长度为64个字符！");
+                return false;
+            }
+        }
+        
+        var receiptZipcode = $("#j_receiptZipcode").val();
+        if(isEmpty(receiptZipcode)){
+            alert("请输入邮政编码！");
+            return false;
+        }else{
+            if(!utils.isZipCode(receiptZipcode)){
+                alert("请输入正确的邮政编码！");
+                return false;
+            }
+        }
+        var receiptContacts = $("#j_receiptContacts").val();
+        if(isEmpty(receiptContacts)){
+            alert("请输入收货人姓名！");
+            return false;
+        }else{
+            if(receiptAddress.length>32){
+                alert("详细地址过长，最大长度为32个字符！");
+                return false;
+            }
+        }
+        var receiptTelephone = $("#j_receiptTelephone").val();
+        var receiptMoblie = $("#j_receiptMoblie").val();
+        if(isEmpty(receiptTelephone) && isEmpty(receiptMoblie)){
+            alert("手机、电话号码必须填写一项");
+            return false;
+        }else{
+            if(!isEmpty(receiptTelephone)){
+                if(!utils.isTel(receiptTelephone)){
+                    alert("请输入正确的联系电话！");
+                    return false;
+                }
+            }
+            if(!isEmpty(receiptMoblie)){
+                if(!utils.isMobile(receiptMoblie)){
+                    alert("请输入正确的手机号！");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    function isEmpty(obj){
+        if(obj != null && obj != "" && typeof(obj) != "undefined"){
+            return false;
+        }else{
+            return true;
+        }
+        
+    }
+</script>
+
+</body>
+</head>

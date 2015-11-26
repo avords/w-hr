@@ -1,0 +1,372 @@
+<#include "/common/order.html">
+<#include "/common/page.html">
+<!DOCTYPE html>
+<head>
+    <script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+</head>
+<body>
+	
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">福利管理</a> &gt;
+		发放福利券
+	</h4>
+</div>
+
+<form action="${dynamicDomain}/grantWelfare/queryWelfareList" method="post" id="searchForm">
+<div id="g-content" class="f-cb">
+	
+	<#include "/include/nav_menu_link.html">
+	
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit"><span class="f-ib">福利发放</span></h4>
+
+		<div id="g-list-p8">
+			<input type="hidden" id="subOrderId"/>
+			<div class="u-flt f-cb">
+
+				<span class="f-fl">
+					<input type="text" class="u-txt z-tw1 j-iib" placeholder="订单编号"  name="search_EQS_subOrderNo"  value="${(pageActivity.paramMap.subOrderNo!'')}">
+				</span>
+
+				<span class="f-fl"><input type="text" readonly="readonly" placeholder="下单开始时间" class="u-txt u-date" name="search_GED_bookingDate" id="startDate" onClick="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'endDate\')}',readOnly:true})" value="<#if pageActivity.paramMap.bookingDateAfter??>${pageActivity.paramMap.bookingDateAfter?string('yyyy-MM-dd')}</#if>"></span>
+				<span class="f-fl"><input type="text" readonly="readonly" placeholder="下单截至时间" class="u-txt u-date" name="search_LED_bookingDate" id="endDate" onClick="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'startDate\')}',readOnly:true})" value="<#if pageActivity.paramMap.bookingDateBefore??>${pageActivity.paramMap.bookingDateBefore?string('yyyy-MM-dd')}</#if>"></span>
+
+				<span class="f-fl f-por">
+					<input type="hidden" class="j-slt-val" name="search_EQI_paymentWay"  value="${(pageActivity.paramMap.paymentWay!'')}">
+						<#if pageActivity.paramMap.paymentWay?? >
+								<#if pageActivity.paramMap.paymentWay==1 >
+									<input type="text" value="线下支付" readonly="" class="u-txt u-slt j-slt">
+									<#else>
+									<input type="text" value="线上支付" readonly="" class="u-txt u-slt j-slt">
+								</#if>
+							<#else>
+							<input type="text" value="付款方式" readonly="" class="u-txt u-slt j-slt">
+						</#if>
+						
+						<em class="f-ib f-poa j-opt">
+							<a href="javascript:void(0);" data-val="" class="f-ib">付款方式</a>
+							<a href="javascript:void(0);" data-val="1" class="f-ib">线下支付</a>
+							<a href="javascript:void(0);" data-val="2" class="f-ib">线上支付</a>
+						</em>
+				</span>
+				
+				<span class="f-fr z-lst">
+					<button type="button" class="u-sch">查询</button>
+				</span>
+			</div>
+
+			<div class="u-act f-cb">
+				<h5 class="f-fr">
+						<@fpage url="${dynamicDomain}/grantWelfare/queryWelfareList"  totalPage=pageActivity.totalPage currentPage=pageActivity.currentPage formId="searchForm" />
+				</h5>
+			</div>
+
+			<ol class="u-tte">
+				<li class="f-ib u-w1">商品</li>
+				<li class="f-ib u-w2">数量</li>
+				<li class="f-ib u-w3">单价(元)</li>
+				<li class="f-ib u-w4">实际付款</li>
+				<li class="f-ib u-w5">付款方式</li>
+				<li class="f-ib u-w6">交易状态</li>
+				<li class="f-ib u-w7">操作</li>
+			</ol>
+
+			<#list pageActivity.list as welfareTemp>
+			<div class="u-list">
+				<p>
+					<span class="f-ib">订单号：${welfareTemp.subOrderNo}</span>
+					<span class="f-ib">下单时间：${welfareTemp.bookingDate?string('yyyy-MM-dd HH:mm:ss')}</span>
+					<span class="f-ib">操作账号：${welfareTemp.loginName}</span>
+				</p>
+				<table>
+					<tr>
+						<td class="u-w1">
+								<#list welfareTemp.orderProductList as orderSku>
+									<a href="${dynamicDomain}/welfarePackage/detail/${orderSku.productId}" target="_blank">
+										<img  class="listImg"  src="${adminStaticDomain}${orderSku.imgUrl}" />
+									</a>
+								</#list>  
+						</td>
+						<td class="u-w2"><a href="${dynamicDomain}/welfarePackage/detail/${welfareTemp.packageId}" target="top" class="f-ib">${welfareTemp.productName}</a></td>
+						<td class="u-w3">${welfareTemp.productCount}</td>
+						<td class="u-w4">${welfareTemp.productPrice?string('0.00')}</td>
+						<td class="u-w5"><i>${welfareTemp.payableAmount?string('0.00')}</i></td>
+						<td class="u-w6"><@paymentWay payWay='${welfareTemp.paymentWay}' /></td>
+						<td class="u-w7"><@orderStatus status='${welfareTemp.subOrderState}' /></td>
+						<td class="u-w8">
+
+							<#if welfareTemp.orderGrantType == 1> 
+							   <a href="javascript:void(0);" class="f-ib u-s1" onclick="onlineSend('${welfareTemp.objectId}')" >在线发放</a><br />
+							<#elseif welfareTemp.orderGrantType ==2> 
+							   <a href="javascript:void(0);" class="f-ib" onclick="sureButton('${welfareTemp.objectId}')">线下发放</a><br />
+						    <#else> 
+							   <a href="javascript:void(0);" class="f-ib u-s1" onclick="onlineSend('${welfareTemp.objectId}')"  >在线发放</a><br />
+							   <a href="javascript:void(0);" class="f-ib"  onclick="sureButton('${welfareTemp.objectId}')">线下发放</a><br />
+							</#if>
+							<a href="javascript:void(0);" class="f-ib u-s2" onclick="viewInfo('${welfareTemp.objectId}')">查看详情</a>
+						</td>
+					</tr>
+				</table>
+			</div>
+			</#list> 
+			
+			<div class="u-act f-cb">
+					<@pageform totalPage=pageActivity.totalPage currentPage=pageActivity.currentPage formId="searchForm" />
+			</div>
+		
+		</div>
+	</div>
+</div>
+</form>
+
+<!-- 线下发放的弹窗 -->
+<form action="${dynamicDomain}/grantWelfare/exportCardInfo" method="post" id="offline-form" target="top">
+<input type="hidden" id="subObjectId"  name="subObjectId">
+<div class="m-pop u-pop1">
+	<h4>线下发放确认<a href="javascript:void(0);" class="f-ib j-pop-close"></a></h4>
+
+	<fieldset class="f-cb u-pop-f1">
+		<label class="f-fl">支付密码：</label>
+		<span class="f-fl"><input type="password" class="u-txt" id="password" name="password" onchange="getPwd(this)"/></span>
+	</fieldset>
+	<fieldset class="f-cb u-pop-f1">
+		<p>提醒：若您选择线下发放后，将不能再进行线上发放操作。</p>
+	</fieldset>
+	<fieldset class="f-cb u-pop-f1">
+		<label class="f-fl">&nbsp;</label>
+		<span class="f-fl">
+			<button type="button" class="u-sub"  onclick="confirmGrant()">确认发放</button>
+			<button type="reset" class="u-reset j-pop-close">取消</button>
+		</span>
+	</fieldset>
+</div>
+</form>
+
+<script>
+$(function(){
+	
+	$('#date-start').click(function(){
+		WdatePicker({maxDate:'#F{$dp.$D(\'date-end\')}'});
+	});
+	$('#date-end').click(function(){
+		WdatePicker({minDate:'#F{$dp.$D(\'date-start\')}'});
+	});
+
+	// 弹窗
+	$('.j-btn-dline').click(function(){
+		openMask(true);
+		openPop(true,250);
+	});
+	
+	// 模拟Select控件
+	$('.j-slt').click(function(){
+
+		var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+		$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+		if(_this.hasClass('z-on-slt')){
+			_this.removeClass('z-on-slt');
+			_opt.hide();
+		}else{
+			_this.addClass('z-on-slt');
+			_opt.show();
+		}
+		return false;
+	});
+
+	// 下拉项的点击事件
+	$('.j-opt > a').click(function(){
+
+		var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+		_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+		
+		return false;
+	});
+
+	$('body').click(function(e){
+		$('.j-opt').hide();
+		$('.j-slt').removeClass('z-on-slt') ;
+	});
+
+	$('body').on('click','.j-pop-close',function(){
+		openMask(false);
+		openPop(false);
+	});
+});
+
+// 窗口缩放控制位置
+var _mPop = '.m-pop';
+$(window).resize(function(){
+	if(!$(_mPop).is(':hidden')){
+		centerPop(_mPop, 250);
+	}
+});
+
+// 开启弹窗
+function openPop(_bool, _myh){
+	_myh = _myh || 0;
+	if(!_bool){
+		$(_mPop).hide();
+	}else{
+		centerPop(_mPop, _myh);
+	}
+}
+
+// 弹窗位置居中
+function centerPop(_ob, _myh){
+
+	var _pop = $(_ob), _h = _pop.height(), _w = _pop.width();
+	var _win = $(window), _wh = _win.height(), _ww = _win.width();
+	var _mh = _myh == 0 ? (((_wh - _h) / 2) - _myh) : _myh;
+	var _css = {'top':_mh , 'left':(_ww - _w) / 2};
+
+	_pop.css(_css).show();
+}
+
+// 开启遮罩
+function openMask(_bool){
+	var _mask = $('#g-mask');
+	if(_bool){
+		if(_mask.length === 1){
+			_mask.show();
+		}else{
+			$('<div id="g-mask"></div>').appendTo('body').css('opacity','.2');
+		}
+	}else{
+		_mask.hide();
+	}
+}
+
+
+
+//查询
+$(".u-sch").click(function(){
+	$("#ec_p").val(1);
+	$("#searchForm").submit();
+});
+
+
+//查看详情
+function viewInfo(subOrderId){
+	$.ajax({
+        url:'${dynamicDomain}/grantWelfare/checkSubOrderState',
+        type : 'post',
+        async : false,
+        dataType : 'json',
+        data : {subOrderId: subOrderId},
+          success : function(json) {
+        	  if(json.subOrderState == 4){
+        		  	document.location.href = "${dynamicDomain}/grantWelfare/viewWelfareInfo/"+subOrderId ;
+			  }else if(json.subOrderState == 5){
+				    //已发放 
+				 	winAlert("该订单已全部发放完成！","$('#searchForm').submit()") ;
+			  } 
+          },
+    	  error: function(){
+		  }
+    });
+}
+
+
+//在线发放
+function onlineSend(subOrderId){
+	$.ajax({
+        url:'${dynamicDomain}/grantWelfare/checkSubOrderState',
+        type : 'post',
+        async : false,
+        dataType : 'json',
+        data : {subOrderId: subOrderId},
+          success : function(json) {
+        	  if(json.subOrderState == 4){
+        		    //待发放 
+        		  	if(json.grantType=="" || json.grantType==1 || json.grantType==null){
+        		  		document.location.href = "${dynamicDomain}/grantWelfare/editWelfare/"+subOrderId ;
+        		  	}
+			  }else if(json.subOrderState == 5){
+				    //已发放 
+				  	winAlert("该订单已全部发放完成！","$('#searchForm').submit()") ;
+			  } 
+          },
+    	  error: function(){
+		  }
+    });
+}
+
+
+//点击线下发放
+function sureButton(subOrderId){	
+	$.ajax({
+        url:'${dynamicDomain}/grantWelfare/checkSubOrderState',
+        type : 'post',
+        async : false,
+        dataType : 'json',
+        data : {subOrderId: subOrderId},
+          success : function(json) {
+        	  if(json.subOrderState == 4){
+        		    //待发放 
+        		  	if(json.grantType=="" || json.grantType==2 || json.grantType==null){
+        		  		$("#password").val("") ;
+        		  		$('#subOrderId').val(subOrderId) ;
+        		  		
+        		  		//开启线下发放弹窗
+        				openMask(true);
+        				openPop(true,250);
+        		  	}
+			  }else if(json.subOrderState == 5){
+			    	//已发放 
+				  	winAlert("该订单已全部发放完成！","$('#searchForm').submit()") ;
+			  } 
+          },
+    	  error: function(){
+		  }
+    });
+
+}
+
+var pwd = "";
+function getPwd(obj){
+	if(obj){
+		pwd = $(obj).val();
+	}
+	return pwd;
+}
+
+
+//线下发放确认
+function confirmGrant(){
+	var subOrderId = $('#subOrderId').val() ;
+	$('#subObjectId').val(subOrderId) ;
+	var pwd = getPwd();
+	if(subOrderId && pwd){
+		$.ajax({
+	          url:'${dynamicDomain}/grantWelfare/confirmPayOffline',
+	          type : 'post',
+	          async : true,
+	          dataType : 'json',
+	          data : "subOrderId=" + subOrderId + "&password=" +pwd,
+	          success : function(json) {
+	              if(json.result==1){
+	                 openMask(false);
+	    			 openPop(false);
+	    			 $("#offline-form").submit();
+	              }else if(json.result==0){
+	            	  winAlert("支付密码错误");
+	              }
+	              return false;
+	          }
+	      });
+	}
+	return false;
+}
+
+</script>
+
+
+</body>
+</html>

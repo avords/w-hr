@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<title>设置收货地址</title>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="-1" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/center.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+<script type="text/javascript" src="${staticDomain}js/func.js"></script>
+</head>
+<body>
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">账户管理</a> &gt;
+		设置收货地址
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<script>var _menuIndex = 5;</script>
+
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit"><span class="f-ib">账户密码设置</span></h4>
+
+		
+<div id="e-y2-2" class="lyt">
+	<div class="main">
+		<div class="menu j-slt-menu">
+			<a href="${dynamicDomain}/system/account">通用设置</a>
+			<a href="${dynamicDomain}/system/password">设置登录密码</a>
+			<a href="${dynamicDomain}/system/payPassword">设置支付密码</a>
+			<a href="javascript:void(0);" class="on">设置收货地址</a>
+		</div>
+		<div class="cnt">
+			<div class="fetch j-slt-cnt">
+				<dl class="f-cb">
+					<dt>已有收货地址</dt>
+					<dd><a href="javascript:void(0);" class="f-ib j-new-addr">新增地址</a><br/>
+				<span style="display: none;"   class="error" id="newAddrMsg"></span></dd>
+				</dl>
+				<table>
+					<thead>
+						<tr>
+							<td class="td0">收货人</td>
+							<td class="td2">所在地区</td>
+							<td class="td1">详细地址</td>
+							<td class="td3">邮编</td>
+							<td class="td4">邮箱</td>
+							<td class="td5">电话/手机</td>
+							<td>操作</td>
+						</tr>
+					</thead>
+					<tbody id="j_addr_tbody">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+var addrsSize = 0;
+$(function(){
+	var _menu = $('.j-slt-menu > a');
+	_menu.click(function(){
+
+		var _this = $(this), _on = 'on';
+
+		if(_this.hasClass(_on)) return false;
+
+		_menu.removeClass(_on);
+		_this.addClass(_on);
+
+		var _i = $('.j-slt-menu > a').index(_this);
+		$('.j-slt-cnt').eq(_i).show().siblings().hide();
+	});
+	
+	// 模拟Select元素 [显示选项的点击事件]
+    var _tagSlt = $('.j-slt'), _onSlt = 'slt-on';
+    _tagSlt.click(function(){
+        var _this = $(this), _opt = _this.next('small');
+
+        // 无下拉选择值则无效
+        if(_opt.children().length <= 0) return false;
+
+        _tagSlt.not(this).removeClass(_onSlt).next().hide();
+
+        if(_this.hasClass(_onSlt)){
+            _this.removeClass(_onSlt);
+            _opt.hide();
+        }else{
+            _this.addClass(_onSlt);
+            _opt.show();
+        }
+
+        return false;
+    });
+    // 模拟Select元素 [下拉项(option)的点击事件]
+    $('body').on('click', '.j-opt > a', function(){
+
+        var _this = $(this), _parent = _this.parent('small'), _val = _this.attr('data-val');
+
+        _parent.hide().prev().removeClass(_onSlt).val(_this.text()).prev().val(_val);
+
+        // do somethings ....
+
+        return false;
+    });
+    // 模拟Select元素 [文档点击隐藏事件]
+    $(document).click(function(e){
+        $('.j-opt').hide();
+        $('.j-slt').removeClass(_onSlt)
+    });
+	
+    // 关闭收货地址弹窗
+    $('.j-cls-addr').click(function(){
+    	doMask(false);
+		$('#j-pop-addr').hide();
+    });
+
+    // 开启收货地址弹窗
+    $('.j-new-addr').click(function(){
+    	 if(addrsSize>=10){
+         	$("#newAddrMsg").html("收货地址最多保留10条！请删除后添加！");
+         	$("#newAddrMsg").show();
+             return;
+         }else{
+         	$("#newAddrMsg").html("");
+         	$("#newAddrMsg").hide();
+         }
+    	doMask(true);
+    	initAddr();
+		$('#j-pop-addr').show();
+    });
+    loadAddrs();
+	
+
+	$("#updateMobileBtn").click(function(){
+		var params = $("#updateMobileForm").serialize();
+		$.ajax({
+				url : "${dynamicDomain}/system/updateMobile?"+params,
+				type : 'post',
+				dataType : 'json',
+				data : "timstamp=" + (new Date()).valueOf(),
+				success : function(msg)
+				{
+					if(msg.result){
+						$("#newMobile").val("");
+						$("#code").val("");
+						$('.j-send-code').removeClass('on').html('获取验证码')
+					}
+					winwinAlert(msg.message);
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+	          		winwinAlert("系统异常，请联系管理员");
+	      		}
+			});
+	});
+	
+	// 发送验证码
+	$('.j-send-code').click(function(){
+		var mobile = $("#newMobile").val();
+		if(mobile!=""&&mobile!="undefined"){
+			var _this = $(this);
+			if(_this.hasClass('on')) return false;
+			var _n = 60, _ch = '秒';
+			_this.addClass('on').html('<i>'+ _n +'</i> ' + _ch);
+			var _int = setInterval(function() {
+				var t = _this.find('i').text();
+				t--;
+				if(t <= 0) {
+					clearInterval(_int);
+					_this.removeClass('on').html('获取验证码');
+				}else{
+					_this.html('<i>'+ t +'</i> ' + _ch);
+				}
+			}, 1000);
+			$.ajax({
+				url : "${dynamicDomain}/sms/getUpdateValidateCode/"+mobile,
+				type : 'post',
+				dataType : 'json',
+				data : "timstamp=" + (new Date()).valueOf(),
+				success : function(msg)
+				{
+					winwinAlert(msg.message);
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					winwinAlert("系统异常，请联系管理员");
+	      		}
+			});
+		}else{
+			winwinAlert("请输入正确的手机号");
+		}
+	});
+	
+	// 发送验证码
+	$('.j-send-pay-code').click(function(){
+			var _this = $(this);
+			if(_this.hasClass('on')) return false;
+			var _n = 60, _ch = '秒';
+			_this.addClass('on').html('<i>'+ _n +'</i> ' + _ch);
+			var _int = setInterval(function() {
+				var t = _this.find('i').text();
+				t--;
+				if(t <= 0) {
+					clearInterval(_int);
+					_this.removeClass('on').html('获取验证码');
+				}else{
+					_this.html('<i>'+ t +'</i> ' + _ch);
+				}
+			}, 1000);
+			$.ajax({
+				url : "${dynamicDomain}/sms/getPayCodeValidateCode",
+				type : 'post',
+				dataType : 'json',
+				data : "timstamp=" + (new Date()).valueOf(),
+				success : function(msg)
+				{
+					winwinAlert(msg.message);
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					winwinAlert("系统异常，请联系管理员");
+	      		}
+			});
+	});
+	
+});	
+	
+//操作遮罩
+function doMask(_bool){
+	var _id = 'm-mask', _mask = $('#' + _id);
+	if(_bool){
+		if(_mask.length === 1){
+			_mask.show();
+		}else{
+			$('<div id="'+ _id +'"></div>').appendTo('body').css({'opacity':'.2'});
+		}
+	}else{
+		_mask.hide();
+	}
+}
+
+//初始化表单
+function initAddr(){
+	$("#j_showCity").val('市');
+	$("#j_showCounty").val('区');
+	$("#j_showProvince").val('省');
+	$("#j_citys").html('');
+	$("#j_countys").html('');
+	$("#obj_id").val('');
+	$("#provinceIdInput").val('');
+	$("#cityIdInput").val('');
+	$("#countyIdInput").val('');
+	$("#j_receiptAddress").val('');
+	$("#j_receiptZipcode").val('');
+	$("#j_receiptContacts").val('');
+	$("#j_receiptTelephone").val('');
+	$("#j_receiptMoblie").val('');
+	$("#j_receiptEmail").val('');
+	$("#j_isDefault").attr("checked",false);
+}
+	
+	
+	//编辑收货地址
+	function edit(objId){
+		$.ajax({
+   			url: "${dynamicDomain}/system/showGoodsReceiptAddr/"+objId,
+   			type : 'post',
+   			dataType : 'json',
+   			success :function (data) {
+   				if(data != null && data.receiptAddr != null){
+   					var receiptAddr = data.receiptAddr;
+   					$("#obj_id").val(receiptAddr.objectId);
+   					$("#provinceIdInput").val(receiptAddr.provinceId);
+   					$("#j_showProvince").val(receiptAddr.provinceName);
+   					$("#cityIdInput").val(receiptAddr.cityId);
+   					$("#j_showCity").val(receiptAddr.cityName);
+   					if(receiptAddr.areaId == '8201' || receiptAddr.areaId == '8202'){
+   						$("#countyIdInput").val('');
+   						$("#j_showCounty").val('');
+   	   					$("#j_showCounty").hide();
+   					}else{
+   						$("#countyIdInput").val(receiptAddr.areaId);
+   	   					$("#j_showCounty").val(receiptAddr.areaName);
+   					}
+   					$("#countyIdInput").val(receiptAddr.areaId);
+   					$("#j_showCounty").val(receiptAddr.areaName);
+   					$("#j_receiptAddress").val(receiptAddr.receiptAddress);
+   					if(receiptAddr.receiptZipcode == 0){
+   						$("#j_receiptZipcode").val();	
+   					}else{
+   						$("#j_receiptZipcode").val(receiptAddr.receiptZipcode);	
+   					}
+   					$("#j_receiptEmail").val(receiptAddr.receiptEmail);
+   					$("#j_receiptContacts").val(receiptAddr.receiptContacts);
+   					$("#j_receiptTelephone").val(receiptAddr.receiptTelephone);
+   					$("#j_receiptMoblie").val(receiptAddr.receiptMoblie);
+   					if(receiptAddr.isDefault != null && receiptAddr.isDefault == 1 ){
+	   					$("#j_isDefault").attr("checked",true);
+   					}else{
+   						$("#j_isDefault").attr("checked",false);
+   					}
+   					doMask(true);
+   					$('#j-pop-addr').show();
+   				}
+   			}
+		
+   		});
+	}
+	
+	function confirmSure_del(objId){
+			$.ajax({
+	   			url: "${dynamicDomain}/system/delAddr/"+objId,
+	   			type : 'post',
+	   			dataType : 'json',
+	   			success :function (data) {
+	   				if(data != null && data.flag != null){
+	   					if(data.flag){
+	   						loadAddrs();
+	   					}else{
+	   						if(data.msg != '' && data.msg != null ){
+	   							winAlert(data.msg);
+	   						}else{
+		   						winAlert("删除地址失败！");
+	   						}
+	   					}
+	   				}
+	   			}
+			
+	   		});
+	  }
+	
+	
+	function setDefault(objId){
+		$.ajax({
+   			url: "${dynamicDomain}/system/setDefault/"+objId,
+   			type : 'post',
+   			dataType : 'json',
+   			success :function (data) {
+   				if(data != null && data.result != null){
+   					if(data.result){
+   						loadAddrs();
+   					}else{
+   						winAlert("设置默认地址失败！");
+   					}
+   				}
+   			}
+		
+   		});
+	  }
+	
+	
+	function loadAddrs(){
+		var addrsHtml = "";
+		$.ajax({
+   			url: "loadaddrs",
+   			type : 'post',
+   			dataType : 'json',
+   			success :function (data) {
+   				if(data != null && data.addrs != null){
+   						var addrs  = data.addrs;
+   						addrsSize = addrs.length;
+   						for(var i=0;addrs.length&&i<addrs.length;i++){
+   							var addr = addrs[i];
+   							var connect = addr.receiptMoblie;
+   							addrsHtml+="<tr>";
+   							addrsHtml+="<td>"+addr.receiptContacts+"</td>";
+   							addrsHtml+="<td>"+addr.provinceName+"-"+addr.cityName+"-"+addr.areaName+"</td>";
+   							addrsHtml+="<td>"+addr.receiptAddress+"</td>";
+   							if(addr.receiptZipcode == 0){
+   	   							addrsHtml+="<td></td>";
+
+   							}else{
+   	   							addrsHtml+="<td>"+addr.receiptZipcode+"</td>";
+   							}
+   							addrsHtml+="<td>"+addr.receiptEmail+"</td>";
+   							if(isEmpty(addr.receiptMoblie)){
+   								connect = addr.receiptTelephone;
+   							}
+   							addrsHtml+="<td>"+connect+"</td>";
+   							addrsHtml+="<td class=\"td5\">";
+   							addrsHtml+="<a href=\"javascript:void(0);\" onclick=\"edit("+addr.objectId+");\" class=\"f-ib\">修改</a> ";
+   							addrsHtml+="<a href=\"javascript:void(0);\" data-val=\"您确认删除?|0|"+addr.objectId+"|del\" class=\"j-confirm-open f-ib rm\">删除</a> ";
+
+   							if(addr.isDefault != null && addr.isDefault == 1 ){
+	   							addrsHtml+="<span class=\"f-ib\">默认地址</span>";
+   							}else{
+	   							addrsHtml+="<a href=\"javascript:void(0);\" onclick=\"setDefault("+addr.objectId+");\" class=\"f-ib\">设为默认</a>";
+   							}
+   							addrsHtml+="</td>";
+   							addrsHtml+="</tr> ";
+					}
+   					$("#j_addr_tbody").html(addrsHtml);
+   				}
+   			}
+		
+   		});
+	}
+	
+	
+	function loadCity(provinceCode){
+		var cityHtml = "";
+		$("#j_showCity").val('市');
+		$("#j_showCounty").val('区');
+		$("#j_citys").html('');
+		$("#j_countys").html('');
+		$.ajax({
+   			url: "${dynamicDomain}/system/getAreaChildren/"+provinceCode,
+   			type : 'post',
+   			dataType : 'json',
+   			success :function (data) {
+   				if(data != null && data.areas != null){
+   						var areas  = data.areas;
+   						for(var i=0;areas.length&&i<areas.length;i++){
+   							var city = areas[i];
+   							cityHtml+="<a href=\"javascript:void(0);\" data-val=\""+city.objectId+"\" onclick=\"loadCounty('"+city.areaCode+"');\" class=\"f-ib\">"+city.name+"</a>";
+					}
+   					$("#j_citys").html(cityHtml);
+   				}
+   			}
+		
+   		});
+	}
+	
+	
+	function loadCounty(cityCode){
+		if(cityCode == '8201' || cityCode == '8202'){
+			$("#j_showCounty").val('');
+			$("#j_countys").html('');
+			$("#j_showCounty").hide();
+		}else{
+			$("#j_showCounty").show();
+			var countyHtml = "";
+			$("#j_showCounty").val('区');
+			$("#j_countys").html('');
+			$.ajax({
+	   			url: "${dynamicDomain}/system/getAreaChildren/"+cityCode,
+	   			type : 'post',
+	   			dataType : 'json',
+	   			success :function (data) {
+	   				if(data != null && data.areas != null){
+							var areas  = data.areas;
+							for(var i=0;areas.length&&i<areas.length;i++){
+								var county = areas[i];
+								countyHtml+="<a href=\"javascript:void(0);\" data-val=\""+county.objectId+"\" class=\"f-ib\">"+county.name+"</a>";
+					}
+						$("#j_countys").html(countyHtml);
+					}
+	   			}
+			
+	   		});
+		}
+		
+	}
+	
+	
+	//保存收货地址
+	function saveAddr(){
+		if(verifyForm()){
+			if($("#addressForm").valid()){
+				ajaxSubmit();
+			}
+		}
+	}
+
+	
+	function ajaxSubmit(){
+		var objectId = $("#obj_id").val();
+		var provinceId = $("#provinceIdInput").val();
+		var provinceName = $("#j_showProvince").val();
+		var cityId = $("#cityIdInput").val();
+		var cityName = $("#j_showCity").val();
+		var areaId = $("#countyIdInput").val();
+		var areaName = $("#j_showCounty").val();
+		var receiptAddress = $("#j_receiptAddress").val();
+		var receiptZipcode = $("#j_receiptZipcode").val();
+		var receiptEmail = $("#j_receiptEmail").val();
+		var receiptContacts = $("#j_receiptContacts").val();
+		var receiptTelephone = $("#j_receiptTelephone").val();
+		var receiptMoblie = $("#j_receiptMoblie").val();
+		var isDefault = $("#j_isDefault").attr("checked");
+		var isDefaultVal = 2;
+		if(isDefault){
+			isDefaultVal = 1;
+		}
+		$("#saveBtn").attr("disabled","disabled");
+		$.ajax({
+			url: "${dynamicDomain}/system/saveAddr",
+   			type : 'post',
+	   		data:{    
+	   			objectId : objectId,    
+	   			provinceId : provinceId,    
+	   			provinceName : provinceName,    
+	   			cityId : cityId,    
+	   			cityName : cityName,    
+	   			areaId : areaId,    
+	   			areaName : areaName,    
+	   			receiptAddress : receiptAddress,    
+	   			receiptZipcode : receiptZipcode,    
+	   			receiptEmail : receiptEmail,    
+	   			receiptContacts : receiptContacts,    
+	   			receiptTelephone : receiptTelephone,    
+	   			receiptMoblie : receiptMoblie,    
+	   			isDefault : isDefaultVal    
+    			},	
+   			dataType : 'json',
+   			success :function (data) {
+   			   $("#saveBtn").removeAttr("disabled");
+   				if(data != null && data.result != null){
+   					if(data.result){
+   						loadAddrs();
+   						doMask(false);
+   						$('#j-pop-addr').hide();
+   					}
+				}
+   			}
+		
+   		});
+	}
+	
+	
+	
+	function verifyForm(){
+		var provinceId = $("#provinceIdInput").val();
+		var provinceName = $("#j_showProvince").val();
+		if(isEmpty(provinceId) || isEmpty(provinceName)){
+			$("#addrMsg").show();
+			$("#addrMsg").html("请选择省份");
+			return false;
+		}else{
+			$("#addrMsg").hide();
+			$("#addrMsg").html("");
+		}
+		
+		var cityId = $("#cityIdInput").val();
+		var cityName = $("#j_showCity").val();
+		
+		if(isEmpty(cityId) || isEmpty(cityName)){
+			$("#addrMsg").show();
+			$("#addrMsg").html("请选择城市");
+			return false;
+		}else{
+			$("#addrMsg").hide();
+			$("#addrMsg").html("");
+		}
+		var areaId = $("#countyIdInput").val();
+		var areaName = $("#j_showCounty").val();
+		if(isEmpty(areaId) || isEmpty(areaName)){
+			var display_country =$('#j_showCounty').css('display');
+			if(display_country != 'none'){
+				$("#addrMsg").show();
+				$("#addrMsg").html("请选择区县");
+				return false;
+			}
+		}else{
+			$("#addrMsg").hide();
+			$("#addrMsg").html("");
+		}
+		
+		/*
+		var receiptTelephone = $("#j_receiptTelephone").val();
+		var receiptMoblie = $("#j_receiptMoblie").val();
+		if(isEmpty(receiptTelephone) && isEmpty(receiptMoblie)){
+			$("#telMsg").html("手机、电话号码必须填写一项");
+			$("#mobileMsg").html("手机、电话号码必须填写一项");
+			$("#telMsg").show();
+			$("#mobileMsg").show();
+			return false;
+		}else{
+			$("#telMsg").html("");
+			$("#mobileMsg").html("");
+			$("#telMsg").hide();
+			$("#mobileMsg").hide();
+		}
+		*/
+		return true;
+	}
+	
+	function isEmpty(obj){
+		if(obj != null && obj != "" && typeof(obj) != "undefined"){
+			return false;
+		}else{
+			return true;
+		}
+		
+	}
+	
+</script>
+
+
+<!-- 新增收获地址 -->
+<form  id="addressForm" action="#" method="post">
+	<table class="m-pop-up" id="j-pop-addr" style="z-index: 1001; position: absolute; top: 100px;">
+		<tbody>
+			<tr>
+				<td class="z-tac z-vam">
+					<div class="z-ib u-addr">
+						<h4>
+							新增收货地址<a href="javascript:void(0);" class="j-cls-addr">&times;</a>
+						</h4>
+						<dl class="f-cb">
+							<dt>所在地区<span style="color: red;">*</span></dt>
+							<dd>
+								<strong class="f-ib m-slt slt-w3"> 
+									<input type="hidden" class="j-val" value="" id="obj_id" /> 
+									<input type="hidden" class="j-val" value="0" id="provinceIdInput" /> 
+									<input type="text" value="省" readonly="readonly" class="slt j-slt" id="j_showProvince" /> 
+									<small class="f-ib f-poa j-opt">
+											<#list provinces?sort_by("name")?reverse as province> <a
+											href="javascript:void(0);" data-val="${province.objectId}"
+											class="f-ib" onclick="loadCity(${province.areaCode});">${province.name}</a>
+											</#list>
+									</small>
+								</strong> 
+								<strong class="f-ib m-slt slt-w3"> 
+									<input type="hidden" class="j-val" value="0" id="cityIdInput" /> 
+									<input type="text" value="市" readonly="readonly" class="slt j-slt" id="j_showCity"> 
+									<small class="f-ib f-poa j-opt" id="j_citys"> </small>
+								</strong> 
+								<strong class="f-ib m-slt slt-w3"> 
+									<input type="hidden" class="j-val" value="0" id="countyIdInput" /> 
+									<input type="text" value="区" readonly="readonly" class="slt j-slt" id="j_showCounty" />
+									<small class="f-ib f-poa j-opt" id="j_countys"> </small>
+								</strong>
+								<br/>
+								<span style="display: none;"   class="error" id="addrMsg"></span>
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>详细地址<span style="color: red;">*</span></dt>
+							<dd>
+								<textarea id="j_receiptAddress"  maxlength="32"  class="required" ></textarea>
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>邮政编码</dt>
+							<dd>
+								<input type="text" class="f-ib u-txt isZipCode" id="j_receiptZipcode" name="receiptZipcode" value=""/>
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>邮箱</dt>
+							<dd>
+								<input id="j_receiptEmail"  class="email " name="receiptEmail" type="text" >
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>收货人姓名<span style="color: red;">*</span></dt>
+							<dd>
+								<input id="j_receiptContacts" class="required " name="receiptContacts" maxlength="16" type="text" >
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>联系电话</dt>
+							<dd>
+								<input id="j_receiptTelephone" type="text" class="tel" name="receiptTelephone" /><span style="display: none;"   class="error" id="telMsg"></span>
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>手机号码<span style="color: red;">*</span></dt>
+							<dd>
+								<input id="j_receiptMoblie" type="text"   class="required mobile"  name="receiptMoblie" /><span style="display: none;"   class="error" id="mobileMsg"></span>
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>&nbsp;</dt>
+							<dd class="u-rdo">
+								<input type="checkbox" id="j_isDefault" name="j_isDefault" /> 设为默认地址
+							</dd>
+						</dl>
+						<dl class="f-cb">
+							<dt>&nbsp;</dt>
+							<dd>
+								<button type="button" onclick="saveAddr();" id="saveBtn">提交</button>
+							</dd>
+						</dl>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	</form>
+	
+</body>
+</html>

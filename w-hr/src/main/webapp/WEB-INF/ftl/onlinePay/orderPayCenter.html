@@ -1,0 +1,312 @@
+<#include "/common/findPayPwd.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>订单结算 - 福利商城</title>
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/order.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <style>
+    .u-nav {
+      background-color: #FF8067; 
+    }
+    </style>
+     <script>
+    $(function(){
+      $('body').css({'background-color':'#fff'});
+    });
+    </script>
+</head>
+<body>
+<form action="${payDomain}/onlinePay/onlinePaySetPayment" method="post" id="onlinePayForm" target="_blank">
+<div id="g-pay-chk">
+	
+	<h4 class="f-cb">
+		<span class="f-fl">收银台</span>
+	</h4>
+
+	<p class="u-desc">
+		订单提交成功，请您尽快付款！<br />
+		请您在提交订单后<strong id="DD"></strong>天 <strong id="HH"></strong>时 <strong id="MM"></strong>分 <strong id="SS"></strong>秒内完成支付，否则订单会自动取消。<br />
+		订单编号:
+		<#list subOrderList as subOrder>
+			<#if subOrder_has_next>
+            ${subOrder.subOrderNo},
+           <#else>
+            ${subOrder.subOrderNo}
+           </#if>
+		</#list>
+	</p>
+
+	<dl class="u-type">
+		<dt class="f-cb">
+			<span class="f-ib">支付方式<input type="hidden" value="1" class="j-rdo-val" /></span>
+			<em class="f-fr">支付总额：<b>${totalAmount?string('0.00')}元</b></em>
+		</dt>
+		<#if orderType>
+		<dd class="f-cb">
+		    <#if surplusScore lt totalAmount >
+                <i data-val="" class="f-ib" ></i>
+            <#else>
+                <i data-val="1" class="f-ib z-on j-tg-rdo" ></i>
+            </#if>
+		    <span class="f-ib">${s_welfarePointName}账户 (可用${s_welfarePointName}：${surplusScore?string('0.00')}${s_welfarePointName})</span>
+		    <!-- <em class="f-fr">可支付：<b>${totalAmount?string('0.00')}元</b></em> -->
+	    </dd>
+		</#if>
+		<dd class="f-cb">
+			<#if !orderType>
+		   	 <i data-val="2" class="f-ib z-on j-tg-rdo"></i>
+		   	<#else>
+		   	 <i data-val="2" class="f-ib j-tg-rdo"></i>
+		   	</#if>
+		    <img src="${staticDomain}image/zpic04.gif" class="f-ib" />
+		    <!--<em class="f-fr">支付：<b>${totalAmount?string('0.00')}元</b></em>-->
+		</dd>
+	</dl>
+	<#if orderType>
+	<div class="u-pwd">
+		<label class="f-ib">支付密码：</label>
+		<fieldset class="f-ib"><input type="password" name="password"/></fieldset>
+		<a href="javascript:void(0);" data-pop="1,400,220,1,9" class="txt j-pop-open">忘记支付密码？</a>
+		<span class="f-ib">输入密码前请仔细确认支付金额是否正确，若您遇到任何问题，请联系客服 400-161-0009</span>
+	</div>
+	</#if>
+	<h5><a href="javascript:void(0);" class="f-ib j-opn-pay">立即支付</a></h5>
+	<!-- 支付方式  -->
+    <input type="hidden" value="1" name="payWay" class="j-rdo-val" />
+    <#list subOrderList as subOrder>
+     <input type="hidden" name="subOrderId" value="${subOrder.objectId}" />
+    </#list>
+    <input style="display:none" mce_style="display:none">  
+</div>
+</form>
+<script>
+$(function(){
+
+	// 模拟Radio 控件
+	var _tagRadio = $('.j-tg-rdo'), _tagVal = $('.j-rdo-val');
+	_tagRadio.click(function(){
+		var _this = $(this), _val = _this.attr('data-val');;
+		if(_this.hasClass('z-on')){
+			return false;
+		}else{
+			_tagRadio.removeClass('z-on');
+			_this.addClass('z-on');
+			_tagVal.val(_val);
+			if(_val==2){
+                $(".u-pwd").hide();
+            }else{
+                $(".u-pwd").show();
+            }
+		}
+	});
+});
+</script>
+<script>
+$(function(){
+
+    // "现在支付" 弹窗
+    var _popPay = $('#j-pop-pay');
+    var _opnPay = $('.j-opn-pay');
+    var _clsPay = $('.j-cls-pay');
+
+    // [开启]现在支付
+    _opnPay.click(function(){
+    	
+    	var _this = $(this), _dis = 'dis';
+    	if(_this.hasClass(_dis)) return false;
+    	
+        var password = $("input[name='password']").val();
+        var payWay = $("input[name='payWay']").val();
+        if(payWay=='1'&&password==''){
+            winAlert('支付密码不能为空！');
+            return false;
+        }
+        //验证积分
+        if(payWay=='1'&&parseFloat('${surplusScore}')<parseFloat('${totalAmount}')){
+           winAlert('你的${s_welfarePointName}不足，请先充值');
+           return false;
+        }
+        //验证支付密码是否正确
+        if(payWay=='1'){
+        	
+        var verify = false;
+        $.ajax({
+          url:'${payDomain}/onlinePay/validatePaymentPwd',
+          type : 'post',
+          async : false,
+          dataType : 'json',
+          data:{'password':password},
+          success : function(json) {
+              if(json.result){
+                // verify = true;
+                 if(payWay=='1'){
+                     $("#onlinePayForm").attr('target','_self');
+                 }else{
+                     dodMask(true);
+                     _popPay.show();
+                     $("#onlinePayForm").attr('target','_blank');
+                 }
+                 $("#onlinePayForm").submit();
+              }else{
+            	  _this.removeClass(_dis); // 解除不可用状态
+            	  winAlert('支付密码错误！');
+                 verify = false
+              }
+          }
+      });
+    }else{
+    	dodMask(true);
+        _popPay.show();
+        $("#onlinePayForm").attr('target','_blank');
+    	 $("#onlinePayForm").submit();
+    }
+      /*if(payWay=='1'&&!verify){
+        winAlert('支付密码错误！');
+        return false;
+      }
+        if(payWay=='1'){
+            $("#onlinePayForm").attr('target','_self');
+        }else{
+            dodMask(true);
+            _popPay.show();
+            $("#onlinePayForm").attr('target','_blank');
+        }
+        $("#onlinePayForm").submit();*/
+    });
+
+    // [关闭]现在支付
+    _clsPay.click(function(){
+        dodMask(false);
+        _popPay.hide();
+    });
+
+    // "现在支付" 子弹窗
+    var _popsPay = $('#j-pop-spay');
+    var _opnsPay = $('.j-opn-spay');
+    var _clssPay = $('.j-cls-spay');
+
+    // [开启] 子弹窗
+    _opnsPay.click(function(){
+        _popPay.hide();
+        _popsPay.show();
+    });
+
+    // [关闭] 子弹窗
+    _clssPay.click(function(){
+        dodMask(false);
+        _popsPay.hide();
+    });
+
+    // 操作遮罩
+    function dodMask(_bool){
+        var _id = 'm-mask', _mask = $('#' + _id);
+        if(_bool){
+            if(_mask.length === 1){
+                _mask.show();
+            }else{
+                $('<div id="'+ _id +'"></div>').appendTo('body').css({'opacity':'.2'});
+            }
+        }else{
+            _mask.hide();
+        }
+    }
+});
+
+// 初始化函数载体
+function popInit(_char){
+
+    var _func = {
+        'init91': function(){ 
+
+            var _html = '<dl class="dl2 f-cb"><dt class="j-cancel" data-func="cleanPwd">手机号码：</dt>' + 
+                        '<dd><input type="text" id="userSessionMobile" value="${s_user.mobilePhone}" readonly="readonly"/>&nbsp;<a href="javascript:void(0);" class="f-ib u-code" id="j-btn-code">获取验证码</a></dd></dl>' +
+                        '<dl class="dl2 f-cb"><dt>手机验证码：</dt>' +
+                        '<dd><input id="smsCode" type="text" />&nbsp;<a href="javascript:void(0);" class="f-ib u-code" id="j-btn-send">提交</a></dd></dl>';
+
+            return {'title':'支付密码重置', 'html': _html}; 
+        }
+    };
+
+    return _func[_char];
+}
+
+// 弹窗的确定按钮回滚函数
+function popSure(_char){
+    var _func = {
+        'sure91': function(){
+        	resetPassword();
+        }
+    };
+
+    return _func[_char];
+}
+
+</script>
+<!-- 支付结果 1 -->
+<table class="m-pop-up" id="j-pop-pay" style="z-index:1002;"><tbody><tr><td class="z-tac z-vam"><div class="z-ib pop-pay">
+    <h4>请确认支付结果<a href="javascript:void(0);" class="j-cls-pay">×</a></h4>
+    <dl>
+        <dt>请您在新打开的页面完成支付！</dt>
+        <dd>
+            - 支付完成前请不要关闭此窗口<br />
+            - 支付完成后请根据支付结果点击下面的按钮<br />
+            - 支付失败后，请记录下订单号,请拨打<br />
+              400-161-0009，我们的客服将为您竭诚服务<br />
+        </dd>
+    </dl>
+    <h5>
+        <a href="javascript:void(0);"  class="j-opn-spay f-ib ft">支付成功</a>
+        <a href="${dynamicDomain}/mall/index" class="f-ib idx">商城首页</a>
+    </h5>
+</div></td></tr></tbody></table>
+
+<!-- 支付结果 2 -->
+<table class="m-pop-up" id="j-pop-spay" style="z-index:1002;"><tbody><tr><td class="z-tac z-vam"><div class="z-ib pop-pay">
+    <h4>订单支付成功<a href="javascript:void(0);" class="j-cls-spay">×</a></h4>
+    <dl class="ok">
+        <dd>
+            支付订单：
+            <#list subOrderList as subOrder>
+               ${subOrder.subOrderNo}
+            </#list><br />
+            支付结果：支付成功<br />
+            支付金额：${totalAmount?string('0.00')}元<br />
+        </dd>
+    </dl>
+    <h5>
+        <a href="${dynamicDomain}/welfareOrder" class="f-ib ft">订单列表</a>
+        <a href="${dynamicDomain}/mall/index" class="f-ib idx">商城首页</a>
+    </h5>
+</div></td></tr></tbody></table>
+<script>
+  EndTimeMsg = ${surplusTime/1000}
+  function show() {
+    h = Math.floor(EndTimeMsg / 60 / 60);
+    m = Math.floor((EndTimeMsg - h * 60 * 60) / 60);
+    s = Math.floor((EndTimeMsg - h * 60 * 60 - m * 60));
+    document.getElementById("DD").innerHTML = parseInt(h/24);
+    document.getElementById("HH").innerHTML = h;
+    document.getElementById("MM").innerHTML = m;
+    document.getElementById("SS").innerHTML = s;
+    EndTimeMsg--;
+    if (EndTimeMsg < 0)
+    {
+        document.getElementById("DD").innerHTML = "0";
+        document.getElementById("HH").innerHTML = "00";
+        document.getElementById("MM").innerHTML = "00";
+        document.getElementById("SS").innerHTML = "00";;
+    }
+  }
+$(function(){
+ setInterval("show()", 1000)
+});
+
+</script>
+<@findPayPwd/>
+</body>
+</html>

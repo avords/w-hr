@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>i福励-员工信息</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+</head>
+<body>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">账户管理</a> &gt;
+		员工信息
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<div class="m-main f-fr">
+		<h4 class="u-tit f-cb">
+			<span class="f-ib">员工信息</span>
+			<a href="${dynamicDomain }/member/listStaff" class="f-fr">返回</a>
+		</h4>
+
+		<div id="g-add-p19">
+		<form  method="post" id="form">
+			<input type="hidden" name="objectId" id="objectId" value="${staff.objectId}">
+			<div class="u-tab f-cb j-tab">
+				<span class="f-fl z-on">员工信息</span>
+			</div>
+
+			<div class="u-cnt j-cnt">
+				<fieldset>
+					<label class="f-ib">员工姓名：</label>
+					${user.userName}
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">员工工号：</label>
+					${staff.workNo}
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">登录账户：</label>
+					${user.loginName}
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">员工性别：<input type="hidden" value="${staff.sex}" class="j-sex-val" name="sex"/></label>
+					<span class="f-ib u-slt-btn">
+						<#if  "1"  == staff.sex>
+						男性
+						<#else>
+						女性
+						</#if>
+					</span>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">入职日期：</label>
+					${(staff.entryDay?string("yyyy-MM-dd"))}
+				</fieldset>
+				<fieldset>
+					<label class="f-ib ">手机号码：</label>
+					${user.mobilePhone}
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">所属部门：</label>
+					<span class="f-ib f-por">
+						${staff.companyDepartment.name}
+					</span>
+					<#include "/include/select_department.html">
+				</fieldset>
+				<fieldset>
+					<label class="f-ib ">出生日期：</label>
+					${(staff.birthday?string("yyyy-MM-dd"))}
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">电子邮箱：</label>
+					${user.email}
+					<i class="f-ib">&nbsp;</i>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib ">联系方式：</label>
+					${staff.linkPhone}
+				</fieldset>
+				<fieldset>
+					<label class="f-ib z-vlt">状态：</label>
+					<dl class="f-ib u-status">
+						<#if staff.status == "1">
+							在职
+						<#elseif staff.status == "2">
+							离职(
+							<#if staff.quitType == "1" && !staff.quitDays??>
+								账户永久有效
+							<#else>
+								账户在${staff.quitDays?string('yyyy-MM-dd')}冻结
+							</#if>
+							)
+						</#if>
+					</dl>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib z-vlt">备注：</label>
+					<div class="f-ib f-wwb" style="width:666px;">${staff.remark}</div>
+				</fieldset>
+			</div>
+			
+			<script src="${staticDomain}/date/WdatePicker.js" charset="utf-8"></script>
+			<script>
+			$(function(){
+
+				// 状态的选择
+				$('.j-slt-sta').click(function(){
+
+					var _this = $(this), _qType = $('.j-slt-qtype');
+					if (_this.val() == '2') {
+						_qType.show();
+					}else{
+						_qType.hide();
+					}
+				});
+
+				// 性别的选择
+				var _sltSex = $('.j-slt-sex'), _valSex = $('.j-sex-val');
+				_sltSex.click(function(){
+					var _this = $(this);
+					if(_this.hasClass('z-on')){
+						return false;
+					}else{
+						_sltSex.removeClass('z-on');
+						_this.addClass('z-on');
+						_valSex.val(_this.attr('data-val'));
+					}
+				});
+
+				// 内容切换
+				var _tab = $('.j-tab span'), _cnt = $('.j-cnt');
+				_tab.click(function(){
+					var _this = $(this), _i = _this.index();
+					if(!_this.hasClass('z-on')){
+						_tab.removeClass('z-on').eq(_i).addClass('z-on');
+						_cnt.hide().eq(_i).show();
+					}
+				});
+
+				// 日期控件 
+				$('#birthday-date').click(function(){
+					WdatePicker({startDate: '1990-01-01' });
+				});
+
+				// 出生日期 
+				$('#in-date').click(function(){
+					WdatePicker({startDate: '2014-01-01' });
+				});
+
+				// 模拟Select控件
+				$('.j-slt').click(function(){
+
+					var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+					$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+					if(_this.hasClass('z-on-slt')){
+						_this.removeClass('z-on-slt');
+						_opt.hide();
+					}else{
+						_this.addClass('z-on-slt');
+						_opt.show();
+					}
+					return false;
+				});
+
+				// 下拉项的点击事件
+				$('.j-opt > a').click(function(){
+
+					var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+					_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+					
+					return false;
+				});
+
+				$('body').click(function(e){
+					$('.j-opt').hide();
+					$('.j-slt').removeClass('z-on-slt')
+				});
+				
+			});
+			</script>
+		</form>	
+		</div>
+	</div>
+</div>
+</body>
+</html>

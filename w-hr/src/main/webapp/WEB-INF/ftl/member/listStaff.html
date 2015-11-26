@@ -1,0 +1,304 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+    <title>员工信息</title>
+</head>
+<body>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">账户管理</a> &gt;
+		员工信息
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<div class="m-main f-fr">
+		<h4 class="u-tit"><span class="f-ib">员工信息</span></h4>
+		<div id="g-list-p19">
+			<div class="u-flt f-cb">
+				<form action="${dynamicDomain }/member/listStaff" id="listStaffForm" method="post">
+				<span class="f-fl">
+					<input type="text" class="u-txt z-tw1" name="search_LIKES_staffName" placeholder="员工姓名" />
+				</span>
+				<span class="f-fl">
+					<input type="text" class="u-txt z-tw1" name="search_LIKES_email" placeholder="邮箱" />
+				</span>
+				<span class="f-fl">
+					<input type="text" class="u-txt z-tw1" name="search_LIKES_workNo" placeholder="工号" />
+				</span>
+				<span class="f-fl f-por">
+					<input type="hidden" name="search_EQI_sex" class="j-slt-val" value="" />
+					<input type="text" value="所有性别" readonly class="u-txt u-slt j-slt" />
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">所有性别</a>
+						<a href="javascript:void(0);" data-val="1"  class="f-ib">男性</a>
+						<a href="javascript:void(0);" data-val="2"  class="f-ib">女性</a>
+					</em>
+				</span>
+
+				<span class="f-fl f-por">
+					<input type="hidden" name="search_EQL_dpt" class="j-slt-val" value="" />
+					<input type="text" value="所有部门" readonly class="u-txt u-slt j-slt" />
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">所有部门</a>
+						<#if departments?exists && (departments?size>0) >
+					        <#list departments as dp>
+					             <a href="javascript:void(0);" data-val="${dp.objectId}" data-val-item="1" class="f-ib">${dp.name}</a>
+					        </#list>
+					    </#if>
+					</em>
+				</span>
+
+				<span class="f-fl f-por" style="width:6%;">
+					<input type="hidden" name="search_EQI_status" class="j-slt-val" value="" />
+					<input type="text" value="在职" readonly class="u-txt u-slt j-slt" />
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>
+						<a href="javascript:void(0);" data-val="1" class="f-ib">在职</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib">离职</a>
+					</em>
+				</span>
+
+				<span class="f-fl f-por">
+					<input type="hidden" name="search_EQI_staffLevel" class="j-slt-val" value="" />
+					<input type="text" value="所有等级" readonly class="u-txt u-slt j-slt" />
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">所有等级</a>
+						<#if staffGS?exists && (staffGS?size>0) >
+					        <#list staffGS as sgs>
+					             <a href="javascript:void(0);" data-val="${sgs.value}" data-val-item="1" class="f-ib">${sgs.name}</a>
+					        </#list>
+					    </#if>
+					</em>
+				</span>
+				<span class="f-fl f-por" style="width:7%;">
+					<input type="hidden" name="search_EQI_quitType" class="j-slt-val" value="" />
+					<input type="text" value="正常" readonly class="u-txt u-slt j-slt" />
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="1" class="f-ib">正常</a>
+						<a href="javascript:void(0);" data-val="0" class="f-ib">冻结</a>
+						<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>
+					</em>
+				</span>
+				<span class="f-fr z-lst">
+					<button type="submit" class="u-sch">查询</button>
+				</span>
+				</form>
+				<script>
+				$(function(){
+					// 模拟Select控件
+					$('.j-slt').click(function(){
+						var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+						$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+						if(_this.hasClass('z-on-slt')){
+							_this.removeClass('z-on-slt');
+							_opt.hide();
+						}else{
+							_this.addClass('z-on-slt');
+							_opt.show();
+						}
+						return false;
+					});
+
+					// 下拉项的点击事件
+					$('.j-opt > a').click(function(){
+						var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+						_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+						return false;
+					});
+
+					$('body').click(function(e){
+						$('.j-opt').hide();
+						$('.j-slt').removeClass('z-on-slt')
+					});
+
+					// 全选
+					$('.j-chk-all').click(function(){
+
+						var _this = $(this), _son = $('.j-chk-son');
+						if(_this.is(':checked')){
+							_son.prop('checked', true);
+						}else{
+							_son.prop('checked', false);
+						}
+					});
+					
+					
+
+					// 控制列表尾元素的样式
+					$('.j-list').find('ul:last').css('border-bottom',0);
+				});
+				</script>
+			</div>
+
+			<div class="u-act f-cb">
+				<h4 class="f-fl">
+					<a href="${dynamicDomain }/member/addStaff" class="f-ib">增加员工信息</a>
+					<a href="javascript:void(0);" id="leaveBtn" class="f-ib">离职</a>
+					<a href="javascript:void(0);" class="f-ib" onclick="javascript:batchBlocked()">冻结</a>
+				</h4>
+			</div>
+			
+			<div class="u-act f-cb">
+				<h4 class="f-fl">
+					<small>当前共有 <em>${pageSearch.totalCount}</em> 条员工信息</small>
+				</h4>
+				<div class="f-fr">
+					<@fpage url="${dynamicDomain }/member/listStaff"  totalPage=pageSearch.totalPage currentPage=pageSearch.currentPage formId="listStaffForm" cpName="ec_p"/>
+				</div>
+			</div>
+			<div class="u-lst z-top">
+				<ol class="f-cb">
+					<li class="z-w1"><input type="checkbox" class="f-ib j-chk-all"></li>
+					<li class="z-w2">工号</li>
+					<li class="z-w3">姓名</li>
+					<li class="z-w4">性别</li>
+					<li class="z-w5">手机号码</li>
+					<li class="z-w6">邮箱</li>
+					<li class="z-w7">部门</li>
+					<li class="z-w8">在职状态</li>
+					<li class="z-w9">年资</li>
+					<li class="z-w10">账户状态</li>
+					<li class="z-w11">操作</li>
+				</ol>
+			</div>
+			<form id="form" action="" method="post" id="form">
+			<div class="u-lst z-cnt j-list">
+				<#list pageSearch.list as item>
+				<ul class="f-cb">
+					<li class="z-w1"><input type="checkbox" class="f-ib j-chk-son" value="${item.objectId}" name="checkId"></li>
+					<li class="z-w2">${item.workNo}</li>
+					<li class="z-w3"><a href="${dynamicDomain }/member/viewStaff/${item.objectId}" target="_blank">${item.userName}</a>
+					<#if s_companyFunctionShowStaffLevel>
+						<#if staffGS?exists && (staffGS?size>0) >
+					        <#list staffGS as sgs>
+					        	<#if item.staffLevel ==sgs.value>
+					        		<i class="f-ib z-lv${item.staffLevel}">${sgs.name}</i>
+					        	</#if>
+					        </#list>
+					    </#if>
+					<#else>
+						<i class="f-ib">${sgs.name}</i>
+					</#if>
+					</li>
+					<li class="z-w4">
+					<#if item.sex == '1'> 
+							    男
+					<#elseif item.sex == '2'> 
+							    女   
+					</#if></li>
+					<li class="z-w5">${item.mobilePhone}</li>
+					<li class="z-w6 f-wwb">${item.email}</li>
+					<li class="z-w7">${item.companyDepartment.name}</li>
+					<li class="z-w8">
+					<#if item.status == '1'> 
+							    在职
+					<#elseif item.status == '2'> 
+							    离职   
+					</#if></li>
+					<li class="z-w9">
+					<#if (item.yearMoney<0)> 
+						0
+					<#else>
+						${item.yearMoney}
+					</#if>
+					</li>
+					<li class="z-w10">
+					<#if item.quitType == '1' > 
+						  正常
+					<#elseif item.quitType == '0' > 
+						冻结
+					</#if></li>
+					<li class="z-w11">
+					<#if item.quitType == '1'> 
+						<a href="${dynamicDomain}/member/updateBlocked?ids=${item.objectId}" class="gtg">冻结</a>&nbsp;&nbsp;
+						<a href="${dynamicDomain}/member/editStaff/${item.objectId}" class="gtg" >修改</a>
+					<#else> 
+						<a href="${dynamicDomain}/member/updateNormal/${item.objectId}" class="gtg" >激活</a>&nbsp;&nbsp;
+					</#if>
+					</li>
+				</ul>
+				</#list>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script src="${staticDomain}js/jquery.popup.js"></script>
+
+<!-- 离职弹窗 -->
+<script type="text/html" id="tmp11">
+	<div class="u-quit">
+		<ul>
+			<li><input type="radio" class="rad" name="quitType" id="qt1" checked="checked" /> <label for="qt1">账户永久有效</label></li>
+			<li><input type="radio" class="rad" name="quitType" /> <label>账户在 <input type="text" value="" class="txt" id="day"/> 天后冻结</label></li>
+		</ul>
+	</div>
+</script>
+<script>
+
+$("#leaveBtn").click(function(event){
+	if(!$("input[type='checkbox']").is(':checked')){
+		winAlert("请勾选要离职的员工！");
+		return false;
+	}
+	doRePopup(['1',500,'0','1','1']);
+}); 
+	
+function batchBlocked(){
+	var _form = $("#listStaffForm");
+	var id="";
+ 	if($("input[type='checkbox']").is(':checked')){
+		$("input[name='checkId']:checked").each(function(){
+			id+=this.value+",";
+		}); 
+		ids=id.substring(0,id.lastIndexOf(","));
+		_form.attr("action","${dynamicDomain}/member/updateBlocked?ajax=1&ids="+ids);
+		_form.submit();
+	}else{
+		winAlert("请勾选要冻结的员工！");
+	} 
+}
+
+function popInit(_char){
+	var _func = {
+		'init11': function(){ return {'title':'离职设置', 'html': $('#tmp11').html()}; }
+	};
+	return _func[_char];
+}
+
+function popSure(_char){
+	var _func = {
+		'sure11': function(){
+			var _form = $("#listStaffForm");
+			var _day = $("#day").val();
+			if(_day == ""){
+				_day = 0;
+			}
+			var id="";
+		 	if($("input[type='checkbox']").is(':checked')){
+				$("input[name='checkId']:checked").each(function(){
+					id+=this.value+",";
+				}); 
+				ids=id.substring(0,id.lastIndexOf(","));
+				_form.attr("action","${dynamicDomain}/member/updateQuitType/"+_day+"?ids="+ids);
+				_form.submit();
+			}else{
+				winAlert("请勾选要离职的员工！");
+			} 
+		}
+	};
+	return _func[_char];
+}
+
+	
+</script>
+</body>
+</html>

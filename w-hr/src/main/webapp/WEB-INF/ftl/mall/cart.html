@@ -1,0 +1,269 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>购物车列表 - 福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/cart.z.css" />
+</head>
+<body>
+<div id="g-ct2-main">
+    <h3 class="f-por"><span class="f-poa">我的购物车</span></h3>
+    <@cartPage url="${dynamicDomain }/mall/cart"  totalPage=pageCart.totalPage currentPage=pageCart.currentPage cpName="currentPage"/>
+    <ol class="f-cb">
+        <li class="u-t1"><input type="checkbox" class="u-chk j-chk-all" /></li>
+        <li class="u-t2">&nbsp;全选</li>
+        <li class="u-t3">&nbsp;商品信息</li>
+        <li class="u-t4">&nbsp;单价</li>
+        <li class="u-t5">&nbsp;数量</li>
+        <li class="u-t6">&nbsp;小计</li>
+        <li class="u-t7">&nbsp;操作</li>
+    </ol>
+    <div class="u-list j-list">
+       <#list pageCart.list as item>
+	        <ul class="f-cb">
+	            <li class="u-t1">
+	            <#if item.cartView.checkStatus==6>
+                   失效
+                <#else>
+                   <input type="checkbox" class="u-chk j-chk-each" name="checkbox" data-id="${item.objectId}"/>
+                </#if>
+	            </li>
+	            <li class="u-t2"><a target="_blank" href="${dynamicDomain}/product/detail/${item.productId}"><img src="${adminStaticDomain}${item.cartView.mainPicture}" class="f-ib" /></a></li>
+	            <li class="u-t3"><a target="_blank" href="${dynamicDomain}/product/detail/${item.productId}">
+	             ${item.cartView.name}
+                (
+                <#if item.cartView.attribute1??>
+                ${item.cartView.attribute1.name}:${item.cartView.attribute1.attributeValue}
+                </#if>
+                &nbsp;&nbsp;
+                <#if item.cartView.attribute2??>
+                ${item.cartView.attribute2.name}:${item.cartView.attribute2.attributeValue}
+                </#if>
+                )
+	            </a></li>
+	            <li class="u-t4"><b>${item.cartView.sellPrice?string('0.00')}${s_welfarePointName}</b><br />￥${item.cartView.sellPrice?string('0.00')}</li>
+	            <li class="u-t5">
+	                <a href="javascript:void(0);" data-type="subt" class="f-ib u-subt j-comp">-</a>
+	                <input type="text" class="f-ib u-txt productCount" data-skuid="${item.productId}" data-id="${item.objectId}" class="f-ib u-txt" value="${item.productCount}" />
+	                <a href="javascript:void(0);" data-type="add" class="f-ib u-add j-comp">+</a>
+	            </li>
+	            <li class="u-t6 score" data-score="${item.cartView.sellPrice?string('0.00')}">${(item.cartView.sellPrice*item.productCount)?string('0.00')}${s_welfarePointName}</li>
+	            <li class="u-t7"><a href="javascript:void(0);" data-id="${item.objectId}" class="f-ib deleteById">删除</a></li>
+	        </ul>
+       </#list>
+    </div>
+    <div class="f-cb u-btm">
+        <h4 class="f-fl">
+            <input type="checkbox" class="f-ib u-chk j-chk-all" />
+            <a href="javascript:void(0);" class="f-ib u-del" onclick="deleteByIds();">删除</a>
+            <a href="${dynamicDomain }/mall/search" class="f-ib u-goon">继续购物</a>
+        </h4>
+        <p class="f-fr">
+            <label class="f-ib">商品数量：共 <i id="totalCount">0</i> 件</label>
+            <span class="f-ib">商品总价：共 <b id="totalScore">0.00</b> &nbsp;${s_welfarePointName}</span>
+            <a href="javascript:void(0);" onclick="writeOrder();" class="f-ib">商品确认</a>
+        </p>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+
+    // 列表尾元素的样式控制
+    $('.j-list > ul:last').css('border-bottom', 0);
+
+    // 数量加减
+        $('.j-comp').click(function(){
+            
+            var _this = $(this), _type = _this.attr('data-type');
+            var objectId = null;
+            var _val = _this.prev('input').val();
+            objectId = _this.prev('input').data('id');
+            var skuId = _this.prev('input').data('skuid');
+            if(_type == 'subt'){
+                _val = _this.next('input').val();
+                objectId = _this.next('input').data('id');
+                skuId = _this.next('input').data('skuid');
+                if(_val <= 1){
+                    winAlert('数量不能少于1');
+                    return false;
+                }
+                _val--;
+                _this.next().val(_val);
+            }else{
+               //查询库存
+                  var flag = true;
+                  $.ajax({
+                      url:'${dynamicDomain}/skuPublish/searchStock/'+skuId,
+                      type : 'get',
+                      async:false,
+                      dataType : 'json',
+                      success : function(json) {
+                          if(json.result&&json.stock>0){
+                             if(_val>=json.stock){
+                                winAlert('最多购买'+json.stock+"件");
+                                flag = false;
+                             }
+                          }
+                      }
+                  });
+                  if(!flag){
+                    return false;
+                  }
+                _val++;
+                _this.prev().val(_val);
+            }
+            //更改数量
+            updateCount(objectId,_val);
+            //更改小计
+            updateTitleScore($(this));
+        });
+        
+        $('.productCount').blur(function(){
+            var obj = $(this);
+            var val = $(this).val();
+            if(!/^[1-9]+\d*$/.test(val)){
+                winAlert('数量输入有误');
+                $(this).val(1)
+                return false;
+            }
+            if(val<1){
+              winAlert('数量不能少于1');
+              $(this).val('1');
+              updateTitleScore($(this));
+              return false;
+            }
+            //更改数量
+            var objectId = $(this).data('id');
+            var skuId = $(this).data('skuid');
+             $.ajax({
+                      url:'${dynamicDomain}/skuPublish/searchStock/'+skuId,
+                      type : 'get',
+                      async:false,
+                      dataType : 'json',
+                      success : function(json) {
+                          if(json.result&&json.stock>0){
+                             if(val>json.stock){
+                                winAlert('最多购买'+json.stock+"件");
+                                obj.val(1);
+                             }
+                          }
+                      }
+                  });
+            updateCount(objectId,$(this).val());
+            //更改小计
+            updateTitleScore($(this));
+        });
+
+        // 全选
+        $('.j-chk-all').click(function(){
+            var _this = $(this), _isCheck = _this.is(':checked'), _bool = false;
+            if(_isCheck) _bool = true;
+            $('.j-chk-all,.j-chk-each').prop('checked', _bool);
+            calculationScore();
+        });
+        
+        function updateCount(objectId,productCount){
+        var action = '${dynamicDomain}/cart/updateCount';
+        var productCount = productCount;
+        var objectId = objectId;
+          $.ajax({
+          url:action,
+          type : 'post',
+          dataType : 'json',
+          data:{'objectId':objectId,'productCount':productCount},
+          success : function(json) {
+              if(json.result){
+                 calculationScore();
+              }else{
+                winAlert(json.message);
+              }
+          }
+      });
+        }
+        
+        function updateTitleScore(obj){
+          var productCount = obj.parent().parent().find('.productCount').val();
+          var score = obj.parent().parent().find('.score').data('score');
+          obj.parent().parent().find('.score').text(parseFloat(productCount*score).toFixed(2)+'${s_welfarePointName}');
+        }
+        
+        $('.deleteById').click(function(){
+           var obj = $(this);
+           var objectId = obj.data('id'); 
+           var action = '${dynamicDomain}/cart/delete/'+objectId;
+           $.ajax({
+              url:action,
+              type : 'post',
+              dataType : 'json',
+              success : function(json) {
+                  if(json.result){
+                     obj.parent().parent().remove();
+                     calculationScore();
+                  }else{
+                    winAlert(json.message);
+                  }
+              }
+          });
+        });
+        //每个checkbox绑定事件
+        $('.j-chk-each').click(function(){
+          calculationScore();
+        });
+});
+function calculationScore(){
+  var totalScore = 0;
+  var count = 0;
+   $('.j-chk-each:checked').each(function(){
+     var productCount = $(this).parent().parent().find('.productCount').val();
+     var score = $(this).parent().parent().find('.score').data('score');
+     totalScore = totalScore+(productCount*score);
+     count = count+parseInt(productCount);
+   });
+   $("#totalCount").text(count);
+   $("#totalScore").text(parseFloat(totalScore).toFixed(2));
+}
+function getIds(){
+ var ids='';
+ var count = 0;
+ $('.j-chk-each:checked').each(function(){
+     var id = $(this).data('id');
+     ids = ids+id+',';
+     count = count+1;
+   });
+   if(count>=1){
+    ids =ids.substring(0,ids.length-1);
+   }
+   return ids;
+}
+function deleteByIds(){
+  var ids = getIds();
+  $.ajax({
+      url:'${dynamicDomain}/cart/delete',
+      type : 'post',
+      dataType : 'json',
+      data :{'ids':ids},
+      success : function(json) {
+          if(json.result){
+            $('.j-chk-each:checked').each(function(){
+              $(this).parent().parent().remove();
+              calculationScore();
+            });
+          }else{
+            winAlert(json.message);
+          }
+      }
+  });
+}
+function writeOrder(){
+ var ids = getIds();
+ if(ids==''){
+     winAlert("请选择商品!");
+     return false;
+ }
+ var url = '${dynamicDomain}/cart/order?cartIds='+ids;
+ window.location.href = url;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<html lang="zh-CN">
+<head>
+    <title>购买${s_welfarePointName}</title>
+</head>
+<body>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">福利管理</a> &gt;
+		<a href="javascript:void(0);">购买${s_welfarePointName}</a>
+	</h4>
+</div>
+
+<form method="post" action="${dynamicDomain}/points/createPointsOrder" id="pointForm" name="pointForm" >
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<input type="hidden" name="count"id="count" value="${bookingOrder.count}"/>
+	<input type="hidden" name="invoiceUp"id="invoiceUp" value="${bookingOrder.invoiceUp}"/>
+	<input type="hidden" name="invoiceAddress"id="invoiceAddress" value="${bookingOrder.invoiceAddress}"/>
+	<input type="hidden" name="invoiceContacts"id="invoiceContacts" value="${bookingOrder.invoiceContacts}"/>
+	<input type="hidden" name="invoiceTelephone"id="invoiceTelephone" value="${bookingOrder.invoiceTelephone}"/>
+	<input type="hidden" name="recipteMoble"id="recipteMoble" value="${bookingOrder.recipteMoble}"/>
+	
+	<div class="m-main f-fr">
+		<h4 class="u-tit"><span class="f-ib">购买${s_welfarePointName}</span></h4>
+		<div id="g-inte">
+
+			<div class="u-info">
+				<span class="f-ib">支付安全提醒：</span>
+				<p>
+					本平台支付宝账号信息如下：<br />
+					账户名称：上海瀚之友信息技术服务有限公司<br />
+					接收账号：zijin1@99wuxian.com
+				</p>
+			</div>
+
+			<dl>
+				<dt>${s_welfarePointName}订单生成</dt>
+				<!-- <dd class="u-t1">订单编号：<b>2015050532456</b></dd> -->
+				<dd class="u-t1">支付金额：<b>￥${bookingOrder.count?string('#.00')}元</b></dd>
+			</dl>
+
+			<dl>
+				<dt>发票信息</dt>
+				<dd class="u-t2"><label class="f-ib">发票抬头：</label><span class="f-ib">${bookingOrder.invoiceUp}</span></dd>
+				<dd class="u-t2"><label class="f-ib">寄送地址：</label><span class="f-ib">${bookingOrder.invoiceAddress}</span></dd>
+				<dd class="u-t2"><label class="f-ib">联系人：</label><span class="f-ib">${bookingOrder.invoiceContacts}</span></dd>
+				<dd class="u-t2"><label class="f-ib">联系方式：</label><span class="f-ib">${bookingOrder.invoiceTelephone}</span></dd>
+			</dl>
+
+			<dl>
+				<dt>支付方式</dt>
+				<dd class="u-t3">
+					<#list payWays as item>
+						<fieldset class="f-por">
+							<a href="javascript:void(0);" class="f-ib j-sel-pay" data-val="${item.value}">${item.name}</a><span class="f-ib">${item.remark}</span>
+						</fieldset>
+					  </#list>
+					<!-- <fieldset class="f-por">
+						<a href="javascript:void(0);" class="f-ib j-sel-pay" data-val="2">线上支付</a>
+						<span class="f-ib"><img src="${staticDomain}image/zpic05.gif" /></span>
+					</fieldset>
+					<fieldset class="f-por">
+						<a href="javascript:void(0);" class="f-ib j-sel-pay" data-val="1">线下汇款</a>
+						<span class="f-ib">收款时间一般为汇款后3-5个工作日内</span>
+					</fieldset> -->
+				</dd>
+			</dl>
+
+			<h5>
+				<input value="" class="j-val-sel" id="paymentWay" name="paymentWay" type="hidden" />
+				<a href="javascript:void(0);" onclick="window.history.go(-1);" class="f-ib u-back">返回</a>
+				<!--<a href="javascript:void(0);" class="f-ib u-doit">确定</a> -->
+				<a href="javascript:void(0);" data-val="您确认提交?|0|0|1" class="j-confirm-open f-ib u-doit">确定</a>
+			</h5>
+			
+		</div>
+
+	</div>
+</div>
+</form>
+<script>
+	
+	var _selPay = $('.j-sel-pay');
+	var _valTag = $('.j-val-sel');
+	function confirmSure_1(_id){
+		if(_valTag.val() == null || _valTag.val()==""){
+			winAlert("请选择支付方式");
+			return false; 
+		}
+		$("#pointForm").submit();
+	}
+	$(function(){
+		// 选择支付方式
+		_selPay.click(function(){
+			_selPay.removeClass('z-on').siblings('i').hide();;
+			$(this).addClass('z-on').siblings('i').show();
+			_valTag.val($(this).attr('data-val'));//设置选择商品的ID值
+			
+		});
+	});
+</script>
+</body>
+</html>

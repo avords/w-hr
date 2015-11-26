@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<script type="text/javascript">
+	   var staticDomain = "${staticDomain}";
+	</script>
+    <title>公告信息管理</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/common.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}/ueditor/themes/default/_css/umeditor.css" />
+	<script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+    <style>
+    #g-add-p2 fieldset span {
+	  font-size: 13px;
+	  padding-left: 5px;
+	  color: #f00;
+	}
+	
+	#g-add-p2 fieldset .f-ib {
+	  font-size: 13px;
+	  color: #999;
+	}
+	
+	#g-add-p2 fieldset #j-total {
+	  font-size: 13px;
+	  color: #999;
+	}
+	
+    </style>
+</head>
+<body>
+<form method="post" action="${dynamicDomain }/infomation/saveNotice" id="saveForm" name="saveForm" >
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">公告管理</a> &gt;
+		发布公告
+	</h4>
+</div>
+<div id="g-content" class="f-cb">
+    <#include "/include/nav_menu_link.html">
+    <#include "/include/select_users.html" encoding="utf-8">
+
+	<div class="m-main f-fr">
+		<input type="hidden" name="objectId" value="${infomation.objectId }">
+            <input type="hidden" name="status" value="${infomation.status }">
+            <input type="hidden" name="type" value="${type }">
+           	<h4 class="u-tit f-cb">
+			<span class="f-ib">发布公告
+		</span>
+		<a href="${dynamicDomain }/infomation/listNotice" class="f-fr">返回</a>
+		</h4>
+
+		<div id="g-add-p2">
+			<fieldset>
+				<label class="f-ib">活动标题：</label>
+				<input type="text" class="f-ib u-txt u-w1 required" id="title" name="title" value="${infomation.title}" onblur="$('#acTitle').text('');"/>
+				<i>*</i>
+			</fieldset>
+			<fieldset>
+			    <#assign userText = "0"/>
+			    <#assign userFlag = ""/>
+			    <#assign faceMember = ""/>
+				<#if notices?exists && (notices?size>0) >
+				     <#assign userText = "${notices?size}个"/>
+				     <#list notices as acUser>
+				          <#if acUser_index == 0 && acUser.allUser =='all'>
+				               <#assign userText = "全体"/>
+				               <#assign userFlag = "checked='checked'"/>
+				               <#assign faceMember = "all"/>
+				          <#else>
+				               <input type="hidden" name="userId" value="${acUser.userId}">
+				          </#if>
+				     </#list>
+				</#if>
+				<label class="f-ib">发布对象：<input type="hidden" class="j-member-v" /></label>
+				<input type="hidden" class="f-ib u-chk"  name="faceMember" value="${faceMember}"/>
+				<input type="checkbox" class="f-ib u-chk"  name="allPeople" ${userFlag}/>
+				<input type="hidden" class="j-member-v" name="members"/>
+				<span class="f-ib">全体员工</span>
+				<a href="javascript:void(0);" data-pop="2,850,0,1,33" class="f-ib u-slt j-pop-open" onclick="$('#userMsg').text('');">选择员工</a>
+				<span id="j-win51-lst" class="list" style="display:none;"><p class="note"></p></span>
+				<span id="j-total">已选择 <i style="color: red" id="totalUser">${userText}</i>员工</span>
+				<i id="userMsg"></i>
+			</fieldset>
+			
+			<fieldset>
+				<label class="f-ib">有效期：</label>
+				<input type="text" readonly="readonly" value="${(infomation.activityBeginDate?string('yyyy-MM-dd'))}" id="activityBeginDate" name="activityBeginDate" 
+				onClick="WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'activityEndDate\')}',readOnly:true})" class="f-ib u-txt-date required" id="sign-start" />
+				<span class="f-ib">TO</span>
+				<input type="text" readonly="readonly" value="${(infomation.activityEndDate?string('yyyy-MM-dd'))}" id="activityEndDate" name="activityEndDate" 
+				onClick="WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'activityBeginDate\')}',readOnly:true})" class="f-ib u-txt-date required" id="sign-end" /><i>*</i>
+			</fieldset>
+
+			<fieldset>
+				<label class="f-ib">优先级别：</label>
+				<input type="text" class="f-ib u-txt sortNoVerify required" name="priority" value="${infomation.priority}"/>
+				<i>*</i>
+			</fieldset>
+			
+			<fieldset>
+				<label class="f-ib z-vlt">公告内容：</label>
+				<div class="f-ib u-ue-w">
+					<script type="text/plain" id="content" name="content" style="width:800px;height:240px;"></script>
+				</div>
+			</fieldset>
+
+			<fieldset class="u-btn">
+				<a href="javascript:void(0);" id="saveDraft" class="f-ib u-sub j-sub-btn">保存草稿</a>
+				<a href="javascript:void(0);" id="savePublish" class="f-ib u-sub j-sub-btn">发布公告</a>
+				<a href="javascript:void(0);" onclick="window.history.go(-1);" class="f-ib u-bak">返回</a>
+			</fieldset>
+		</div>
+	</div>
+</div>
+</form>
+<script>
+$(function(){
+	var ue = UM.getEditor('content');
+	$("#content").html('${infomation.content}');
+	$('#saveDraft').click(function(){
+		$("input[name='status']").val(1);
+		if((typeof(ue.getContent()) === 'undefined' || ue.getContent() == '')){
+			winAlert("请输入公告内容");
+		}else if(((typeof($("input[name='faceMember']").val()) === 'undefined' || $("input[name='faceMember']").val() == ''))
+		&&((typeof($("input[name='userId']").val()) === 'undefined' || $("input[name='userId']").val() == ''))){
+			winAlert("请选择发放对象");
+		}else{
+			$("#saveForm").submit();
+		}
+	});
+	$('#savePublish').click(function(){
+		$("input[name='status']").val(2);
+		if((typeof(ue.getContent()) === 'undefined' || ue.getContent() == '')){
+			winAlert("请输入公告内容");
+		}else if(((typeof($("input[name='faceMember']").val()) === 'undefined' || $("input[name='faceMember']").val() == ''))
+		&&((typeof($("input[name='userId']").val()) === 'undefined' || $("input[name='userId']").val() == ''))){
+			winAlert("请选择发放对象");
+		}else{
+			$("#saveForm").submit();
+		}
+	});
+});
+</script>
+
+<script type="text/javascript">
+$(function(){
+	$("#saveForm").validate();
+	//选择全年有效复选框的处理
+	var yearCheckBox = $("input[name=yearEffective]");
+	yearCheckBox.click(function() {
+		if (yearCheckBox.attr('checked')) {
+			$("input[name=activityBeginTime]").val('');
+			$("input[name=activityEndTime]").val('');
+			$("input[name=allYear]").val('allYear');
+			$("#actiMsg").text('');
+		}else{
+			$("input[name=allYear]").val('');
+		}
+	});
+	
+	//选择全体员工复选框的处理
+	var allPeople = $("input[name=allPeople]");
+	allPeople.click(function() {
+		if (allPeople.attr('checked')) {
+			//选择全体员工时，将选择的部分员工的隐藏域userId清空
+			var userIdList = $("input[name='userId']");
+			var userIdStr = "";
+			if (userIdList) {
+				userIdList.each(function() {
+					$(this).val('');
+				});
+			}
+			$("input[name=faceMember]").val('all');
+			$('#j-total').html('已选择 <i style= "color:red;" id="totalUser" >全体</i> 员工');
+			$("#userMsg").text('');
+		}else{
+			$("input[name=faceMember]").val('');
+			$('#j-total').html('已选择 <i style= "color:red;" id="totalUser">0</i>个员工');
+		}
+	});
+	
+	$('.j-date-valid').click(function(){
+
+		var _this = $(this), _tagP = _this.parent().find('p');
+
+		if(_this.is(':checked')){
+			_tagP.hide();
+		}else{
+			_tagP.show();
+		}
+	});
+});
+//处理层冲突
+$(document).on('click', '#j-pop-up332 .j-pop-cancel', function(){
+	$('#m-mask').hide();
+})
+$(document).on('click', '#j-pop-up332 .j-pop-sure', function(){
+	$('#m-mask').hide();
+})
+
+// 初始化函数载体
+function popInit(_char){
+	var _func = {
+		'init332': function(){ return {'title':'选择人员', 'html': tmp332Html}; } 
+	};
+	return _func[_char];
+}
+
+// 弹窗的确定按钮回滚函数
+function popSure(_char){
+	var _func = {
+		// "添加人员" 弹窗确定按钮回调
+		'sure332': function(){
+			var userIdList = $("input[name='userId']");
+			var userIdStr = "";
+			if (userIdList) {
+				userIdList.each(function() {
+					$(this).val('');
+				});
+			}
+			var _has = {};
+			$('#j-win51-lst a').each(function(){
+				var _k = $(this).attr('data-id');
+				_has['z'+_k] = _k;
+			});
+			
+			$("input[name='userId']").remove();
+			var _v = [], lst = '', _n = 0;
+			$('#j-pop51-rst input').each(function(){
+				var _this = $(this), _val = _this.val(), _arr = _val.split('|');
+				if(typeof(_has['z'+_arr[0]]) === 'undefined'){
+					lst += '<a href="javascript:void(0);" data-id="'+ _arr[0] +'" class="f-ib">'+ _arr[1] +'('+ _arr[0] 
+						+')<i class="j-win-del"><input type="hidden" name="userId" value="' + _arr[2] + '"></i></a>';
+				};
+			});
+			$('#j-pop51-rst').empty();
+			$('#j-win51-lst').append($(lst));
+			$('#j-total').html('已选择 <i style= "color:red;">'+ $('#j-win51-lst a').length +'</i> 个员工');
+			var allCheck = $("input[name=allPeople]");
+			allCheck.attr("checked",false);
+			$("input[name='faceMember']").val("");
+			return true;
+		}
+	
+	     
+	
+	};
+	return _func[_char];
+}
+
+</script>
+<script src="${staticDomain}js/jquery.popup.js"></script>
+<!-- 弹窗[选择员工] -->
+<table class="m-pop-up" id="j-pop-member"><tr><td class="z-tac">
+	<div class="z-ib z-wid650">
+		<h4 class="u-tit">选择员工</h4>
+		<h5 class="u-close">
+			<a href="javascript:void(0);" data-pop="test1" class="j-pop-cancel">×</a>
+			<input type="hidden" class="j-pop-data" />
+		</h5>
+		<div class="pop-member f-cb">
+
+			<div class="f-fl u-lft">
+				<span class="f-ib">选择部门：</span>
+				<div>
+					<dl class="j-pop-list"></dl>
+				</div>
+			</div>
+			<div class="f-fl u-rgt">
+				<span class="f-ib">待选：<input type="checkbox" id="sltWaitAll" data-type="wait" class="f-ib j-slt-all"> <label for="sltWaitAll">全选</label></span>
+				<div class="u-max-h j-wait-area"></div>
+			</div>
+			<div class="f-fl u-ctr">
+				<a href="javascript:void(0);" class="f-ib u-add j-act-plus">添加 &gt;&gt;</a>
+				<a href="javascript:void(0);" class="f-ib u-del j-act-move">移除 &lt;&lt;</a>
+				<a href="javascript:void(0);" class="f-ib u-clr j-act-clear">清空</a>
+			</div>
+			<div class="f-fl u-rgt">
+				<span class="f-ib">已选：<input type="checkbox" id="sltHasAll" data-type="has" class="f-ib j-slt-all"> <label for="sltHasAll">全选</label></span>
+				<div class="u-max-h j-has-area"></div>
+			</div>
+		</div>
+		<h6 class="u-btn">
+			<a href="javascript:void(0);" class="u-sub j-pop-sure">提交</a>
+			<a href="javascript:void(0);" class="u-rst j-pop-cancel">取消</a>
+		</h6>
+	</div>
+</td></tr></table>
+<script src="${staticDomain}ueditor/umeditor.config.js" charset="utf-8"></script>
+<script src="${staticDomain}ueditor/editor_api.js" charset="utf-8"></script>
+<script>
+
+// [回调函数]选择员工的弹窗的确定按钮事件
+function addMember(){
+	var _bool = true;
+	var _hasList = $('.j-has-slt');
+	if(_hasList.length > 0){
+		var _data = [];
+		$.each(_hasList, function(){
+			var _this = $(this), _id = _this.val();
+			_data.push(_id + '|' + _this.attr('data-txt'));
+		});
+		$('.j-member-v').val(_data.join(','));
+		//$('.j-member-n').val('已选择 '+ _data.length +' 人');
+	}else{
+		alert('请选择员工');
+		_bool = false;
+	}
+	return _bool;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <title>福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/system.css" />
+</head>
+<body>
+    <div class="g-content">
+    <div class="g-inc">
+        <p>订单已提交，请勿重复提交订单！</p>
+        <div class="btn">
+            <a href="${dynamicDomain}/welfareOrder" class="on">返回福利订单</a>
+            <a href="${dynamicDomain}/mall/search">返回商城</a>
+        </div>
+    </div>
+</div>
+<script>
+    $(function(){
+        var _h1 = $(window).height(),_h2 = $('.nav').height(),_h3 = $('.footer').height(),h = _h1-(_h2+_h3) ;
+        $('.g-inc').css('height',h-135+'px');
+    })
+</script>
+</body>
+</html>

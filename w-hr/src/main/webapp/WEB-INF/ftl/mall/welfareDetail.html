@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>套餐商品列表 - 福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/list.z.css" />
+</head>
+<body>
+<form method="post" action="${dynamicDomain}/buyWelfare/buyWelfareIndex" onsubmit="return validateForm();"  id="welfarePackageForm" name="welfarePackageForm" >
+	<div id="g-lt1-tit" style="height:auto;">
+	    <div>
+	        <h3 style="height:auto;line-height: 50px;">${welfarePackage.packageName}</h3>
+	        <h4 class="f-cb">
+	            <span style="width:auto;"><b>${money?string('0.00')}</b> 元<em class="f-ib">${wpType}</em></span>
+	            <fieldset class="f-cb"><i class="f-fl">${totalCount }</i><u class="f-fl"></u><em class="f-fl">${count }</em></fieldset>
+	        </h4>
+	    </div>
+	</div>
+	
+	<div id="g-lt1-main">
+	    <h4><span class="f-ib">商品图片</span><i class="f-ib">商品价格</i></h4>
+	    <#list products as item>
+	    <ul class="f-cb">
+	        <li class="u-img"><a href="${dynamicDomain }/product/skuDetail/${item.objectId}"><img src="${adminStaticDomain }${item.mainPicture}"/></a></li>
+	        <li class="u-tit">
+	            <a href="${dynamicDomain }/product/skuDetail/${item.objectId}">${item.name }</a>
+	            <p>${item.welfareTag }</p>
+	        </li>
+	        <li class="u-prc"><b>${item.sellPrice?string('0.00')}</b> ${s_welfarePointName}<br /><i>￥${item.sellPrice?string('0.00')}</i></li>
+	    </ul>
+	    </#list>
+	</div>
+	
+	<div id="g-lt1-desc">
+	    <dl style="word-break: break-all; overflow: hidden;">
+	        <dt>套餐说明</dt>
+	        <dd>${welfarePackage.packageExplain }</dd>
+	        <dt>截止日期 </dt>
+	        <dd>${welfarePackage.endDate?string("yyyy年MM月dd日")}</dd>
+	    </dl>
+	    <h5 class="f-cb">
+	        <span class="f-fl u-lab">份&nbsp;&nbsp;&nbsp;数: </span>
+	        <a href="javascript:void(0);" data-type="subt" class="f-fl u-subt j-comp">-</a>
+	        <input type="text" id="count" name="count" class="f-fl u-txt j-count" value="1" />
+	        <a href="javascript:void(0);" data-type="add" class="f-fl u-add j-comp">+</a>
+	        <span class="f-fl u-lab  stock-num" style="color:red;font-size:15px;margin-left:10px;">
+	        <#if welfarePackage.packageStock==0>
+                 套餐已售罄
+             <#else>
+               剩余库存${welfarePackage.packageStock}
+             </#if>
+	        </span>
+	    </h5>
+	    <#if isPermission>
+		    <h6>
+		        <#if (products?size>0)>
+		        	<input type="hidden" name="pakageId" id="pakageId"  value="${welfarePackage.objectId}"/>
+		           <a href="javascript:void(0);" class="f-ib u-do buy_welfare">立即购买</a>
+		        <#else>
+		           <a href="javascript:void(0);" style="background-color:#A9A9A9" class="f-ib u-do">立即购买</a>
+		        </#if>
+		    </h6>
+	    </#if>   
+	</div>
+</form>
+<script>
+
+function validateForm(){
+    var count = $('#count').val();
+    if(!/^[1-9]+\d*$/.test(count)){
+        winAlert('数量有误，请重新输入');
+        return false;
+    }
+    var stock = '${welfarePackage.packageStock}';
+    if(parseInt(count)<=0||count==''){
+        winAlert('数量有误，请重新输入');
+        return false;
+    }
+    if(parseInt(count)>parseInt(stock)){
+      winAlert('库存不足!');
+      return false;
+    }
+	return true;
+	
+}
+
+	$(function(){
+	
+	    // 列表尾元素的样式控制
+	    $('#g-lt1-main').find('ul:last').css('border-bottom-color','#c6c6c6');
+	
+	    // 数量加减
+	    $('.j-comp').click(function(){
+	        var _count = $('.j-count');
+	        var _this = $(this), _type = _this.attr('data-type');
+	        var _val = _count.val();
+	        
+	        if(_type == 'subt'){
+	            if(_val <= 1){
+	                winAlert('数量不能少于1');
+	                return false;
+	            }
+	            _val--;
+	        }else{
+	        	var stock = $('.stock-num').text();
+            	stock = stock.match(/^[^\d]+?(\d+)?[^\d]+?$/)[1];
+            	stock = parseInt(stock || -1);
+            	if(stock != -1 && _val<stock)
+                	_val++;
+	        }
+	        _count.val(_val);
+	    });
+	    //立即购买
+	    $(".buy_welfare").click(function (){
+        	if(validateForm()){
+        		$("#welfarePackageForm").submit();
+        	}
+        });
+	     
+	});
+</script>
+</body>
+</html>

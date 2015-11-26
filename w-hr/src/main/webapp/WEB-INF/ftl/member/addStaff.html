@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>员工信息</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+    <script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+	<script src="${staticDomain}js/jquery.popup.js"></script>
+	<script src="${staticDomain}js/jquery.form.js"></script>
+	<script src="${staticDomain}js/ajaxfileupload.js"></script>
+</head>
+<body>
+<form  method="post" id="form" action="${dynamicDomain }/member/saveStaff">
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">账户管理</a> &gt;
+		添加员工
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<div class="m-main f-fr">
+		<h4 class="u-tit f-cb">
+			<span class="f-ib">添加员工</span>
+			<a href="${dynamicDomain }/member/listStaff" class="f-fr">返回</a>
+		</h4>
+		<div id="g-add-p19">
+		
+			<input type="hidden" name="objectId" id="objectId" value="<#if staff??>${staff.objectId}</#if>">
+			<div class="u-tab f-cb j-tab">
+				<span class="f-fl z-on">添加员工</span>
+				<span class="f-fl">批量导入员工信息</span>
+			</div>
+
+			<div class="u-cnt j-cnt">
+				<fieldset>
+					<label class="f-ib">员工姓名：</label>
+					<input type="text" class="f-ib u-txt required {maxlength:[32]}" name="userName" id="staffName"/>
+					<i class="f-ib">*</i>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib">员工工号：</label>
+					<input type="text" class="f-ib u-txt required {maxlength:[50]}" name="workNo" id="workNo" />
+					<i class="f-ib">*</i>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib">登录账户：</label>
+					<input type="text" class="f-ib u-txt required {account_no:[6,50]}" name="loginName" id="loginName"/>
+					<i class="f-ib">*</i>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">入职日期：</label>
+					<input type="text" readonly="readonly" class="f-ib u-txt-date required" id="in-date" name="entryDay" value="<#if staff.entryDay??>${(staff.entryDay?string('yyyy-MM-dd'))}</#if>"/>
+					<i class="f-ib">*</i>
+					<label class="f-ib u-pl1">员工性别：<input type="hidden" value="<#if staff??>${staff.sex}</#if>" class="j-sex-val" name="sex"/></label>
+					<span class="f-ib u-slt-btn">
+						<a href="javascript:void(0);" data-val="1" class="f-ib j-slt-sex">男性</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib j-slt-sex">女性</a>
+					</span>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">手机号码：</label>
+					<input type="text" class="f-ib u-txt mobile" name="mobilePhone" id="mobilePhone"/>
+					<i class="f-ib">*</i>
+					<label class="f-ib u-pl1">电子邮箱：</label>
+					<input type="text" class="f-ib u-txt email {maxlength:[50]}" name="email" id="email"/>
+					<i class="f-ib">*</i>
+				</fieldset>
+				<fieldset>
+					<#include "/include/select_department.html">
+					<label class="f-ib">出生日期：</label>
+					<input type="text" readonly="readonly" class="f-ib u-txt-date" id="birthday-date" name="birthday" value="<#if staff.birthday??>${(staff.birthday?string('yyyy-MM-dd'))}</#if>"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="f-ib u-pl1">所属部门：</label>
+					<span class="f-ib f-por">
+						<input type="text" readonly="readonly" data-pop="1,400,0,1,7" class="f-ib u-txt dep j-pop-open required" value="${companyName}" name="companyDepartment.name"/>
+						<input type="hidden" class="j-dep-val"  name="departmentId" value="<#if staff??>${staff.departmentId}</#if>"/>
+					</span>
+					<i class="f-ib">*</i>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">联系方式：</label>
+					<input type="text" class="f-ib u-txt phone" name="linkPhone" value="<#if staff??>${staff.linkPhone}</#if>"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<label class="f-ib z-vlt u-pl1">状态：</label>
+					<dl class="f-ib u-status">
+						<dt class="f-ib"><label><input type="radio" checked="checked" class="rad j-slt-sta" name="status" value="1" /> 在职</label></dt>
+					</dl>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib z-vlt">备注：</label>
+					<div class="f-ib"><textarea name="remark" class="{maxlength:[500]}"></textarea></div>
+				</fieldset>
+
+				<fieldset>
+					<label class="f-ib">&nbsp;</label>
+					<button type="submit" class="f-ib u-sub">保存</button>
+				</fieldset>
+			</div>
+			
+			<div class="u-mod j-cnt f-dn f-cb">
+				<span class="f-fl">导入人员名单：</span>
+				<i class="f-fl"><a href="javascript:void(0);"  data-pop="logo,1,0,vam" class="f-ib u-up-btn j-pop-open">选择文件</a></i> 
+				<em class="f-fl">
+					<a href="${dynamicDomain}/member/exportTemplate" target="_blank" class="f-ib">下载员工信息模板</a>
+				</em>
+			</div>
+			
+<!-- 弹窗[导入员工] -->
+<table class="m-pop-up" id="j-pop-logo"><tr><td class="z-tac">
+	<div class="z-ib z-wid450">
+		<h4 class="u-tit">员工导入</h4>
+		<h5 class="u-close">
+			<a href="javascript:void(0);" data-pop="test1" class="j-pop-cancel">×</a>
+			<input type="hidden" class="j-pop-data" />
+		</h5>
+		<div class="pop-upload">
+			<dl>
+				<dt>
+					<input type="file" name="uploadFile" id="uploadFile" class="f-ib">
+				</dt>
+				<dd>模板格式支持：xls,大小不超过5M；</dd></dl>
+				<dd>
+				<div id="loadingDiv" class="f-ib" style="margin: 20px; display: none;">
+					<font style="font-color: red; font-weight: bold;">正在上传...<br>请勿关闭窗口</font>
+				</div>
+				<div id="errorDataDiv" class="f-ib" style="margin: 20px; display: none;">
+				<em class="f-fl">
+					<a href="${dynamicDomain}/member/exportAll" target="_blank" class="f-ib">下载导入失败员工信息</a>
+				</em>
+				</div>
+				</dd>
+			</dl>
+		</div>
+		<h6 class="u-btn">
+			<a href="javascript:void(0);" onclick="javascript:sbumitFile();"  class="j-pop-sure buttonStyle">确定</a>
+			<a href="javascript:void(0);" class="u-rst j-pop-cancel">取消</a>
+		</h6>
+	</div>
+</td></tr></table>
+			<script>
+			$("#form").validate();
+			$(document).ready(function() {
+				$("#loginName").rules("add", {
+					remote : {
+						url : "${dynamicDomain}/user/isUnique?ajax=1&objectId=${staff.objectId}",
+						type : "post",
+						dataType : "json"
+					},
+					messages : {
+						remote : "该登录名已存在"
+					}
+				});
+				$("#workNo").rules("add", {
+					remote : {
+						url : "${dynamicDomain}/member/isUnique?ajax=1&objectId=${staff.objectId}",
+						type : "post",
+						dataType : "json"
+					},
+					messages : {
+						remote : "该工号已存在"
+					}
+				});
+				$("#mobilePhone").rules("add", {
+					remote : {
+						url : "${dynamicDomain}/user/isUnique?ajax=1&objectId=${staff.objectId}&type=6",
+						type : "post",
+						dataType : "json"
+					},
+					required: {  
+	                    depends:function(){ //二选一  
+	                        return ($('#email').val().length <= 0);  
+	                    }  
+	                },
+					messages : {
+						remote : "该手机号码已存在",
+						required: "手机号码、邮箱二选一"
+					}
+				});
+				
+				$("#email").rules("add", {
+					remote : {
+						url : "${dynamicDomain}/user/isUnique?ajax=1&objectId=${staff.objectId}&type=6",
+						type : "post",
+						dataType : "json"
+					},
+					required: {  
+	                    depends:function(){ //二选一  
+	                        return ($('#mobilePhone').val().length <= 0);  
+	                    }  
+	                },
+					messages : {
+						remote : "该电子邮箱已存在",
+						required :"手机号码、邮箱二选一"
+					}
+				});
+			});
+			function sbumitFile(){
+				var fileName = $("#uploadFile").val();
+				fileName = /.[^.]+$/.exec(fileName);
+				if (fileName !=".xls"){
+					winAlert("请上传2003版EXCEL文件");
+					return false;
+				}else{
+					document.getElementById("loadingDiv").style.display="";
+					document.getElementById("errorDataDiv").style.display='none';
+					$.ajaxFileUpload({
+						url : '${dynamicDomain}/member/uploadStaffs?ajax=1',
+						secureuri : false,
+						fileElementId : 'uploadFile',
+						type:"POST",
+						dataType : 'json',
+						success : function(data) {
+							winAlert(data.iResult);
+							document.getElementById("loadingDiv").style.display='none';
+							document.getElementById("errorDataDiv").style.display='';
+						}
+					});
+				}
+			}
+	
+			$(function(){
+
+				// 状态的选择
+				$('.j-slt-sta').click(function(){
+
+					var _this = $(this), _qType = $('.j-slt-qtype');
+					if (_this.val() == '2') {
+						_qType.show();
+					}else{
+						_qType.hide();
+					}
+				});
+
+				// 性别的选择
+				var _sltSex = $('.j-slt-sex'), _valSex = $('.j-sex-val');
+				_sltSex.click(function(){
+					var _this = $(this);
+					if(_this.hasClass('z-on')){
+						return false;
+					}else{
+						_sltSex.removeClass('z-on');
+						_this.addClass('z-on');
+						_valSex.val(_this.attr('data-val'));
+					}
+				});
+
+				// 内容切换
+				var _tab = $('.j-tab span'), _cnt = $('.j-cnt');
+				_tab.click(function(){
+					var _this = $(this), _i = _this.index();
+					if(!_this.hasClass('z-on')){
+						_tab.removeClass('z-on').eq(_i).addClass('z-on');
+						_cnt.hide().eq(_i).show();
+					}
+				});
+
+				// 日期控件 
+				$('#birthday-date').click(function(){
+					WdatePicker({maxDate: '%y-%M-%d'});
+				});
+
+				// 入职日期 
+				$('#in-date').click(function(){
+					WdatePicker({value: '%y-%M-%d'});
+				});
+
+				// 模拟Select控件
+				$('.j-slt').click(function(){
+					var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+					$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+					if(_this.hasClass('z-on-slt')){
+						_this.removeClass('z-on-slt');
+						_opt.hide();
+					}else{
+						_this.addClass('z-on-slt');
+						_opt.show();
+					}
+					return false;
+				});
+
+				// 下拉项的点击事件
+				$('.j-opt > a').click(function(){
+					var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+					_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+					return false;
+				});
+
+				$('body').click(function(e){
+					$('.j-opt').hide();
+					$('.j-slt').removeClass('z-on-slt')
+				});
+			});
+			
+			</script>
+		</div>
+	</div>
+</div>
+</form>	
+</body>
+</html>

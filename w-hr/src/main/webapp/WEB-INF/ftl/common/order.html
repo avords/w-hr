@@ -1,0 +1,162 @@
+
+
+<!-- 订单状态 -->
+<#macro orderStatus status>
+	<#if status == '1'>
+		待支付
+		<#elseif status == '2' >
+		待发货
+		<#elseif status == '3' >
+		已发货(实物)
+		<#elseif status == '4' >
+		待发放
+		<#elseif status == '5' >
+		已发放(虚拟)
+		<#elseif status == '6' >
+		取消订单
+		<#elseif status == '7' >
+		系统作废
+		<#elseif status == '8' >
+		退货
+		<#elseif status == '9' >
+		已结算
+		<#elseif status == '10' >
+		已发货(虚拟)
+		<#elseif status == '11' >
+		交易成功
+		<#elseif status == '12' >
+		待预约
+		<#elseif status == '13' >
+		已预约
+		<#elseif status == '14' >
+		已到检
+		<#elseif status == '15' >
+		报告已出
+		<#elseif status == '16' >
+		报告寄出
+		<#elseif status == '17' >
+		已付款
+		<#elseif status == '18' >
+		处理中
+		<#elseif status == '19' >
+		已完成
+	</#if>
+</#macro>
+
+
+
+<!-- 福利订单 筛选订单状态 -->
+<#macro welfareOrderStatusSelect>
+	<a href="javascript:void(0);" data-val="0" class="f-ib">交易状态</a>
+	<a href="javascript:void(0);" data-val="1" class="f-ib">待支付</a>
+	<a href="javascript:void(0);" data-val="2" class="f-ib">待发货</a>
+	<a href="javascript:void(0);" data-val="3" class="f-ib">已发货(实物)</a>
+	<a href="javascript:void(0);" data-val="4" class="f-ib">待发放</a>
+	<a href="javascript:void(0);" data-val="5" class="f-ib">已发放(虚拟)</a>
+	<a href="javascript:void(0);" data-val="6" class="f-ib">取消订单</a>
+	<a href="javascript:void(0);" data-val="7" class="f-ib">系统作废</a>
+	<a href="javascript:void(0);" data-val="8" class="f-ib">退货</a>
+	<a href="javascript:void(0);" data-val="11" class="f-ib">交易成功</a>
+</#macro>
+
+
+<!-- 福利订单 筛选订单状态 选中 -->
+<#macro welfareOrderStatusSelected subOrderStatus>
+	
+	<#if subOrderStatus == '1'>
+		<input type="text" value="待支付" readonly="" class="u-txt u-slt j-slt">
+	<#elseif subOrderStatus == '2'>
+		<input type="text" value="待发货" readonly="" class="u-txt u-slt j-slt">
+	<#elseif subOrderStatus == '3'>
+		<input type="text" value="已发货(实物)" readonly="" class="u-txt u-slt j-slt">
+	<#elseif subOrderStatus == '4'>
+		<input type="text" value="待发放" readonly="" class="u-txt u-slt j-slt">
+	<#elseif subOrderStatus == '5'>
+		<input type="text" value="已发放(虚拟)" readonly="" class="u-txt u-slt j-slt">
+	<#elseif subOrderStatus == '6'>
+		<input type="text" value="取消订单" readonly="" class="u-txt u-slt j-slt">
+	<#elseif subOrderStatus == '7'>
+		<input type="text" value="系统作废" readonly="" class="u-txt u-slt j-slt">
+	<#elseif subOrderStatus == '8'>
+		<input type="text" value="退货" readonly="" class="u-txt u-slt j-slt">
+	<#elseif subOrderStatus == '11'>
+		<input type="text" value="交易成功" readonly="" class="u-txt u-slt j-slt">
+	<#else>
+		<input type="text" value="交易状态" readonly="" class="u-txt u-slt j-slt">
+	</#if>
+</#macro>
+
+
+
+
+
+
+<!-- 
+	订单对应的操作按钮 
+	status：状态；
+	subOrderId：子订单ID；
+	orderProdType：订单商品类型（0：积分购买；1：福利套餐；2：体检套餐；3：SKU商品；4：生活服务） 
+	orderGrantType:订单发放类型(在线发放1，线下发放2)
+	paymentWay: 支付方式（1：线下支付:2：线上支付）
+-->
+<#macro hrOrderOption status subOrderId orderProdType orderGrantType paymentWay>
+	<#if status == '1'>
+		<#if orderProdType =='4'>
+			<#if paymentWay ==2>
+				<a href="javascript:void(0);" data-val="${subOrderId}" target="top" class="u-s3 aliPayNow">立即支付</a><br />
+			</#if>
+			<a href="javascript:void(0);" data-val="您确认取消订单?|0|${subOrderId}|cancelSubOrder" class="j-confirm-open">取消</a><br />
+		<#else>
+			<#if paymentWay ==2>
+				<a href="${payDomain}/onlinePay/orderPayCenter?subOrderIds=${subOrderId}" data-val="${subOrderId}" target="top" class="u-s3 payNow">立即支付</a><br />
+			</#if>
+			<a href="javascript:void(0);" data-val="您确认取消订单?|0|${subOrderId}|cancelSubOrder" class="j-confirm-open">取消</a><br />
+		</#if>
+	<#elseif status == '4' >
+		<#if orderGrantType=='1'>
+			<a href="${dynamicDomain}/grantWelfare/editWelfare/${subOrderId}" class="u-s2">在线发放</a><br />
+		<#elseif  orderGrantType=='2'>
+			<a href="javascript:void(0);" data-val="${subOrderId}"  class="f-ib j-btn-dline sureButton">线下发放</a><br />
+		<#else>
+			<a href="${dynamicDomain}/grantWelfare/editWelfare/${subOrderId}" class="u-s2">在线发放</a><br />
+			<a href="javascript:void(0);" data-val="${subOrderId}" class="f-ib j-btn-dline sureButton">线下发放</a><br />
+		</#if>
+	<#elseif status == '5' >
+		<#if orderGrantType=='2'>
+			<a href="javascript:void(0);" data-val="${subOrderId}" class="f-ib j-btn-dline sureButton">线下发放</a><br />
+		</#if>
+	</#if>
+	<#if orderProdType!='4'&&orderProdType!='0' >
+		<a href="javascript:void(0);" data-val="${subOrderId}" class="u-s2 showDetail">查看详情</a>
+	</#if>
+</#macro>
+
+
+<!-- 流程环节展示   -->
+<#macro hrWorkflow status> 
+	<#if status=='1'>
+		<p><img src="${staticDomain}image/stp1.png" /></p>
+	<#elseif status=='2'>
+		<p><img src="${staticDomain}image/stp2.png" /></p>
+	<#elseif status=='3'>
+		<p><img src="${staticDomain}image/stp4.png" /></p>
+	<#elseif status=='4'>
+		<p><img src="${staticDomain}image/stp3.png" /></p>
+	<#elseif status=='5' >
+		<p><img src="${staticDomain}image/stp4.png" /></p>
+	<#elseif status=='10'>
+		<p><img src="${staticDomain}image/stp4.png" /></p>
+	<#elseif status=='11'>
+		<p><img src="${staticDomain}image/stp4.png" /></p>
+	</#if>
+</#macro>
+
+
+<!-- 订单付款方式 -->
+<#macro paymentWay payWay>
+	<#if payWay == '1'>
+		线下支付
+		<#elseif payWay == '2' >
+		线上支付
+	</#if>
+</#macro>

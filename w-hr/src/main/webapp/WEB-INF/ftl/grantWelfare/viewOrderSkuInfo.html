@@ -1,0 +1,339 @@
+<#include "/common/order.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>福利订单信息 - 福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/order.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+	<link media="all" rel="stylesheet" href="${staticDomain}css/gw.main.v1.css" />
+	<link media="all" rel="stylesheet" href="${staticDomain}css/logistics.css" />
+</head>
+<body>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">福利管理</a> &gt;
+		<a href="javascript:void(0);">福利订单</a> &gt;
+		订单详情
+	</h4>
+</div>
+
+<div id="u-step">
+	
+	<@hrWorkflow status='${subOrderTemp.subOrderState}'/> 
+	
+	<#if subOrderTemp.subOrderState!=8  &&  subOrderTemp.subOrderState!=7 &&  subOrderTemp.subOrderState!=6>
+		<ul class="f-cb">
+			<#list subOrderTemp.subOrderTimeInfoList as timeInfo>
+				<li class="on"><span class="f-ib">${timeInfo.stateDesc}</span><br />${timeInfo.operationTime?string('yyyy-MM-dd HH:mm:ss')}</li> 
+			</#list> 
+		</ul>
+	</#if>
+</div>
+
+<div id="g-odr2">
+
+	<dl class="nt">
+		<dt>
+		<#if subOrderTemp.subOrderState==1>
+		<!-- 订单交易状态为待支付，实体或虚拟套餐可走立即支付流程   -->
+			<a href="${dynamicDomain}/buyWelfare/buyWelfareSubOrderSuc/${subOrderTemp.objectId}" data-val="${subOrderTemp.objectId}" class="f-ib onl">立即支付</a><br />
+		</#if>
+		</dt>
+		<dd>订单编号：${subOrderTemp.subOrderNo} </dd>
+		<#if subOrderTemp.subOrderType==2>
+			<dd><a href="javascript:void(0);" data-pop="${subOrder.objectId}" data-val="${subOrder.receiptMoblie}" class="j-btn-dline">下载电子凭证文件</a></dd>
+		</#if>
+	</dl>
+
+
+	<p class="u-info">
+		<span class="f-ib">操作账号：${subOrderTemp.loginName}</span>
+		<span class="f-ib">付款方式：<@paymentWay payWay='${subOrderTemp.paymentWay}' /></span><br />
+		<span class="f-ib">总数量：${subOrderTemp.count}</span>		
+	</p>
+	
+
+	<#if  subOrderTemp.subOrderType==1>
+	<!-- 订单的子订单类型为实物   -->
+			<h5 class="u-tt">收货信息：</h5>
+			<p class="u-info">
+				<span class="f-ib">收货联系人：${subOrderTemp.receiptContacts}</span>
+				<span class="f-ib">联系方式：${subOrderTemp.receiptMoblie}</span>
+				<span class="f-ib">邮编：${subOrderTemp.receiptZipcode}</span><br />
+				<span class="f-ib">地址：${subOrderTemp.receiptAddress}</span>
+			</p> 
+			 
+	
+		<#if  subOrderTemp.subOrderState==3>
+			<!-- 订单的交易状态为已发货    -->
+	
+			<h5 class="u-tt">物流信息：</h5>
+			<p class="u-info">
+				<span class="f-ib">物流公司：${subOrderTemp.logisticsCompanyStr}</span>
+				<span class="f-ib">运单号：
+						<a href="javascript:void(0);" data-pop="${subOrderTemp.companyCode}" data-val="${subOrderTemp.logisticsNo}" class="logistics_info">${subOrderTemp.logisticsNo}</a> 
+				</span><br/>
+			</p> 
+		</#if>
+		
+	</#if>
+	
+	
+	<h5 class="u-tt">商品清单：</h5>
+	<div class="u-g-list">
+		<ol class="f-cb">
+			<li class="u-t2">&nbsp;商品信息</li>
+			<li class="u-t3">&nbsp;</li>
+			<li class="u-t4">&nbsp;单价</li>
+			<li class="u-t5">数量</li>
+			<li class="u-t6">&nbsp;小计</li>
+		</ol>
+		<div class="u-list j-list">
+			<#list subOrderTemp.orderProductList as subOrder>
+				<ul class="f-cb">
+					<li class="u-t2"><a href="${dynamicDomain}/product/detail/${subOrder.productId}" target="top"><img class="listImg" src="${adminStaticDomain}${subOrder.product.mainPicture}" class="f-ib"></a></li>
+					<li class="u-t3"><a href="${dynamicDomain}/product/detail/${subOrder.productId}" target="top">${subOrder.name}</a></li>
+					<li class="u-t4"><b>${subOrder.productPrice?string('0.00')}${s_welfarePointName}</b><br>￥${subOrder.productPrice?string('0.00')}</li>
+					<li class="u-t5">${subOrder.productCount}</li>
+					<li class="u-t6">${subOrder.productPrice?string('0.00')}${s_welfarePointName}</li>
+				</ul>
+			</#list> 
+			<p><span>商品数量：共 <i>${subOrderTemp.count}</i> &nbsp;件&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			
+			<!-- 待支付显示，应付xx积分   -->
+			<#if subOrderTemp.subOrderState==1>
+				应付：<b>${subOrderTemp.payableAmount}</b> &nbsp;${s_welfarePointName}</span></p>
+			<#else>
+				实付：<b>${subOrderTemp.payableAmount}</b> &nbsp;${s_welfarePointName}</span></p>
+			</#if>
+				
+		</div>
+	</div>
+</div>
+
+
+
+<!-- 物流信息 -->
+<table class="z-pop-up j-pop-up" id="logistics_info_mask" style="z-index: 1002; display: none;">
+	<tbody><tr><td style="text-align:center;vertical-align:middle;">
+	<div style="width:600px;" class="z-ib">
+	<h4 class="u-tit">
+		<span>运单信息</span>
+		<a href="javascript:void(0);" class="logistics-info-cancel">×</a>
+	</h4>
+	<div class="pop-221">
+		<h3>运单号：<span class="logisticsNo"></span><br>物流信息：</h3>
+		<ul class="logistics_info_detail">
+		</ul>
+	</div>
+	<h6 class="u-btn"> <a href="javascript:void(0);" class="u-rst logistics-info-cancel">取消</a> </h6>
+	</div>
+	</td></tr></tbody>
+</table>
+
+
+
+
+<!-- 线下发放的弹窗 -->
+<form action="${dynamicDomain}/virtualCardInfo/downVirtualCardInfo" name="downCardInfo" id="downCardInfo" target="top">
+	<div class="m-pop u-pop1">
+		<h4>下载电子凭证文件<a href="javascript:void(0);" class="f-ib j-pop-close"></a></h4>
+		<fieldset class="f-cb u-pop-f1">
+			<label class="f-fl">支付密码：</label>
+			<span class="f-fl"><input type="password" class="u-txt" id="password" name="password"/></span>
+		</fieldset>
+		<fieldset class="f-cb u-pop-f1">
+			<p>提醒：请输入支付密码。</p>
+		</fieldset>
+		<fieldset class="f-cb u-pop-f1">
+			<label class="f-fl">&nbsp;</label>
+			<span class="f-fl">
+				<button type="button" class="u-sub confirmGrant" />确认</button>
+				<button type="reset" class="u-reset j-pop-close">取消</button>
+			</span>
+		</fieldset>
+	</div>
+	<input type="hidden" id="subOrderId" name="subOrderId" value="${subOrderTemp.objectId}"/>
+</form>
+
+
+
+<script>
+$(function(){
+	
+	//获取物流信息
+	$(".logistics_info").click(function(){
+		//初始化信息
+		var companyCode = $(this).attr('data-pop');
+		var logisticsNo = $(this).attr('data-val');
+		
+		$(".logisticsNo").text(logisticsNo);
+		
+		var data = {} ;
+		data.companyCode = companyCode ;
+		data.logisticsNo = logisticsNo;
+		data = jQuery.param(data) ;
+		var logistics_info_detail = $(".logistics_info_detail");
+		
+		$.ajax({
+			url : "${dynamicDomain}/logisticsInfo/getLogisticsInfo",
+			type : 'post',
+			dataType : 'json',
+			data : data,
+			async: false,
+			success : function(response){
+				logistics_info_detail.children().remove();
+				$.each(response.LogisticsInfoes, function(i){
+					logistics_info_detail.append("<li>"+response.LogisticsInfoes[i].logisticsContext+"<i class='f-ib'>"+response.LogisticsInfoes[i].logisticsTimeStr+"</i></li>");
+				});
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				winAlert("系统异常，请联系管理员");
+      		}	
+		});
+		
+		doMask(true);
+        $('#logistics_info_mask').show();
+	
+	});
+
+	
+	//关闭物流页面
+	$(".logistics-info-cancel").click(function(){
+		doMask(false);
+	       $('#logistics_info_mask').hide();
+	});
+	
+	
+	
+	
+	
+	
+	var pwd = "";
+	function getPwd(obj){
+		if(obj){
+			pwd = $(obj).val();
+		}
+		return pwd;
+	}
+	
+	
+	//下载电子凭证
+	
+	$(document.body).on('click', '.confirmGrant', function(){
+		var subOrderId = $('#subOrderId').val() ;
+		var pwd = $("#password").val();
+		if(pwd==null || pwd=='' || typeof(pwd)=="undefined"){
+			winAlert("支付密码不能为空");
+			return;
+		}
+		$.ajax({
+	          url:'${dynamicDomain}/grantWelfare/confirmPayOffline',
+	          type : 'post',
+	          async : false,
+	          dataType : 'json',
+	          data :"password=" +pwd,
+	          success : function(json) {
+	              if(json.result==1){
+            	  	$("#downCardInfo").submit();
+					$(".j-pop-close").click();
+	              }else if(json.result==0){
+	            	  winAlert("支付密码错误");
+	              }
+	              return false;
+	          }
+	      });
+		return false;
+	});
+	
+	
+	
+	
+	
+	
+	// 弹窗
+	$('.j-btn-dline').click(function(){
+		openMask(true);
+		openPop(true,250);
+		//初始化
+		$("#password").val("");
+	});
+	
+	// 窗口缩放控制位置
+	var _mPop = '.m-pop';
+	$(window).resize(function(){
+		if(!$(_mPop).is(':hidden')){
+			centerPop(_mPop, 250);
+		}
+	});
+
+	// 开启弹窗
+	function openPop(_bool, _myh){
+		_myh = _myh || 0;
+		if(!_bool){
+			$(_mPop).hide();
+		}else{
+			centerPop(_mPop, _myh);
+		}
+	}
+
+	// 弹窗位置居中
+	function centerPop(_ob, _myh){
+
+		var _pop = $(_ob), _h = _pop.height(), _w = _pop.width();
+		var _win = $(window), _wh = _win.height(), _ww = _win.width();
+		var _mh = _myh == 0 ? (((_wh - _h) / 2) - _myh) : _myh;
+		var _css = {'top':_mh , 'left':(_ww - _w) / 2};
+
+		_pop.css(_css).show();
+	}
+
+	// 开启遮罩
+	function openMask(_bool){
+		var _mask = $('#g-mask');
+		if(_bool){
+			if(_mask.length === 1){
+				_mask.show();
+			}else{
+				$('<div id="g-mask"></div>').appendTo('body').css('opacity','.2');
+			}
+		}else{
+			_mask.hide();
+		}
+	}
+	
+	$('body').on('click','.j-pop-close',function(){
+		openMask(false);
+		openPop(false);
+	});
+	
+	
+});	
+
+
+
+
+	//操作遮罩
+	function doMask(_bool){
+	    var _id = 'm-mask', _mask = $('#' + _id);
+	    if(_bool){
+	        if(_mask.length === 1){
+	            _mask.show();
+	        }else{
+	            $('<div id="'+ _id +'"></div>').appendTo('body').css({'opacity':'.2'});
+	        }
+	    }else{
+	        _mask.hide();
+	    }
+	}
+	
+	
+	
+	
+
+</script>
+</body>
+</html>

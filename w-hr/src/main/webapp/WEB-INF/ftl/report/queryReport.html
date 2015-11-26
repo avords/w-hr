@@ -1,0 +1,78 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>${report.reportName}</title>
+    <script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+</head>
+<body>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">统计查询</a> &gt;
+		${report.reportName}
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+		<div class="m-main f-fr">
+		<h4 class="u-tit"><span class="f-ib">${report.reportName}</span></h4>
+		<div id="g-lst-p5">
+			<form action="${dynamicDomain}/hrreport/queryReport/${report.objectId}" method="post" id="searchForm">
+					<input type="hidden" name="ec_p" id="ec_p">
+				<div class="u-flt f-cb">
+					<span class="f-fl"><input type="text" name="search_GED_reportDate" readonly="readonly" class="u-txt u-date" id="date-start" /></span>
+					<span class="f-fl"><input type="text" name="search_LED_reportDate" readonly="readonly" class="u-txt u-date" id="date-end" /></span>
+					<script src="date/WdatePicker.js" charset="utf-8"></script>
+					<script>
+					$(function(){
+						$('#date-start').click(function(){
+							WdatePicker({maxDate:'#F{$dp.$D(\'date-end\')}'});
+						});
+						$('#date-end').click(function(){
+							WdatePicker({minDate:'#F{$dp.$D(\'date-start\')}'});
+						});
+					});
+					</script>
+					<span class="f-fr z-lst" style="width:180px;">
+						<button type="reset" class="u-sch u-rst">重置</button>
+						<button type="submit" class="u-sch">查询</button>
+					</span>
+				</div>
+			</form>
+			<fieldset class="f-cb u-lst-top">
+				<h4 class="f-fl">
+					<small>共 ${pageSearch.totalCount} 条记录</small>
+				</h4>
+				<div class="f-fr f-tar">
+					<@fpage totalPage=pageSearch.totalPage currentPage=pageSearch.currentPage formId="searchForm" cpName="ec_p"/>
+				</div>
+			</fieldset>
+			<div class="u-lst z-top u-lst2">
+				<ol class="f-cb">
+					<li class="z-w1">序号</li>
+					<li class="z-w2">报表名称</li>
+					<li class="z-w3">统计时间</li>
+					<li class="z-w4">操作</li>
+				</ol>
+			</div>
+			<div class="u-lst u-lst2 z-cnt j-list">
+				<#list pageSearch.list as item>
+				<ul class="f-cb">
+					<li class="z-w1">1</li>
+					<li class="z-w2"><a href="${dynamicDomain}/hrreport/downloadReport/${item.objectId}" target="_blank">${item.reportName}</a></li>
+					<li class="z-w3">${item.reportDate?string('yyyy-MM-dd')}</li>
+					<li class="z-w4"><a href="${dynamicDomain}/hrreport/downloadReport/${item.objectId}" target="_blank" class="f-ib">下载</a></li>
+				</ul>
+				</#list>
+			</div>
+			<div class="u-act f-fr">
+				<@pageform totalPage=pageSearch.totalPage currentPage=pageSearch.currentPage formId="searchForm" />
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

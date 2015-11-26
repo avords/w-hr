@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>体检 - 福利商城</title>
+    <script src="${staticDomain}js/jquery.1.8.3.min.js"></script>
+    <script type="text/javascript" src="${staticDomain}js/jquery.zfocus.js"></script>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/list.z.css" />
+    <script src="${staticDomain}js/jquery.lazyload.min.js"></script>
+    <style>
+    .j-cb-list li h5 span{
+       overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width:90%;
+    }
+    #g-logo .u-code{
+		display:none;
+	}
+    </style>
+</head>
+<body>
+<div class="m-focus">
+    <div class="u-focus" id="j-focus">
+        <ul class="f-cb">
+            <#list banner as item>
+                <li><img src="${adminStaticDomain}${item.picturePath}" /></li>
+            </#list>
+        </ul>
+    </div>
+    <script type="text/javascript" src="js/jquery.zfocus.js"></script>
+    <script type="text/javascript">$('#j-focus').zFocus('timer':3000,'speed':300,'onClass':'Onc','isLR':true,'auto':true);</script>
+</div>
+
+<div id="g-topic">
+    <ol class="u-tc f-cb j-cb-list">
+        <#list pagePackage.list as item>
+	        <li>
+	            <table><tr><td><a target="_blank" href="${dynamicDomain}/welfarePackage/detail/${item.packageId}"><img style="width:372px;height:232px" class="package" data-original="${adminStaticDomain}${item.mainPicture}" /></a></td></tr></table>
+	            <h5 title="${item.name}">
+	                <span class="f-ib" style="width:65%;"><a target="_blank" href="${dynamicDomain}/welfarePackage/detail/${item.packageId}" class="u-b">${item.name}</a><br /><a target="_blank" href="${dynamicDomain}/welfarePackage/detail/${item.packageId}">&nbsp;</a></span>
+	                <b class="f-ib" style="width:30%;">￥${item.sellPrice?string('0.00')}</b>
+	            </h5>
+	        </li>
+        </#list>
+    </ol>
+</div>
+<script type="text/javascript">
+$(function(){
+	$("img.package").lazyload({
+		placeholder:"${staticDomain}image/package.png",
+       	skip_invisible : false,
+       	threshold : 200
+    });
+	$("img:not(.package)").lazyload({
+		placeholder:"${staticDomain}image/product.png",
+       	skip_invisible : false,
+       	threshold : 200
+    });  
+    // 控制列表末元素的样式
+    $('.j-cb-list > li:nth-child(3n)').css('margin-right', 0);
+
+});
+</script>
+</body>
+</html>

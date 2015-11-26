@@ -1,0 +1,56 @@
+<script>
+var _tmp71 = '';
+$(function(){
+	//加载部门数据
+	$.ajax({ 
+		type:"GET", 
+		url: "${dynamicDomain}/companyDepartment/getDepartments",   
+		success: function(msg){  
+			_tmp71 = '<div id="j-pop71-slt" class="cnt">' + msg.treeNode + '</div>';
+		}   
+	});
+	// 树状结构的折叠
+	$(document.body).on('click', '#j-pop71-slt i', function(){
+		var _this = $(this);
+		if(_this.text() === '-'){
+			_this.text('+').parent().next('div').hide();
+		}else{
+			_this.text('-').parent().next('div').show();
+		}
+		return false;
+	});
+
+	// 点击操作
+	$(document.body).on('click', '#j-pop71-slt input', function(){
+		var _this = $(this), _all = $('#j-pop71-slt input');
+		if(_this.is(':checked')){
+			_all.not(this).prop('disabled', true);
+		}else{
+			_all.prop('disabled', false);
+		}
+	});
+
+});
+
+// 初始化函数载体
+function popInit(_char){
+	var _func = {
+		'init71': function(){ return {'title':'选择部门', 'html': _tmp71}; }
+	};
+	return _func[_char];
+}
+
+// 弹窗的确定按钮回滚函数
+function popSure(_char){
+	var _func = {
+		'sure71': function(){
+			var _rstTag = $('.j-dep-val');
+			var _chkTag = $('#j-pop71-slt input').filter(':checked').eq(0);
+			var _val = _chkTag.val(), _txt = _chkTag.parent().text().substr(1);
+			_rstTag.val(_val).parent().find(".dep").val(_txt);
+			return true;
+		}
+	};
+	return _func[_char];
+}
+</script>

@@ -1,0 +1,399 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>确定选择</title>
+    <script src="${staticDomain}js/jquery.popup.v1.js"></script>
+    <script src="${staticDomain}date/WdatePicker.js"></script>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/excel.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+</head>
+<body>
+<div id="p9-1-4">
+<div id="g-crum2">
+    <h4>
+        <a href="javascript:void(0);">账户首页</a> &gt;
+        <a href="javascript:void(0);">信息管理</a> &gt;
+        添加|修改福利计划
+    </h4>
+</div>
+<form id="staffForm" action="${dynamicDomain }/welfarePlanStaff/confirmSelect/${planId}" method="post">
+<div id="g-content" class="f-cb">
+
+    <#include "/include/nav_menu_link.html">
+    <script>var _menuIndex = 1;</script>
+
+    <div class="m-main f-fr">
+        
+        <h4 class="u-tit f-cb">
+            <span class="f-ib">福利计划设置</span>
+        </h4>
+
+        <div id="g-step" class="f-cb">
+            <a href="javascript:void(0);" class="u-c21">计划信息</a>
+            <a href="javascript:void(0);">制定计划</a>
+            <a href="javascript:void(0);">额度分配</a>
+            <a href="javascript:void(0);">员工选择</a>
+            <a href="javascript:void(0);" class="u-c13">确定选择</a>
+            <a href="javascript:void(0);">订单支付</a>
+            <a href="javascript:void(0);" class="u-c31">付款详情</a>
+        </div>
+
+        <h3>确定选择</h3>
+
+        <div class="m-hd">
+                <span>年份： ${entity.year}年 </span>
+                <span class="z-name"> 计划名称： ${entity.name}</span>
+                <span>发放总人数： ${entity.headCount}人 </span>
+                <span class="z-right">应付款总额： <i>${amount?string('0.00')}</i> 元 </span>
+                <#if isNextStep>
+                  <a href="javascript:void(0);" onclick="generateOrder(${planId});">确认并下一步</a>
+                </#if>
+        </div>
+
+        <div class="g-con f-cb">    
+            <div class="m-f1 f-cb">
+                <fieldset >
+                    <label class="f-ib">确认状态：</label>
+                    <span class="f-ib f-por">
+                        <input type="hidden" name="search_EQI_status" class="j-slt-val">
+                        <input type="text" value="全部" readonly="readonly" class="u-txt-slt j-slt">
+                        <em class="f-ib f-poa j-opt">
+                            <a href="javascript:void(0);" class="f-ib">全部</a>
+                            <!-- 
+                            <a href="javascript:void(0);" data-val="1" class="f-ib">员工待确认</a>
+                            <a href="javascript:void(0);" data-val="2" class="f-ib">员工已确认</a>
+                             -->
+                            <a href="javascript:void(0);" data-val="3" class="f-ib">HR已确认</a>
+                            <a href="javascript:void(0);" data-val="5" class="f-ib">HR已取消</a>
+                            
+                        </em>
+                    </span>
+                </fieldset>
+                <fieldset>
+                    <label class="f-ib">在职状态：</label>
+                    <span class="f-ib f-por">
+                        <input type="hidden" name="search_EQI_staffStatus" class="j-slt-val">
+                        <input type="text" value="全部" readonly="readonly" class="u-txt-slt j-slt">
+                        <em class="f-ib f-poa j-opt">
+                            <a href="javascript:void(0);" class="f-ib">全部</a>
+                            <a href="javascript:void(0);" data-val="1" class="f-ib">在职</a>
+                            <a href="javascript:void(0);" data-val="2" class="f-ib">离职</a>
+                        </em>
+                    </span>
+                </fieldset>
+            </div>
+            
+            <div class="m-f2 f-cb">
+                <fieldset>
+                    <label class="f-ib">提交时间：</label>
+                    <input type="text" name="search_EQD_commitDate1" readonly="readonly" class="f-ib u-txt-date" id="sel-start" value="${rc.search_EQD_commitDate1}"/>
+                    <span class="f-ib"> ~ </span>
+                    <input type="text" name="search_EQD_commitDate2" readonly="readonly" class="f-ib u-txt-date" id="sel-end" value="${rc.search_EQD_commitDate2}"/>
+                </fieldset>
+
+                <fieldset>
+                    <label class="f-ib">员工姓名：</label>
+                    <input name="search_LIKES_userName" type="text" class="f-ib u-txt"  />
+                    
+                </fieldset>
+
+                <a href="javascript:void(0);" onclick="find();">查找</a>
+            </div>
+
+            <h5 class="f-fr" id="up-down">
+               <#if pageSearch.currentPage<=1>
+                  <a href="javascript:void(0);" class="f-ib u-lft" style="cursor:not-allowed;">上一页</a>
+               <#else>
+                  <a href="javascript:void(0);" class="f-ib u-lft" onclick="prePage();">上一页</a>
+               </#if>
+                <span class="f-ib">${pageSearch.currentPage}/${pageSearch.totalPage}</span>
+               <#if pageSearch.currentPage gte pageSearch.totalPage>
+                  <a href="javascript:void(0);" class="f-ib u-rgt" style="cursor:not-allowed;">下一页</a>
+               <#else>
+                  <a href="javascript:void(0);" class="f-ib u-rgt" onclick="nextPage();">下一页</a>
+               </#if>
+            </h5>
+            
+            <ol class="f-cb f-fwb">
+                <li class="z-li1">选项名称</li>
+                <li class="z-li1-1">单价（元）</li>
+                <li class="z-li2">兑换金额（元）</li>
+                <li class="z-li3">员工</li>
+                <li class="z-li4">状态</li>
+                <li class="z-li5">操作</li>
+            </ol>   
+            <#list pageSearch.list as staff>
+            <div class="m-tbl">
+                <table>
+                    <thead><tr><td colspan="5">提交时间：${staff.commitDate?string('yyyy-MM-dd HH:mm:ss')}</td></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td class="wt1 j-for-css1">
+                                <#list staff.staffItems as item>
+                                    <p><b class="f-ib">${item.goodsName}</b><span class="f-ib">${item.price?string('0.00')}</span></p>
+                                </#list>
+                            </td>
+                            <td class="wt2">${staff.subTotalAmount?string('0.00')}</td>
+                            <td class="wt3">${staff.userName}</td>
+                            <td class="wt4" style="width:15%;">
+                                   <#if staff.staffStatus==1>
+                                      在职
+                                   <#elseif staff.staffStatus==2>
+                                      离职
+                                   </#if>
+                                   
+                                   <#if staff.status==1>
+		                              /员工待确定
+		                           <#elseif staff.status==2>
+		                              /员工已选择
+		                           <#elseif staff.status==3>
+		                              /HR已确认
+		                           <#elseif staff.status==5>
+		                              /HR取消
+		                           </#if>
+                            </td>
+                            <td>
+                                   <#if staff.status==1>
+                                   <#elseif staff.status==2>
+                                      <a href="javascript:void(0);" class="j-pop-open" data-param="${staff.userId}" data-char="cancel">取消</a>
+                                      <a href="javascript:void(0);" onclick="agree(${staff.userId})">同意</a>
+                                   <#elseif staff.status==3>
+                                      <a href="javascript:void(0);" class="j-pop-open" data-param="${staff.userId}" data-char="cancel">取消</a>
+                                   <#elseif staff.status==5>
+                                      <a href="javascript:void(0);" class="z-a1 j-pop-open" data-param="${staff.userId}" data-char="canres">取消原因</a>
+                                      <a href="javascript:void(0);" onclick="agree(${staff.userId})">同意</a>
+                                   </#if>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </#list>
+        </div>
+        <div class="u-act f-cb">
+            <@pageform totalPage=pageSearch.totalPage currentPage=pageSearch.currentPage formId="staffForm" />
+        </div>
+        <div class="m-ft-ntn">
+            <a href="${dynamicDomain}/welfarePlan/page" class="z-l">返回</a>
+            <#if isNextStep>
+               <a href="javascript:void(0);" onclick="generateOrder(${planId});">确认并下一步</a>
+            </#if>
+        </div>
+    </div>
+</div>
+</form>
+</div>
+<script>
+$(function(){
+    $('.j-for-css1 > p:nth-child(1)').css('border-top','none');
+    // 日期控件 
+    $('#sel-start').click(function(){
+        WdatePicker({maxDate:'#F{$dp.$D(\'sel-end\')}'});
+    });
+    $('#sel-end').click(function(){
+        WdatePicker({minDate:'#F{$dp.$D(\'sel-start\')}'});
+    });
+
+
+    // 模拟Select控件
+    $('.j-slt').click(function(){
+
+        var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+        $('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+        if(_this.hasClass('z-on-slt')){
+            _this.removeClass('z-on-slt');
+            _opt.hide();
+        }else{
+            _this.addClass('z-on-slt');
+            _opt.show();
+        }
+        return false;
+    });
+
+    //下拉项的点击事件
+    $('.j-opt > a').click(function(){
+
+        var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+        _opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+        
+        return false;
+    });
+
+    $('body').click(function(e){
+        $('.j-opt').hide();
+        $('.j-slt').removeClass('z-on-s')
+    });
+
+
+
+    //取消弹窗
+    var _delre = $('.j-del-reason'),_del = $('.j-del'),_delin = $('#m-popu-ft'),_delon = $('#m-popu'),_mask = $('#mask'),
+                _cover = $('.j-cover');
+
+    _delre.click(function(){
+        _delin.show();
+        _mask.show();
+    });
+
+    _del.click(function(){
+        _delon.show();
+        _mask.show();
+    });
+
+    _cover.click(function(){
+        _delon.hide();
+        _delin.hide();
+        _mask.hide();
+    });
+    
+    $('body').attr("id","p9-1-4");
+});
+
+    // 弹窗对象预定义
+var POPUP = {};
+
+// 配置信息 [弹窗1：取消] 
+POPUP.cancel = {
+
+    'title': '取消操作', 'top': 200, 'width':460,'position':'fixed',
+    'content': 'popupContentForPlanCp();',
+    'complete': 'popupCompleteForPlanCp();',
+    'sure': {'txt':'确定', 'func':'popupSureForPlanCp();'},
+    'cancel': {'txt':'取消'}
+};
+
+function popupContentForPlanCp(){
+
+    return  '<div class="j-p-del">'+
+            '<p>请输入取消员工享受福利计划的原因</p><input type="hidden" id="staffId">'+
+            '<textarea id="cancelReason"></textarea>'+
+            '</div>';
+            
+}
+function popupCompleteForPlanCp(param){
+      $('#staffId').val(param);
+}
+function popupSureForPlanCp(){
+    //取消操作
+    var staffId = $('#staffId').val();
+    var planId = '${entity.objectId}';
+    var cancelReason = $('#cancelReason').val();
+    if(cancelReason.length>200){
+       winAlert('不通过原因最多200个字符');
+       return false;
+    }
+    $.ajax({
+            url:"${dynamicDomain}/welfarePlanStaff/cancel",
+            async: false,
+            type : 'post',
+            dataType : 'json',
+            data:{'userId':staffId,'planId':planId,'cancelReason':cancelReason},
+            success : function(json) {
+                if(json.result){
+                   window.location.reload();
+                }else{
+                   winAlert('操作失败');
+                }
+            }
+    });
+    return true;
+}
+
+
+// 配置信息 [弹窗2：取消原因] 
+POPUP.canres = {
+
+    'title': '取消原因', 'top': 200, 'width':460,'position':'fixed',
+    'content': 'popupContentForcanres();',
+    'complete': 'popupCompleteFormodify();',
+    'sure': {'txt':'确定', 'func':'popupSureForcanres();'},
+    'cancel': {'txt':'取消'}
+};
+
+function popupContentForcanres(){
+
+    return  '<p class="j-canres">不通过原因：<em id="cacR"></em></p>';
+            
+}
+
+function popupCompleteFormodify(param){
+    var userId = param;
+    var planId = '${entity.objectId}';
+    $.ajax({
+            url:"${dynamicDomain}/welfarePlanStaff/get/"+planId+"/"+userId,
+            async: false,
+            type : 'get',
+            success : function(json) {
+                var cancelReason = json.entity.cancelReason;
+                $('#cacR').text(cancelReason); 
+            }
+    });
+}
+
+function popupSureForcanres(){
+
+    return true;
+}
+function agree(userId){
+    var planId = '${entity.objectId}';
+    $.ajax({
+            url:"${dynamicDomain}/welfarePlanStaff/agree",
+            async: false,
+            type : 'post',
+            dataType : 'json',
+            data:{'userId':userId,'planId':planId},
+            success : function(json) {
+                if(json.result){
+                   window.location.reload();
+                }else{
+                   winAlert('操作失败');
+                }
+            }
+    });
+}
+
+function prePage(){
+   var url = $('#staffForm').attr('action');
+   url = url+'?ec_p=${pageSearch.currentPage-1}';
+   $('#staffForm').attr('action',url);
+   $('#staffForm').submit();
+}
+function nextPage(){
+   var url = $('#staffForm').attr('action');
+   url = url+'?ec_p=${pageSearch.currentPage+1}';
+   $('#staffForm').attr('action',url);
+   $('#staffForm').submit();
+}
+function find(){
+  $('#staffForm').attr('action','${dynamicDomain }/welfarePlanStaff/confirmSelect/${planId}');
+  $('#ec_p').val(1);
+  $('#staffForm').submit();
+}
+function generateOrder(planId){
+  //判断是否有员工已选择的状态
+    $.ajax({
+            url:"${dynamicDomain}/welfarePlanStaff/isHaveSelected/"+planId,
+            async: false,
+            type : 'post',
+            dataType : 'json',
+            success : function(json) {
+                if(json.result){//如果存在员工已选择的状态
+                   winAlert('请同意或取消员工已经选择的福利项目');
+                }else{
+                   window.location.href = "${dynamicDomain }/welfarePlan/generateOrder/"+planId;
+                }
+            }
+    });
+}
+</script>
+</body>
+</html>

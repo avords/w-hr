@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>购物车其他热卖列表 - 福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/cart.z.css" />
+    <style>
+     #g-ct1-list ul li h4{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width:90%;
+    }
+    </style>
+</head>
+<body>
+<div id="g-ct1-top">
+	<h4><span class="f-ib">成功加入购物车!</span></h4>
+	<ul class="f-cb">
+		<li class="u-img f-fl"><a target="_blank" href="${dynamicDomain}/product/detail/${cart.productId}"><img src="${adminStaticDomain}${cart.cartView.mainPicture}" class="f-ib" /></a></li>
+		<li class="u-txt f-fl"><a target="_blank" href="${dynamicDomain}/product/detail/${cart.productId}">${cart.cartView.name}</a><br /><span>数量：${cart.productCount} 单价：￥${cart.cartView.sellPrice?string('0.00')}</span></li>
+		<li class="u-oth f-fr"><b>小计：￥${(cart.cartView.sellPrice*cart.productCount)?string('0.00')}</b><br />购物车共有 <i id="totalCount">${totalCount}</i> 件商品</li>
+	</ul>
+	<h5>
+		<a href="${dynamicDomain }/mall/search" class="f-ib u-goon">继续购物</a>
+		<a href="javascript:void(0);" onclick="window.history.go(-1);" class="f-ib u-back">返回</a>
+		<a href="${dynamicDomain}/mall/cart" class="f-ib u-doit">去购物车结算</a>
+	</h5>
+</div>
+<#if recommend_1??>
+	<div id="g-ct1-list">
+		<h3 class="f-por"><span class="f-poa f-ib">其他热卖商品</span><a href="javascript:void(0);" onclick="changeBatch();" class="f-ib">换一批</a></h3>
+		<ul class="f-cb" id="hotContent">
+		    <#list page_1.list as item>
+				<li class="f-por">
+					<table><tr><td><a href="${dynamicDomain}/product/detail/${item.skuId}"><img src="${adminStaticDomain}${item.mainPicture}" style="width:210px;height:210px;"/></a></td></tr></table>
+					<h4 title="${item.name}"><a href="${dynamicDomain}/product/detail/${item.skuId}">${item.name}</a></h4>
+					<h5 class="f-cb"><b class="f-fl">￥ ${item.sellPrice?string('0.00')}</b><!--<a href="javascript:void(0);" class="f-fr"></a> --></h5>
+				</li>
+			</#list>
+		</ul>
+	</div>
+</#if>
+<script type="text/javascript">
+function changeRow(){
+  // 列表尾元素的样式控制
+  $('#g-ct1-list > ul > li:nth-child(5n)').css('margin-right',0);
+}
+$(function(){
+changeRow();
+});
+var currentPage = '${page_1.currentPage}';
+var totalPage = '${page_1.totalPage}';
+var staticDomain = '${staticDomain}';
+var adminStaticDomain = '${adminStaticDomain}';
+var dynamicDomain = '${dynamicDomain}';
+function changeBatch(){
+           var nextPage = parseInt(currentPage)+1;
+           if(currentPage==totalPage){
+              nextPage = 1;
+           }
+           $.ajax({
+             url:"${dynamicDomain}/cart/changeBatch",
+             type : 'post',
+             dataType : 'json',
+             data:{'currentPage':nextPage},
+             success : function(json) {
+                 if(json.result){
+                   currentPage = json.page.currentPage;
+                   var content = '';
+                   for(var i=0;i<json.page.list.length;i++){
+                    var item = json.page.list[i];
+                    content = content+
+	                '<li class="f-por">'+
+	                '<table><tr><td><a href="'+dynamicDomain+'/product/detail/'+item.skuId+'"><img src="'+adminStaticDomain+item.mainPicture+'" style="width:210px;height:210px;"/></a></td></tr></table>'+
+	                '<h4 title="'+item.name+'"><a href="'+dynamicDomain+'/product/detail/'+item.skuId+'">'+item.name+'</a></h4>'+
+	                '<h5 class="f-cb"><b class="f-fl">￥ '+parseFloat(item.sellPrice).toFixed(2)+'</b></h4>'+
+	                '</li>';
+                   }
+                   $('#hotContent').html(content);
+                   changeRow();
+                 }
+             }
+         });
+}
+</script>
+</body>
+</html>

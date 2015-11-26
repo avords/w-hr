@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<title>管理帐号设置</title>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="-1" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/center.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+<script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+<script src="${staticDomain}js/jquery.popup.js"></script>
+</head>
+<body>
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">账户管理</a> &gt;
+		管理帐号设置
+	</h4>
+</div>
+<form action="${dynamicDomain}/user/saveUser" method="post" id="addHrUserForm">
+<input type="hidden" name="objectId" value="${entity.objectId}">
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit f-cb" style="height:42px;position:relative;border:0;">
+			<span class="f-ib">
+			<#if (entity.objectId!'')??>修改账户<#else>新增账户</#if></span>
+			<a href="${dynamicDomain}/user/listUser" style="position:absolute;right:0;top:5px;">返回</a>
+		</h4>
+		<div id="g-lst-p19">
+			<div class="u-fm">
+				<h4>填写账户信息</h4>
+				<fieldset class="f-cb">
+					<label class="f-fl">登录账户：</label>
+					<span class="f-fl f-por">
+					<#if (entity.objectId)!''>
+						<input type="text" name="loginName" readonly id="loginName" value="${entity.loginName}" class="u-txt required {account_no:[6,18]} required" />
+					<#else>
+						<input type="text" name="loginName" id="loginName" value="${entity.loginName}" class="u-txt required {account_no:[6,50]} required" />
+					</#if>
+					
+					</span>
+					<small class="f-fl u-c1">*</small>
+				</fieldset>
+				<fieldset class="f-cb">
+					<#if (entity.objectId)!''>
+						<input type="hidden" name="password" value="${entity.password}" class="u-txt"/>
+					<#else>
+					<label class="f-fl">登录密码：</label>
+						<span class="f-fl f-por">
+							<input type="password" name="password" value="${entity.password}" class="u-txt {account_pass:[6,18]} required" />
+						</span>
+						<small class="f-fl u-c1">*</small>
+					</#if>
+				</fieldset>
+				<fieldset class="f-cb">
+					<label class="f-fl">手机号码：</label>
+					<span class="f-fl f-por">
+					<input type="text" class="u-txt mobile" value="${entity.mobilePhone}" name="mobilePhone" id="mobilePhone"/>
+					</span><small class="f-fl u-c1">*</small>
+				</fieldset>
+				<fieldset>
+					<label class="f-fl">电子邮箱：</label>
+					<span class="f-fl f-por"><input type="text" class="u-txt email {maxlength:[50]}" value="${entity.email}" name="email" id="email"/>
+					</span><small class="f-fl u-c1">*</small>
+				</fieldset>
+				<fieldset class="f-cb">
+					<label class="f-fl">所属角色：</label>
+					<span class="f-fl f-por z-slt-w1">
+						<input type="hidden" name="roleId" class="j-slt-val" value="${role.objectId}" />
+						<#if (entity.objectId)!''>
+							<input type="text" value="${role.name}" readonly="readonly" class="u-slt j-slt" />
+						<#else>
+							<input type="text" value="—请选择—"  readonly="readonly" class="u-slt j-slt" />
+						</#if>
+						<em class="f-ib f-poa j-opt">
+							<#list roles as role>
+								<a href="javascript:void(0);" data-val="${role.objectId}" class="f-ib">${role.name}</a>
+							</#list>
+						</em>
+					</span>
+				</fieldset>
+				<fieldset class="f-cb">
+					<label class="f-fl">所属机构：</label>
+					<span class="f-fl f-por z-slt-w1">
+						<input type="hidden" name="organizationId" class="j-slt-val" value="${companyDepartment.organizationId}" />
+						<#if (entity.objectId)!''>
+							<input type="text" value="${companyDepartment.name}" readonly="readonly" class="u-slt j-slt" />
+						<#else>
+							<input type="text" value="—请选择—" readonly="readonly" class="u-slt j-slt not_default" />
+						</#if>
+						<em class="f-ib f-poa j-opt">
+							<#list companyDepartments as companyDepartment>
+								<a href="javascript:void(0);" data-val="${companyDepartment.objectId}" class="f-ib">${companyDepartment.name}</a>
+							</#list>
+						</em>
+					</span>
+					<small class="f-fl u-c1">*</small>
+				</fieldset>
+				<fieldset class="f-cb">
+					<label class="f-fl">账户说明：</label>
+					<span class="f-fl f-por">
+						<input type="text" name="userName" value="${entity.userName}" class="u-txt required" />
+					</span>
+					<small class="f-fl u-c1">*</small>
+				</fieldset>
+				<fieldset class="f-cb">
+					<label class="f-fl">账户状态：<input type="hidden" name="status" value="1" class="j-status-val" ></label>
+					<span class="f-fl f-por">
+						<i data-val="1" class="f-ib u-tg-rad j-tg-rad z-on"></i>
+						<b class="f-ib u-rd-t">正常</b>
+						<i data-val="2" class="f-ib u-tg-rad j-tg-rad"></i>
+						<b class="f-ib u-rd-t">冻结</b>
+					</span>
+				</fieldset>
+				<fieldset class="f-cb">
+					<label class="f-fl">&nbsp;</label>
+					<span class="f-fl f-por">
+						<button type="submit">提交</button>
+					</span>
+				</fieldset>
+			</div>
+
+			<script>
+			
+			$(function(){
+				$("#addHrUserForm").validate();
+				$(document).ready(function() {
+				$("#loginName").rules("add",
+				{
+					remote : {
+						url : "${dynamicDomain}/user/isUnique?ajax=1&objectId=${entity.objectId}",
+						type : "post",
+						dataType : "json"
+					},
+					messages : {
+						remote : "该帐户名称已存在"
+					}
+				});
+				$("#mobilePhone").rules("add", {
+					remote : {
+						url : "${dynamicDomain}/user/isUnique?ajax=1&objectId=${staff.objectId}&type=3",
+						type : "post",
+						dataType : "json"
+					},
+					required: {  
+	                    depends:function(){ //二选一  
+	                        return ($('#email').val().length <= 0);  
+	                    }  
+	                },
+					messages : {
+						remote : "该手机号码已存在",
+						required: "手机号码、邮箱二选一"
+					}
+				});
+				
+				$("#email").rules("add", {
+					remote : {
+						url : "${dynamicDomain}/user/isUnique?ajax=1&objectId=${staff.objectId}&type=3",
+						type : "post",
+						dataType : "json"
+					},
+					required: {  
+	                    depends:function(){ //二选一  
+	                        return ($('#mobilePhone').val().length <= 0);  
+	                    }  
+	                },
+					messages : {
+						remote : "该电子邮箱已存在",
+						required :"手机号码、邮箱二选一"
+					}
+				});
+			});
+				// 模拟radio控件
+				var _tagRadio = $('.j-tg-rad');
+				_tagRadio.click(function(){
+
+					var _this = $(this), _val = _this.attr('data-val');
+
+					if(_this.hasClass('z-on')){
+						return false;
+					}else{
+						_tagRadio.removeClass('z-on');
+						_this.addClass('z-on');
+					}
+					$('.j-status-val').val(_val);
+				});
+
+
+				// 点击显示密码
+				$('.j-show-pwd').click(function(){
+
+					$(this).hide().next().show();
+				});
+				
+
+				// 全选
+				$('.j-chk-all').click(function(){
+
+					var _this = $(this), _son = $('.j-chk-son');
+					if(_this.is(':checked')){
+						_son.prop('checked', true);
+					}else{
+						_son.prop('checked', false);
+					}
+				});
+
+				// 控制列表尾元素的样式
+				$('.j-list').find('ul:last').css('border-bottom',0);
+
+				// 模拟Select控件
+				$('.j-slt').click(function(){
+
+					var _this = $(this), _val = _this.prev('input'), _opt = _this.parent().find('em');
+
+					$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+					if(_this.hasClass('z-on-slt')){
+						$('.j-slt').each(function(){
+							$(this).parent().addClass('f-por');
+						});
+						_this.removeClass('z-on-slt');
+						_opt.hide();
+					}else{
+						$('.j-slt').each(function(){
+							$(this).parent().removeClass('f-por');
+						});
+						_this.parent().addClass('f-por');
+						_this.addClass('z-on-slt');
+						_opt.show();
+					}
+					return false;
+				});
+
+				// 下拉项的点击事件
+				$('.j-opt > a').click(function(){
+
+					var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+					_opt.hide().parent().find("input").removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+
+					var _tag = _opt.attr('data-tag');
+
+					if(typeof(_tag) != 'undefined' && _tag == 'sel-title'){
+						var _tit = $('.j-title'), _parent = _tit.parent().parent();
+						if(_val == '1'){
+							_parent.show();
+							_tit.focus();
+						}else{
+							_parent.hide();
+							_tit.val('');
+						}
+					}
+					return false;
+				});
+
+
+				// 模拟Select控件的文档事件
+				$('body').click(function(e){
+					$('.j-opt').hide();
+					$('.j-slt').removeClass('z-on-slt');
+					$('.j-slt').each(function(){
+						$(this).parent().addClass('f-por');
+					});
+				});
+			});
+			</script>
+			
+		</div>
+	</div>
+</div>
+</div>
+</form>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>活动详情 - 福利商城</title>
+</head>
+<body>
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">激励管理</a> &gt;
+		活动详情
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+
+	<#include "/include/nav_menu_link.html">
+
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit"><span class="f-ib">活动详情</span></h4>
+
+		<div id="g-dtl-p1">
+
+			<h4 class="u-tt">活动信息</h4>
+			<p class="u-desc">
+				<span class="f-ib">激励名目: ${exActivity.itemName}</span><br />
+				<#assign userText = "无"/>
+				<#if acUserList?exists && (acUserList?size>0) >
+				     <#assign userText = "部分员工"/>
+				     <#list acUserList as acUser>
+				          <#if acUser_index == 0 && acUser.userType =='all'>
+				               <#assign userText = "全体员工"/>
+				          </#if>
+				     </#list>
+				</#if>
+				<span class="f-ib">发布对象: ${userText}</span><br />
+				<span class="f-ib">创建人: ${exActivity.createdUser}</span>
+				<span class="f-ib">发布时间:${exActivity.createdOn?string('yyyy-MM-dd HH:mm:ss')}</span><br />
+				<span class="f-ib">修改人: ${exActivity.updatedUser}</span>
+				<span class="f-ib">修改时间:${exActivity.updatedOn?string('yyyy-MM-dd HH:mm:ss')}</span><br />
+				<span class="f-ib">有效期:
+					<#if exActivity.activityBeginDate?? && exActivity.activityEndDate??>
+			              ${exActivity.activityBeginDate?string('yyyy-MM-dd HH:mm:ss')}至${exActivity.activityEndDate?string('yyyy-MM-dd HH:mm:ss')}
+					<#else>
+					              全年有效
+					</#if>
+				</span>
+				<span class="f-ib">
+					<#if exActivity.priority == '1'> 
+					           优先级: 低
+					<#elseif exActivity.priority == '2'> 
+					           优先级: 中
+				    <#elseif exActivity.priority == '3'> 
+					           优先级: 高
+					</#if>
+				</span>
+			</p>
+
+			<h4 class="u-tt">活动预览</h4>
+			<div class="u-info">
+				<h1>${exActivity.title}</h1>
+				<fieldset class="f-tac">发布时间: ${exActivity.createdOn?string('yyyy-MM-dd HH:mm:ss')}</fieldset>
+				<fieldset class="f-tac">
+					<#if exActivity.applyBeginDate?? && exActivity.applyEndDate??>
+					                 报名时间: ${exActivity.applyBeginDate?string('yyyy-MM-dd HH:mm:ss')} 至 ${exActivity.applyEndDate?string('yyyy-MM-dd HH:mm:ss')}
+					</#if>
+				</fieldset>
+				<div>
+					活动规则：<br />
+					<#list acList as aRewardInfo>
+					    <#if aRewardInfo_index==0 && aRewardInfo.type=='1'>
+					                 奖励${s_welfarePointName}：${aRewardInfo.reward}
+					    <#else>
+					       ${aRewardInfo.excitationRule}&nbsp;可获得&nbsp;${aRewardInfo.reward}&nbsp;${s_welfarePointName}<br/>
+					    </#if>
+					</#list>
+					<br/>
+					详细说明:
+					${exActivity.activityContent}
+				</div>
+				<#if exActivity.status != '3'>
+				    <h6 class="u-add"><a href="javascript:void(0);" class="f-ib">立即报名</a></h6>
+				</#if>
+			</div>
+
+			<h5 class="u-back"><a href="${dynamicDomain}/excitationActivity/queryActivityList" class="f-ib">返回</a></h5>
+		</div>
+	</div>
+</div>
+</body>
+</html>

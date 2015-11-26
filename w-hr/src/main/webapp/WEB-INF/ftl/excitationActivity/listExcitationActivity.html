@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>激励活动管理</title>
+</head>
+<body>
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">激励管理</a> &gt;
+		激励活动管理
+	</h4>
+</div>
+<form method="post" action="${dynamicDomain}/excitationActivity/queryActivityList" id="queryForm" name="queryForm" >
+<div id="g-content" class="f-cb">
+
+	<#include "/include/nav_menu_link.html">
+	<#include "/common/page.html">
+	<div class="m-main f-fr">
+		<h4 class="u-tit"><span class="f-ib">激励活动管理</span></h4>
+		<input type="hidden" name="objectId" id="objectId"/>
+		<input type="hidden" name="status" id="status"/>
+		<input type="hidden" name="itemName" id="itemName"/>
+		<div id="g-list-p12">
+			<div class="u-flt f-cb">
+				<span class="f-fl f-por">
+				    <input type="hidden" class="j-slt-val-item" value="${pageActivity.paramMap.itemType}" name="search_EQI_itemType">
+					<input type="hidden" class="j-slt-val" value="${pageActivity.paramMap.activityCategoriesId}" name="search_EQI_activityCategoriesId">
+					    <#assign activityObjectName = "活动类目"/>
+					    <#if pageActivity.paramMap.activityCategoriesId??>
+					       <#if pageActivity.paramMap.itemType == 1>
+					            <#if welfareItemList?exists && (welfareItemList?size>0) >
+							        <#list welfareItemList as welfareItem>
+							             <#if pageActivity.paramMap.activityCategoriesId == welfareItem.objectId>
+									      <#assign activityObjectName = "${welfareItem.itemName}"/>
+								         </#if>
+							        </#list>
+					            </#if>
+					       <#elseif pageActivity.paramMap.itemType == 2>
+						        <#if acItemList?exists && (acItemList?size>0) >
+						            <#list acItemList as acItem>
+							             <#if pageActivity.paramMap.activityCategoriesId == acItem.objectId>
+									      <#assign activityObjectName = "${acItem.activityName}"/>
+								         </#if>
+							        </#list>
+						        </#if>
+					       </#if>
+					    </#if>
+					    <input type="text" value="${activityObjectName}" readonly="" class="u-txt u-slt j-slt" >
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>
+						<#if welfareItemList?exists && (welfareItemList?size>0) >
+					        <#list welfareItemList as welfareItem>
+					             <a href="javascript:void(0);" data-val="${welfareItem.objectId}" data-val-item="1" class="f-ib">${welfareItem.itemName}</a>
+					        </#list>
+					    </#if>
+					    <#if acItemList?exists && (acItemList?size>0) >
+					        <#list acItemList as acItem>
+					             <a href="javascript:void(0);" data-val="${acItem.objectId}" data-val-item="2" class="f-ib">${acItem.activityName}</a>
+					        </#list>
+					    </#if>
+					</em>
+				</span>
+				<span class="f-fl">
+				<#if pageActivity.paramMap.title??>
+				    <input type="text" class="u-txt z-tw1" placeholder="标题" name="search_LIKES_title" value="${pageActivity.paramMap.title?substring(1,pageActivity.paramMap.title?length-1)}">
+				<#else>
+					<input type="text" class="u-txt z-tw1" placeholder="标题" name="search_LIKES_title">
+				</#if>
+				</span>
+				<span class="f-fl">
+					<input type="text" readonly="readonly" placeholder="活动开始时间" class="u-txt u-date" id="date-start" name="search_GED_activityBeginDate" value="<#if pageActivity.paramMap.activityBeginDateAfter??>${pageActivity.paramMap.activityBeginDateAfter?string('yyyy-MM-dd')}</#if>"/>
+				</span>
+				<span class="f-fl">
+					<input type="text" readonly="readonly" placeholder="活动结束时间" class="u-txt u-date" id="date-end" name="search_LED_activityEndDate" value="<#if pageActivity.paramMap.activityEndDateBefore??>${pageActivity.paramMap.activityEndDateBefore?string('yyyy-MM-dd')}</#if>"/>
+				</span>
+				<span class="f-fl f-por">
+					<input type="hidden" class="j-slt-val" value="${pageActivity.paramMap.activityType}" name="search_EQI_activityType">
+					<#if pageActivity.paramMap.activityType?? >
+						<#if pageActivity.paramMap.activityType == 1>
+							<input type="text" value="普通活动" readonly="" class="u-txt u-slt j-slt">
+					    <#elseif pageActivity.paramMap.activityType == 2>
+					        <input type="text" value="报名活动" readonly="" class="u-txt u-slt j-slt">
+						</#if>
+					<#else>
+						<input type="text" value="类型" readonly="" class="u-txt u-slt j-slt" >
+					</#if>
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>
+						<a href="javascript:void(0);" data-val="1" class="f-ib">普通活动</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib">报名活动</a>
+					</em>
+				</span>
+				<span class="f-fl f-por">
+					<input type="hidden" class="j-slt-val" value="${pageActivity.paramMap.status}" name="search_EQI_status">
+					<#if pageActivity.paramMap.status?? >
+						<#if pageActivity.paramMap.status == 1>
+							<input type="text" value="草稿" readonly="" class="u-txt u-slt j-slt">
+					    <#elseif pageActivity.paramMap.status == 2>
+					        <input type="text" value="已发布" readonly="" class="u-txt u-slt j-slt">
+					    <#elseif pageActivity.paramMap.status == 3>
+					        <input type="text" value="已过期" readonly="" class="u-txt u-slt j-slt">
+						</#if>
+					<#else>
+						<input type="text" value="状态" readonly="" class="u-txt u-slt j-slt">
+					</#if>
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>
+						<a href="javascript:void(0);" data-val="1" class="f-ib">草稿</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib">已发布</a>
+						<a href="javascript:void(0);" data-val="3" class="f-ib">已过期</a>
+					</em>
+				</span>
+
+				<span class="f-fr z-lst">
+					<button type="submit" class="u-sch">查询</button>
+				</span>
+			</div>
+			<div class="u-act f-cb">
+				<h4 class="f-fl">
+					<a href="${dynamicDomain}/excitationActivity/createActivity" class="f-ib u-pub">新增</a>
+					<a href="javascript:void(0);" target="top" class="f-ib u-out">导出</a>
+				</h4>
+				<h5 class="f-fr">
+					<@fpage url="${dynamicDomain}/excitationActivity/queryActivityList"  totalPage=pageActivity.totalPage currentPage=pageActivity.currentPage formId="queryForm" />
+				</h5>
+			</div>
+			<ol class="u-tte f-cb">
+				<li class="u-w0"><input type="checkbox" class="f-ib j-chk-all" /></li>
+				<li class="u-w1">标题</li>
+				<li class="u-w2">奖励(分)</li>
+				<li class="u-w3">活动类目</li>
+				<li class="u-w4">报名人数</li>
+				<li class="u-w5">创建日期</li>
+				<li class="u-w6">有效日期</li>
+				<li class="u-w7">状态</li>
+				<li class="u-w8">操作</li>
+			</ol>
+			<div class="u-list j-list">
+			    <#list pageActivity.list as exinfo>
+					<ul class="f-cb">
+						<li class="u-w0"><input type="checkbox" class="f-ib j-chk-son" name="exinfoId" value="${exinfo.objectId}"/></li>
+						<li class="u-w1"><a title="${exinfo.title}" href="javascript:void(0);" data-val="${exinfo.objectId}" data-val-itemName="${exinfo.itemName}" class="activityDetatil">
+							<#if exinfo.title?length gt 16 > 
+                            	${exinfo.title[0..16]}...
+                            <#else>
+                            	${exinfo.title}
+                            </#if>
+							</a>
+						</li>
+						<li class="u-w2">
+						<#if exinfo.acList?exists && (exinfo.acList?size>0) >
+			               <#list exinfo.acList as acReward>
+						         ${acReward.excitationRule}&nbsp;&nbsp;${acReward.reward}<br/>
+						   </#list>
+						</#if>
+						</li>
+						<li class="u-w3">${exinfo.itemName}</li>
+						<li class="u-w4"><a href="${dynamicDomain}/excitationActivity/activityUserInfo/${exinfo.objectId}">${exinfo.applyUser}</a></li>
+						<li class="u-w5">${exinfo.createdOn?string('yyyy-MM-dd HH:mm:ss')}</li>
+						<li class="u-w6">
+							<#if exinfo.activityBeginDate?? && exinfo.activityEndDate??>
+					              <span class="f-ib">${exinfo.activityBeginDate?string('yyyy-MM-dd HH:mm:ss')}<br />${exinfo.activityEndDate?string('yyyy-MM-dd HH:mm:ss')}</span>
+							<#else>
+							      <span class="f-ib">全年有效</span>
+							</#if>
+						</li>
+						<li class="u-w7">
+							<#if exinfo.status == '1'> 
+							    草稿
+							<#elseif exinfo.status == '2'> 
+							   	已发布   
+						    <#elseif exinfo.status == '3'> 
+							    已过期 
+							</#if>
+						</li>
+						<li class="u-w8">
+						<#if exinfo.status == '1'> <!-- 草稿状态 -->
+							<a href="javascript:void(0);" data-val="${exinfo.objectId}" data-val-status="2" class="f-ib gtg updateActivityStatus">发布</a>
+							<a href="javascript:void(0);" data-val="${exinfo.objectId}"  class="f-ib gtg editActivity">修改</a>
+							<!--<a href="javascript:void(0);" data-val="${exinfo.objectId}"  class="f-ib gdel deleteExInfo">删除</a>-->
+							<a href="javascript:void(0);" data-val="您确认删除?|0|${exinfo.objectId}|delActivity" class="f-ib gdel j-confirm-open">删除</a>
+						<#elseif exinfo.status == '2'> <!-- 发布中状态 -->
+							<a href="javascript:void(0);" data-val="${exinfo.objectId}"  class="f-ib gtg activityTop">置顶</a>
+							<a href="javascript:void(0);" data-val="${exinfo.objectId}" data-val-status="1" class="f-ib gtg updateActivityStatus">撤销发布</a>
+							<a href="javascript:void(0);" data-val="${exinfo.objectId}"  class="f-ib gtg editActivity">修改</a>
+							<!--<a href="javascript:void(0);" data-val="${exinfo.objectId}"  class="f-ib gdel deleteExInfo">删除</a>-->
+						<#elseif exinfo.status == '3'> <!-- 已过期状态 -->
+							<a href="javascript:void(0);" data-val="${exinfo.objectId}"  class="f-ib gtg editActivity">修改</a>
+							<!--<a href="javascript:void(0);" data-val="${exinfo.objectId}"  class="f-ib gdel deleteExInfo">删除</a>-->
+							<a href="javascript:void(0);" data-val="您确认删除?|0|${exinfo.objectId}|delActivity" class="f-ib gdel j-confirm-open">删除</a>
+						</#if>
+						</li>
+					</ul>
+				</#list>
+			</div>
+			<div class="u-act f-cb">
+				<h4 class="f-fl u-pl1">
+					<input type="checkbox" class="f-ib j-chk-all" /><span class="f-ib">全选</span>
+					<a href="javascript:void(0);" data-val="您确认删除?|0|0|batchDetele" class="f-ib u-del j-confirm-open">批量删除</a>
+				</h4>
+				<h5 class="f-fr">
+					<@pageform totalPage=pageActivity.totalPage currentPage=pageActivity.currentPage formId="queryForm" />
+				</h5>
+			</div>
+		</div>
+	</div>
+</div>
+</form>
+<script>
+// [回调] 确认
+function confirmSure_delActivity(_id){
+		$("#objectId").val(_id);
+		$("#queryForm").attr("action","${dynamicDomain}/excitationActivity/deleteActivity");
+		$("#queryForm").submit();
+}
+
+function confirmSure_batchDetele(_id){
+		var checkedCount=$("input[class*=j-chk-son]:checked").length;
+		if(checkedCount==0){
+			winAlert("请选择需要删除的数据！");
+		}else{
+			$("#queryForm").attr("action","${dynamicDomain}/excitationActivity/batchDetele");
+			$("#queryForm").submit();
+		}
+}
+</script>
+<script src="${staticDomain}js/jquery.popup.js"></script>
+<!-- 弹窗[确认删除] -->
+<!-- <table class="m-pop-up" id="j-pop-confirm">
+	<tr>
+	<td class="z-tac">
+		<div class="z-ib z-wid400">
+			<h4 class="u-tit">删除确认</h4>
+			<h5 class="u-close">
+				<a href="javascript:void(0);" data-pop="test1" class="j-pop-cancel">×</a>
+				<input type="hidden" class="j-pop-data" />
+			</h5>
+			<div class="pop-confirm">确认删除么？此操作不可恢复！</div>
+			<h6 class="u-btn">
+				<a href="javascript:void(0);" class="u-sub j-pop-sure">确认</a>
+				<a href="javascript:void(0);" class="u-rst j-pop-cancel">取消</a>
+			</h6>
+		</div>
+	</td>
+	</tr>
+</table> -->
+<script>
+function doConfirm(){
+	return true;
+}
+</script>
+<script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+<script>
+$(function(){
+	$('#date-start').click(function(){
+		WdatePicker({maxDate:'#F{$dp.$D(\'date-end\')}'});
+	});
+	$('#date-end').click(function(){
+		WdatePicker({minDate:'#F{$dp.$D(\'date-start\')}'});
+	});
+});
+</script>
+<script>
+	$(function(){
+
+		// 模拟Select控件
+		$('.j-slt').click(function(){
+
+			var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+			$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+			if(_this.hasClass('z-on-slt')){
+				_this.removeClass('z-on-slt');
+				_opt.hide();
+			}else{
+				_this.addClass('z-on-slt');
+				_opt.show();
+			}
+			return false;
+		});
+
+		// 下拉项的点击事件
+		$('.j-opt > a').click(function(){
+
+			var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em'); 
+			var _itemType = $(".j-slt-val-item");
+			var _dateItemType = _this.attr('data-val-item')
+			_itemType.val(_dateItemType);
+			_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+			
+			return false;
+		});
+
+		$('body').click(function(e){
+			$('.j-opt').hide();
+			$('.j-slt').removeClass('z-on-slt')
+		});
+
+		// 全选
+		$('.j-chk-all').click(function(){
+
+			var _this = $(this), _son = $('.j-chk-son');
+			if(_this.is(':checked')){
+				_son.prop('checked', true);
+			}else{
+				_son.prop('checked', false);
+			}
+		});
+		//子复选框点击
+		$("input[class*=j-chk-son]").click(function(){
+			//获取选中的复选框数量
+			var checkedCount=$("input[class*=j-chk-son]:checked").length;
+			//获取除全选外所有复选框数量
+			var childCheckCount=$("input[class*=j-chk-son]").length;
+			if(checkedCount<childCheckCount){
+				//去掉勾选
+				$('.j-chk-all').attr("checked",false);
+			}else{
+				$('.j-chk-all').attr("checked",true);
+			}
+		});
+
+		// 控制列表尾元素的样式
+		$('.j-list').find('ul:last').css('border-bottom',0);
+	});
+</script>
+<script type="text/javascript">
+$(function() {
+	//更新单条记录的状态
+	$(".updateActivityStatus").click(function() {
+		$("#objectId").val($(this).attr("data-val"));
+		$("#status").val($(this).attr("data-val-status"));
+		$("#queryForm").attr("action","${dynamicDomain}/excitationActivity/updateActivityStatus");
+		$("#queryForm").submit();
+	});
+	
+	//将记录置顶
+	$(".activityTop").click(function() {
+		$("#objectId").val($(this).attr("data-val"));
+		$("#queryForm").attr("action","${dynamicDomain}/excitationActivity/activityTop");
+		$("#queryForm").submit();
+	});
+	
+	//修改记录
+	$(".editActivity").click(function() {
+		$("#objectId").val($(this).attr("data-val"));
+		$("#queryForm").attr("action","${dynamicDomain}/excitationActivity/editActivity");
+		$("#queryForm").submit();
+	});
+	
+	//查看详情
+	$(".activityDetatil").click(function() {
+		$("#objectId").val($(this).attr("data-val"));
+		$("#itemName").val($(this).attr("data-val-itemName"));
+		$("#queryForm").attr("action","${dynamicDomain}/excitationActivity/activityDetatil");
+		$("#queryForm").submit();
+	});
+}); 
+
+</script>
+<script type="text/javascript">
+$(function(){
+	$(".u-out").click(function(){
+		
+		$("#queryForm").attr("target","top");
+		$("#queryForm").attr("action","${dynamicDomain}/excitationActivity/exportExcelByActivity");
+		$("#queryForm").submit();
+		
+		$("#queryForm").attr("target","");
+		$("#queryForm").attr("action","${dynamicDomain}/excitationActivity/queryActivityList");
+		
+	});
+	
+	//查询
+	$(".u-sch").click(function(){
+		$("#ec_p").val(1);
+		$("#queryForm").submit();
+	});
+	
+});
+</script>
+</body>
+</html>

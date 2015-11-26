@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>套餐商品详情页-福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/detail.css" />
+    <script src="${staticDomain}js/jquery.slide.js"></script>
+    <style type="text/css">
+        .u-desc ul li.u-sel a.z-on {
+              border: 2px solid #FF8063;
+              padding: 4px 14px;
+              color: #666;
+              background: url('${staticDomain}image/ico5.gif') no-repeat 100% 100%;
+         }
+         .u-desc ul li.u-sel a {
+              border: 1px solid #ccc;
+              padding: 5px 15px;
+              color: #666;
+              margin-left: 5px;
+         }
+         .u-info.j-info img{
+             max-width:955px;
+         }
+     </style>
+     <script type="text/javascript">
+     var stock=0;
+     function searchStock(){
+         $('.placeOrder').each(function(){
+	        //$(this).css('background-color','#A9A9A9');
+	        $(this).css('cursor','not-allowed');
+          });
+         $('#skuNo').text('');
+         $('#cartLink').val('#');
+         $('#buyLink').val('#');
+         $('#showCart').html('');
+         //ajax请求查询sku信息,
+         var attributeValueId1 = $('.attributeValueId1.z-on').data('id');
+         var attributeValueId2 = $('.attributeValueId2.z-on').data('id');
+         attributeValueId1 = typeof(attributeValueId1)== 'undefined'?'':attributeValueId1;
+         attributeValueId2 = typeof(attributeValueId2)== 'undefined'?'':attributeValueId2;
+         $.ajax({
+             url:"${dynamicDomain}/skuPublish/searchStock",
+             type : 'post',
+             dataType : 'json',
+             data:{'attributeValueId1':attributeValueId1,'attributeValueId2':attributeValueId2,'productId':'${product.objectId}'},
+             success : function(json) {
+                 if(json.result){
+                     stock = json.totalStock;
+                     if(typeof(stock)=='undefined'){
+                         //查询出来单个sku
+                         if(json.sku=='null'){
+                             $('#stock').text('该商品已下架');
+                             $("#skuId").val("");
+                             return false;
+                         }
+                         var name = json.sku.name;
+                         stock = json.sku.stock;
+                         var skuId = json.sku.objectId;
+                         var marketPrice = json.sku.marketPrice.toFixed(2);
+                         var sellPrice = json.sku.sellPrice.toFixed(2);
+                         $('#skuName').text(name);
+                         $('#skuMarketPrice').html('原价：'+marketPrice+'元&nbsp;&nbsp;'+(marketPrice)+'${s_welfarePointName}');
+                         $('#skuSellPrice').text(sellPrice);
+                         $('#skuSellPriceScore').text(sellPrice);
+                         $('#skuNo').text(json.sku.skuNo);
+                         if(stock<='0'){
+                             $('#stock').text('该商品已售罄');
+                             $("#skuId").val("");
+                         }else{
+                        	 
+                        	 $("#skuId").val(skuId);//设置 选择的商品 
+                        	 
+                             $('#stock').text('剩余库存'+stock);
+                             $('#buyLink').val('${dynamicDomain}/product/productOrder/'+skuId);
+                             $('#cartLink').val('${dynamicDomain}/cart/addCart/'+skuId);
+                             if(json.sku.type=='1'||json.sku.type=='2'){
+	                              var content = '<a class="f-ib u-cart placeOrder" onclick="javascript:addCart();" style="background-color: #FF7F60;cursor:not-allowed">加入购物车</a>';
+	                              $('#showCart').html(content);
+                             }
+                             $('.placeOrder').each(function(){
+                                //$(this).css('background-color','#FF7F60');
+                                $(this).css('cursor','pointer');
+                             });
+                         }
+                     }else{
+                    	 $("#skuId").val("");//未选择 商品 
+                         var name = '${mainProduct.name}';
+                         stock = json.totalStock;
+                         var marketPrice = '${mainProduct.marketPrice}';
+                         marketPrice = parseFloat(marketPrice).toFixed(2);
+                         var sellPrice = '${mainProduct.sellPrice}';
+                         sellPrice = parseFloat(sellPrice).toFixed(2);
+                         $('#skuName').text(name);
+                         $('#skuMarketPrice').html('原价：'+marketPrice+'元&nbsp;&nbsp;'+(marketPrice)+'${s_welfarePointName}');
+                         $('#skuSellPrice').text(sellPrice);
+                         $('#skuSellPriceScore').text(sellPrice);
+                         if(stock<='0'){
+                             $('#stock').text('该商品已售罄');
+                         }else{
+                             $('#stock').text('剩余库存'+stock);
+                         }
+                     }
+                 }
+             }
+         });
+     }
+     </script>
+</head>
+<body>
+<#if thirdMall??>
+	<div id="g-crum">
+		您的位置：
+		<a href="${dynamicDomain}/mall/index">首页</a> <#if thirdMall??>&gt;
+		<a href="${dynamicDomain}/mall/search?firstId=${thirdMall.firstId}">${thirdMall.firstName}</a> &gt;
+		<a href="${dynamicDomain}/mall/search?secondId=${thirdMall.secondId}">${thirdMall.secondName}</a> &gt;
+		${thirdMall.name}</#if>
+	</div>
+</#if>
+<div id="g-img" class="f-cb">
+	<div class="u-img f-fl">
+        <div class="u-show" style="padding: 0px;"><img src="${adminStaticDomain }${product.mainPicture }" width="300" height="300" id="mainPicture"></div>
+        <div class="u-slide" id="j-slide">
+            <div style="width: 272px;">
+                <ul class="f-cb j-sml" style="width:680px;">
+                  <li><img src="${adminStaticDomain }${product.mainPicture}" width="60" height="60" class="z-on"></li>
+                  <#list subPics as item>
+                     <li><img src="${adminStaticDomain }${item}" width="60" height="60"></li>
+                  </#list>
+                </ul>
+            </div>
+            </div>
+            <#if subPics?size<=3>
+                <script type="text/javascript">$('#j-slide').zSlide({'auto':false,'size':'${subPics?size+1}'});</script>
+            <#else>
+                <script type="text/javascript">$('#j-slide').zSlide({'auto':false,'size':'4'});</script>
+            </#if>
+    </div>
+<form method="post" action="${dynamicDomain}/buyWelfare/buyProdIndex" onsubmit="return validateForm();"  id="buyProdForm" name="buyProdForm" >
+	<div class="u-desc f-fl">
+        <h1 id="skuName">${product.name }</h1>
+        <p>${welfares }</p>
+        <i id="skuMarketPrice">原价：${product.marketPrice?string('0.00') }元&nbsp;&nbsp;${product.marketPrice?string('0.00') }${s_welfarePointName}</i>
+        <ul>
+            <li>促销价: <b id="skuSellPrice">${product.sellPrice?string('0.00') }</b>元&nbsp;&nbsp;<b id="skuSellPriceScore">${product.sellPrice?string('0.00') }</b>${s_welfarePointName}</li>
+            <#list attrs as item>    
+                    <li class="u-sel">${item.name }: 
+                            <#if item.isTogeter==1>
+                                <#list item.attributeValues as it>
+                                    <a href="javascript:void(0);" data-type="${item_index }" data-id="${it.objectId }" class="f-ib j-sel attributeValueId${item_index+1 }">${it.alias!it.name}</a>
+                                </#list>
+                            <#else>
+                                  <#if item_index+1==1>
+                                        <a href="javascript:void(0);" data-type="${item_index }" data-id="${attributeId1 }" class="f-ib j-sel attributeValueId${item_index+1 }">${attributeValue1}</a>
+                                  <#elseif item_index+1==2>
+                                       <a href="javascript:void(0);" data-type="${item_index }" data-id="${attributeId2 }" class="f-ib j-sel attributeValueId${item_index+1 }">${attributeValue2}</a>
+                                  </#if>
+                            </#if>
+                    </li>
+            </#list>
+            <li class="f-cb"><span class="f-fl u-lab">数量: </span>
+                <a href="javascript:void(0);" data-type="subt" class="f-fl u-subt j-comp">-</a>
+                <input type="text" name="count" class="f-fl u-txt j-count" value="1" id="count" autocomplete="off"/>
+                <a href="javascript:void(0);" data-type="add" class="f-fl u-add j-comp">+</a>
+                <u class="f-fl u-over" id="stock"></u>
+            </li>
+        </ul>
+        <h5 class="j-res" style="padding: 0px 0px 15px">&nbsp;</h5>
+         <#if isPermission>
+	        <h6>
+	            <input type="hidden" id="cartLink" value="#"/>
+	            <input type="hidden" id="buyLink" value="#"/>
+	            <input type="hidden" id="skuId" name="skuId" value=""/>
+	            <a href="javascript:void(0);" class="f-ib u-exch placeOrder" onclick="buy();" style="cursor:not-allowed">立即下单</a>
+	            <!-- <a class="f-ib u-cart placeOrder" href="javascript:void(0);"   id="placeOrder">立即下单</a> -->
+	            <span id="showCart">
+	            </span>
+	            
+	        </h6>
+        </#if>
+    </div>
+    </form>
+    
+    
+	<script>
+	
+	function validateForm(){
+		var _count = $('.j-count');
+        var _val = _count.val();
+        if(!/^[1-9]+\d*$/.test(_val) ||  +_val > stock || _val<1 ){
+        	winAlert('请输入正确的数量');
+        	return false;
+        }		 	
+		return true;
+	}
+        
+        
+	$(function(){
+
+		// 小图点击
+		var _imgList = $('.j-sml > li > img');
+		_imgList.click(function(){
+			_imgList.removeClass('z-on');
+			$(this).addClass('z-on');
+			var imgSrc = $(this).attr('src');
+            $('#mainPicture').attr('src',imgSrc);
+		});
+		
+		// 选择颜色 尺寸
+        var _types = ['',''];
+        $('.j-sel').click(function(){
+            
+            var _this = $(this), _isOn = _this.hasClass('z-on');
+            
+            if(_isOn) return false;
+            
+            var _type = _this.attr('data-type'), _txt = _this.text();
+            if(_isOn){
+                _this.removeClass('z-on');
+                _types[_type] = '';
+            }else{
+                _this.addClass('z-on').siblings().removeClass('z-on');
+                _types[_type] = _txt;
+            }
+
+            if(_types[0] == '' && _types[1] == ''){
+                $('.j-res').html('&nbsp;');
+            }else{
+                var _html = '';
+                $.each(_types, function(i, v){
+                    if(v != '') _html += ' ，"' + v + '"';
+                });
+                $('.j-res').text('已选择 ' + _html.substr(2)).show();
+                
+            }
+            searchStock();
+        });
+		
+		      // 数量加减
+        $('.j-comp').click(function(){
+            var _count = $('.j-count');
+            var _this = $(this), _type = _this.attr('data-type');
+            var _val = _count.val();
+            if(_type == 'subt'){
+                if(_val <= 1){
+                    winAlert('数量不能少于1');
+                    return false;
+                }
+                _val--;
+            }else{
+                if(!verifyCount(parseInt(_val)+1)){
+                   return false;
+                }
+                _val++;
+            }
+            _count.val(_val);
+        });
+
+		// 内容切换
+		$('.j-info').eq(0).show()
+		$('.j-tit').click(function(){
+			var _this = $(this), _idx = _this.index();
+			_this.addClass('z-on').siblings().removeClass('z-on');
+			$('.j-info').hide().eq(_idx).show();
+		});
+		$('#count').blur(function(){
+		  var count = $(this).val();
+		 if(!verifyCount(count)){
+		   $(this).val('1');
+		 }
+		});
+
+		$('.attributeValueId1').each(function(){
+		  if($(this).data('id')=='${attributeId1}'){
+		    $(this).addClass('z-on');
+		  }
+		});
+		$('.attributeValueId2').each(function(){
+          if($(this).data('id')=='${attributeId2}'){
+            $(this).addClass('z-on');
+          }
+        });
+        searchStock();
+	});
+	function addCart(){
+	  var action = $("#cartLink").val();
+	  if(action=='#'){
+	    return false;
+	  }
+	  var productCount = $('#count').val();
+      $.ajax({
+	      url:action,
+	      type : 'post',
+	      dataType : 'json',
+	      data:{'productCount':productCount},
+	      success : function(json) {
+	          if(json.result){
+	             queryCartCount();
+                 var url = '${dynamicDomain}/cart/addSuccess/'+json.productId;
+                 window.location.href = url;
+	          }
+	      }
+      });
+	}
+	
+	
+	//立即下单
+	function buy(){
+		var _count = $('.j-count');
+        var _val = _count.val();
+		var skuId = $("#skuId").val();
+		if(skuId!=null && skuId!=""){
+			if(verifyCount(parseInt(_val))) 
+				$("#buyProdForm").submit();
+		}else{
+			return;
+		}
+		
+    }
+    
+    function verifyCount(count){
+      //var count = $('#count').val();
+      if(count>stock||count<1||!/^[1-9]+\d*$/.test(count)){
+         winAlert('数量输入有误！');
+         return false;
+      }
+      return true;
+    }
+	</script>
+	<div class="u-oth f-fr">
+		<dl>
+		    <#if brandLogo??>
+                <dt><img src="${adminStaticDomain}${brandLogo}" style="width:210px;height:90px;"/></dt>
+                <dd class="f-tac">
+                    商品编号:<span id="skuNo"></span><br />
+                </dd>
+            <#else>
+                <dt>商品编号:<span id="skuNo"></span></dt>
+            </#if>
+			<!-- 
+			<dd class="u-teh">
+				<span class="f-db">服务支持</span>
+				<a href="javascript:void(0);" class="f-ib">三个月保换</a>
+				<a href="javascript:void(0);" class="f-ib">一年保修</a>
+			</dd>
+			 -->
+		</dl>
+		 <!-- 
+		<h6><a href="javascript:void(0);" class="f-ib">发表评论</a></h6>
+		-->
+	</div>
+</div>
+<!-- 
+<div id="g-recom">
+	<h4>优惠套餐 <a href="javascript:void(0);" class="f-ib">推荐搭配省更多！</a></h4>
+	<ul class="f-cb">
+		<li class="u-pic"><img src="${staticDomain}image/tmp006.gif" /></li>
+		<li class="u-ico"><img src="${staticDomain}image/ico7.gif" /></li>
+		<li class="u-pic"><img src="${staticDomain}image/tmp006.gif" /></li>
+		<li class="u-txt">
+			<input type="checkbox" class="f-ib" /> <i class="f-ib">100${s_welfarePointName}</i><br />
+			<a href="javascript:void(0);" class="f-ib">运动蓝牙耳机</a>
+		</li>
+
+		<li class="u-pic"><img src="${staticDomain}image/tmp006.gif" /></li>
+		<li class="u-txt">
+			<input type="checkbox" class="f-ib" /> <i class="f-ib">100${s_welfarePointName}</i><br />
+			<a href="javascript:void(0);" class="f-ib">运动蓝牙耳机</a>
+		</li>
+
+		<li class="u-pic"><img src="${staticDomain}image/tmp006.gif" /></li>
+		<li class="u-txt">
+			<input type="checkbox" class="f-ib" /> <i class="f-ib">100${s_welfarePointName}</i><br />
+			<a href="javascript:void(0);" class="f-ib">运动蓝牙耳机</a>
+		</li>
+
+		<li class="u-ico"><img src="${staticDomain}image/ico8.gif" /></li>
+		<li class="u-all">
+			套餐价：<b>20000</b> ${s_welfarePointName}<br />
+			<a href="p6-8.hr.cart1.z.html" class="f-ib">加入购物车</a>
+		</li>
+	</ul>
+</div>
+ -->
+<div id="g-cnt" class="f-cb">
+	<div class="m-info f-fl">
+		<h4 class="f-cb">
+			<a href="javascript:void(0);" class="f-fl j-tit z-on">详细说明</a>
+			<!-- 
+			<a href="javascript:void(0);" class="f-fl j-tit">详细咨询(5)</a>
+			<a href="javascript:void(0);" class="f-fl j-tit">详细参数</a>
+			<a href="javascript:void(0);" class="f-fl j-tit">售后服务</a>
+			-->
+		</h4>
+		<div class="u-info j-info">${product.description }</div>
+		<!-- 
+		<div class="u-info j-info">详细咨询</div>
+		<div class="u-info j-info">详细参数</div>
+		<div class="u-info j-info">售后服务</div>
+		-->
+	</div>
+	<#if rightProduct.list?size!=0>
+		<div class="m-like f-fr">
+			<h4>其他员工喜欢的商品</h4>
+			<#list rightProduct.list as item>
+				<dl>
+					<dt><a target="_blank" href="${dynamicDomain}/product/detail/${item.skuId}"><img src="${adminStaticDomain}${item.mainPicture}" style="width:134px;height:134px;"/></a></dt>
+					<dd><a target="_blank" href="${dynamicDomain}/product/detail/${item.skuId}" class="f-ib f-toe">${item.name}</a><br /><i>${item.sellPrice?string('0.00')}</i> 元&nbsp;&nbsp;&nbsp;&nbsp;<i>${item.sellPrice?string('0.00')}</i> ${s_welfarePointName}</dd>
+				</dl>
+			</#list>  
+		</div>
+	</#if>
+</div>
+</body>
+</html>

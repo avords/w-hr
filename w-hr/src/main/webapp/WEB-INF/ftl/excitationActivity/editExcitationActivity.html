@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>发布激励</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}/ueditor/themes/default/_css/umeditor.css" />
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+	<script type="text/javascript">
+	   var staticDomain = "${staticDomain}";
+	</script>
+	<script src="${staticDomain}ueditor/umeditor.config.js" charset="utf-8"></script>
+</head>
+<body>
+<form method="post" action="${dynamicDomain}/excitationActivity/saveActivity" id="saveForm" name="saveForm" >
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">激励管理</a> &gt;
+		<#if ecActivity.objectId=='' >
+			发布激励
+		<#else>
+			修改激励
+		</#if>
+	</h4>
+</div>
+<div id="g-content" class="f-cb">
+    <#include "/include/nav_menu_link.html">
+    <#include "/include/select_users.html" encoding="utf-8">
+
+	<div class="m-main f-fr">
+		<input type="hidden" class="f-ib u-txt u-w2" name="excitationSize"/>
+		<input type="hidden" class="f-ib u-txt u-w2" name="activityType"/> <!-- 活动管理类型 1、普通活动  2、报名活动 -->
+		<input type="hidden" class="f-ib u-txt u-w2" name="type" value=""/>   <!-- 活动规则类型 1、单项奖励  2、多项奖励 -->
+		<input type="hidden" class="f-ib u-txt u-w2" name="status"/> <!-- 保存到草稿状态 值为1 我要发布 值为2-->
+		<input type="hidden" class="f-ib u-txt u-w2" name="objectId" value="${ecActivity.objectId}"/>
+		<input type="hidden" class="f-ib u-txt u-w2" name="excTitle" value="${ecActivity.title}"/>
+		<input type="hidden" class="f-ib u-txt u-w2" name="applyPeople" value="${ecActivity.canApplyPeople}"/>
+		<input type="hidden" class="f-ib u-txt u-w2" name="activityStatus" value="${ecActivity.status}"/>
+		<h4 class="u-tit f-cb">
+			<span class="f-ib">
+			<#if ecActivity.objectId=='' >
+			          发布激励
+			<#else>
+				修改激励
+			</#if>
+			</span>
+			<a href="javascript:void(0);" class="f-fr" onclick="window.history.go(-1);">返回</a>
+		</h4>
+
+		<div id="g-add-p1">
+		    
+		    <fieldset class="f-cb">
+			    <label class="f-fl">活动分类：</label>
+				<p class="type-lst">
+				    <#if welfareItemList?exists && (welfareItemList?size>0) >
+					  <#list welfareItemList as welfareItem>
+							<a href="javascript:void(0);" data-val="${welfareItem.objectId}" data-val-item="1" class="<#if ecActivity.itemType == '1' && welfareItem.objectId==ecActivity.activityCategoriesId>z-on</#if> f-fl u-type j-slt-type">${welfareItem.itemName}</a>
+					  </#list>
+					</#if>
+					<#if acItemList?exists && (acItemList?size>0) >
+					  <#list acItemList as acItem>
+							<a href="javascript:void(0);" data-val="${acItem.objectId}" data-val-item="2" class="<#if ecActivity.itemType == '2' && acItem.objectId==ecActivity.activityCategoriesId>z-on</#if> f-fl u-type j-slt-type">${acItem.activityName}<em class="f-ib j-slt-del-title">&times;</em></a>
+					  </#list>
+					</#if>
+				    <input type="hidden" class="j-type-val-item" name="itemType" id="itemType" value="${ecActivity.itemType}"/>
+				    <input type="hidden" class="j-type-val" name="activityCategoriesId" id ="activityCategoriesId" value="${ecActivity.activityCategoriesId}"/>
+	                <a href="javascript:void(0);" class="f-fl u-type-add j-add-tag" id="addItem">添加分类</a><i id="itemMsg"></i>
+			    </p>
+		    </fieldset>
+		    
+		    
+			<fieldset>
+				<label class="f-ib">活动标题：</label>
+				<input type="text" class="f-ib u-txt u-w1 required" id="title" name="title" value="${ecActivity.title}" onblur="$('#acTitle').text('');" maxlength="50"/>
+				<i class="f-ib" id="acTitle">*</i>
+			</fieldset>
+			
+			<fieldset>
+				<label class="f-ib">活动有效期：</label>
+				<#assign flag = ""/>
+				<#assign dateFlag = ""/>
+				<#assign allYear = ""/>
+				<#if ecActivity.objectId !='' >
+				    <#if ecActivity.activityBeginDate?? && ecActivity.activityEndDate??>
+				      <#assign flag = ""/>
+				      <#assign dateFlag = ""/>
+				      <#assign allYear = ""/>
+					<#else>
+				      <#assign flag = "checked='checked'"/>
+				      <#assign dateFlag = "display:none"/>
+				      <#assign allYear = "allYear"/>
+					</#if>
+				</#if>
+				<input type="checkbox" class="f-ib u-chk j-date-valid"  name="yearEffective" ${flag}/>
+				<input type="hidden" class="f-ib u-chk" name="allYear" value="${allYear}"/>
+				<span class="f-ib">全年有效</span>
+				<p class="f-ib" style="${dateFlag}">
+					<input type="text" readonly="readonly" class="f-ib u-txt-date" id="acti-start" name="activityBeginTime" value="<#if ecActivity.activityBeginDate??>${ecActivity.activityBeginDate?string('yyyy-MM-dd HH:mm:ss')}</#if>" />
+					<span class="f-ib">TO</span>
+					<input type="text" readonly="readonly" class="f-ib u-txt-date" id="acti-end" name="activityEndTime" value="<#if ecActivity.activityEndDate??>${ecActivity.activityEndDate?string('yyyy-MM-dd HH:mm:ss')}</#if>" onblur="$('#actiMsg').text('');"/>
+				</p><i id="actiMsg">*</i>
+			</fieldset>
+			<fieldset>
+			    <#assign rewardType = ""/>
+			    <label class="f-ib">奖励${s_welfarePointName}：</label>
+				<div class="f-ib">
+				    <#if acInfo !=null>
+				      <#assign rewardType = "1"/>
+					  <input type="text" class="f-ib u-txt u-w2 positive_integer" name="score" id="score" value="${acInfo.reward}"/>
+					<#else>
+					  <input type="text" class="f-ib u-txt u-w2 positive_integer" name="score" id="score" value=""/>
+					</#if>
+				</div>
+				<a href="javascript:void(0);" class="f-ib u-slt j-add-lst" id="addReward">设置多项奖励</a><!-- <i id="rewardMsg"></i> -->
+				<#if acRewardInfoList?exists && (acRewardInfoList?size>0)>
+				     <div class="u-multi j-cnt-lst" style="display:block;">
+				<#else>
+				     <div class="u-multi j-cnt-lst">
+				</#if>
+					<fieldset class="f-por">
+						<label class="f-fl f-poa u-lst-t"></label>
+						<#if acRewardInfoList?exists && (acRewardInfoList?size>0) >
+						<#assign rewardType = "2"/>
+						 <#list acRewardInfoList as acRewardInfo>
+						    <#if acRewardInfo_index == 0>
+						        <fieldset class="f-cb">
+								<label class="f-fl">&nbsp;</label>
+								<span class="f-fl">奖励规则</span>
+								<input type="text" name="excitation" class="f-fl u-txt u-w2" placeholder="${acRewardInfo.excitationRule}" value="${acRewardInfo.excitationRule}" />
+								<span class="f-fl">奖励${s_welfarePointName}</span>
+								<input type="text" name="excitation"  class="f-fl u-txt u-w2 positive_integer" value="${acRewardInfo.reward}" />
+								<input type="hidden" name="excitation"  class="f-fl u-txt u-w2" value="${acRewardInfo.objectId}" />
+								<a href="javascript:void(0);" class="f-fl u-lst j-lst-del">删除</a>
+								<#if acRewardInfo_index?if_exists+1 == (acRewardInfoList?size) >
+								<a href="javascript:void(0);" class="f-fl u-lst j-lst-add">增加</a>
+								</#if>
+							    </fieldset>
+						    <#else>
+						    <fieldset class="f-cb">
+								<label class="f-fl">&nbsp;</label>
+								<span class="f-fl">奖励规则</span>
+								<input type="text" name="excitation${acRewardInfo_index}" class="f-fl u-txt u-w2" placeholder="${acRewardInfo.excitationRule}" value="${acRewardInfo.excitationRule}" />
+								<span class="f-fl">奖励${s_welfarePointName}</span>
+								<input type="text" name="excitation${acRewardInfo_index}"  class="f-fl u-txt u-w2 positive_integer" value="${acRewardInfo.reward}" />
+								<input type="hidden" name="excitation${acRewardInfo_index}"  class="f-fl u-txt u-w2" value="${acRewardInfo.objectId}" />
+								<a href="javascript:void(0);" class="f-fl u-lst j-lst-del">删除</a>
+								<#if acRewardInfo_index?if_exists+1 == (acRewardInfoList?size) >
+								<a href="javascript:void(0);" class="f-fl u-lst j-lst-add">增加</a>
+								</#if>
+							</fieldset>
+							</#if>
+						 </#list>
+						</#if>
+					</fieldset>
+				</div>
+				<input type="hidden" class="f-ib u-txt u-w2" name="rewardType" value="${rewardType}"/>
+			</fieldset>
+			<fieldset>
+			    <#assign userText = "0"/>
+			    <#assign userFlag = ""/>
+			    <#assign userAll = ""/>
+				<#if acUserList?exists && (acUserList?size>0) >
+				     <#assign userText = "${acUserList?size}个"/>
+				     <#list acUserList as acUser>
+				          <#if acUser_index == 0 && acUser.userType =='all'>
+				               <#assign userText = "全体"/>
+				               <#assign userFlag = "checked='checked'"/>
+				               <#assign userAll = "all"/>
+				          <#else>
+				               <input type="hidden" name="userId" value="${acUser.userId}">
+				          </#if>
+				     </#list>
+				</#if>
+				<label class="f-ib">发布对象：<input type="hidden" class="j-member-v" /></label>
+				<input type="hidden" class="f-ib u-chk"  name="userAll" value="${userAll}"/>
+				<input type="checkbox" class="f-ib u-chk"  name="allPeople" ${userFlag}/>
+				<input type="hidden" class="j-member-v" name="members"/>
+				<span class="f-ib">全体员工</span>
+				<a href="javascript:void(0);" data-pop="2,850,0,1,33" class="f-ib u-slt j-pop-open" onclick="$('#userMsg').text('');">选择员工</a>
+				<span id="j-win51-lst" class="list" style="display:none;"><p class="note"></p></span>
+				<span id="j-total">已选择 <i style="color: red" id="totalUser">${userText}</i>员工</span>
+				<i id="userMsg"></i>
+			</fieldset>
+			
+			<fieldset>
+				<label class="f-ib">可报人数：</label>
+				<input type="text" class="f-ib u-txt positive_integer" name="canApplyPeople" value="${ecActivity.canApplyPeople}" onblur="$('#applyPeopleMsg').text('')"/>
+				<span class="f-ib">人（可报人数不填，则表示发布对象全部可以参与）</span>
+				<i id="applyPeopleMsg"></i>
+			</fieldset>
+
+			<fieldset>
+				<label class="f-ib">报名日期：</label>
+				<input type="text" readonly="readonly" class="f-ib u-txt-date" id="sign-start" name="applyBeginTime" value="<#if ecActivity.applyBeginDate??>${ecActivity.applyBeginDate?string('yyyy-MM-dd HH:mm:ss')}</#if>"/>
+				<span class="f-ib">TO</span>
+				<input type="text" readonly="readonly" class="f-ib u-txt-date" id="sign-end" name="applyEndTime" value="<#if ecActivity.applyEndDate??>${ecActivity.applyEndDate?string('yyyy-MM-dd HH:mm:ss')}</#if>" onblur="$('#signMsg').text('');"/><i id="signMsg">非必填</i>
+			</fieldset>
+
+			<fieldset>
+				<label class="f-ib">排序优先级：</label>
+				<#assign userG = ""/>
+				<#assign userZ = ""/>
+				<#assign userD = ""/>
+				<#if  ecActivity.priority == 3>
+				     <#assign userG = "checked='checked'"/>
+				<#elseif  ecActivity.priority == 2>
+				     <#assign userZ = "checked='checked'"/>
+				<#elseif  ecActivity.priority == 1>
+				     <#assign userD = "checked='checked'"/>
+				</#if>
+				<input type="radio" name="priority" class="f-ib u-rdo" value="3" ${userG}/><span class="f-ib">高</span>
+				<input type="radio" name="priority" class="f-ib u-rdo" value="2" ${userZ}/><span class="f-ib">中</span>
+				<#if  ecActivity.objectId ==''>
+				     <input type="radio" name="priority" class="f-ib u-rdo" value="1" checked="checked"/><span class="f-ib">低</span>
+				<#else> 
+				     <input type="radio" name="priority" class="f-ib u-rdo" value="1" ${userD}/><span class="f-ib">低</span>
+				</#if>
+			</fieldset>
+			<fieldset>
+				<label class="f-ib z-vlt">活动内容：</label>
+				<div class="f-ib u-ue-w">
+					<script type="text/plain" id="activityContent" name="activityContent" style="width:800px;height:240px;"></script>
+				</div>
+			</fieldset>
+			<fieldset class="u-btn">
+				<a href="javascript:void(0);" id="draftInfo" class="f-ib u-sub">保存草稿</a>
+				<a href="javascript:void(0);" id="releaseInfo" class="f-ib u-sub">我要发布</a>
+				<a href="javascript:void(0);" onclick="window.history.go(-1);" class="f-ib u-bak">返回</a>
+			</fieldset>
+
+			
+		</div>
+	</div>
+</div>
+</form>
+<script>
+$(function(){
+	var ue = UM.getEditor('activityContent');
+	$("#activityContent").html('${ecActivity.activityContent}');
+});
+</script>
+<script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+<script type="text/javascript">
+$(function(){
+	$("#saveForm").validate();
+	//选择全年有效复选框的处理
+	var yearCheckBox = $("input[name=yearEffective]");
+	yearCheckBox.click(function() {
+		if (yearCheckBox.attr('checked')) {
+			$("input[name=activityBeginTime]").val('');
+			$("input[name=activityEndTime]").val('');
+			$("input[name=allYear]").val('allYear');
+			$("#actiMsg").text('');
+		}else{
+			$("input[name=allYear]").val('');
+		}
+	});
+	
+	//选择全体员工复选框的处理
+	var allPeople = $("input[name=allPeople]");
+	allPeople.click(function() {
+		if (allPeople.attr('checked')) {
+			//选择全体员工时，将选择的部分员工的隐藏域userId清空
+			var userIdList = $("input[name='userId']");
+			var userIdStr = "";
+			if (userIdList) {
+				userIdList.each(function() {
+					$(this).val('');
+				});
+			}
+			$("input[name=userAll]").val('all');
+			$('#j-total').html('已选择 <i style= "color:red;" id="totalUser" >全体</i> 员工');
+			$("#userMsg").text('');
+		}else{
+			$("input[name=userAll]").val('');
+			$('#j-total').html('已选择 <i style= "color:red;" id="totalUser">0</i>个员工');
+		}
+	});
+	
+	if(!$('.j-cnt-lst').is(':hidden')){
+		
+		$('.j-cnt-lst:first').prev().text('设置单项奖励').addClass('on').prev('div').hide().prev('label').text('奖励明细：');
+	}
+	
+	$('.j-date-valid').click(function(){
+
+		var _this = $(this), _tagP = _this.parent().find('p');
+
+		if(_this.is(':checked')){
+			_tagP.hide();
+		}else{
+			_tagP.show();
+		}
+	});
+	// 日期控件
+	$('#sign-start').click(function(){
+		WdatePicker({minDate:'%y-%M-%d %H:%m:%s',dateFmt:'yyyy-MM-dd HH:mm:ss'});
+	});
+	$('#sign-end').click(function(){
+		WdatePicker({minDate:'#F{$dp.$D(\'sign-start\')}', dateFmt:'yyyy-MM-dd HH:mm:ss'});
+	});
+	$('#acti-start').click(function(){
+		WdatePicker({minDate:'%y-%M-%d %H:%m:%s',dateFmt:'yyyy-MM-dd HH:mm:ss'});
+	});
+	$('#acti-end').click(function(){
+		WdatePicker({minDate:'#F{$dp.$D(\'acti-start\')}', dateFmt:'yyyy-MM-dd HH:mm:ss'});
+	});
+
+	// 活动分类的选中事件
+	$('body').on('click', '.j-slt-type', function(){
+		var _sltType = $('.j-slt-type');
+		var _this = $(this), _val = _this.attr('data-val'), _valItem = _this.attr('data-val-item'),_tagVal = $('.j-type-val'),_tagValItem = $('.j-type-val-item');
+		if(_this.hasClass('z-on')){
+			_this.removeClass('z-on');
+			_tagVal.val('');
+			_tagValItem.val('');
+		}else{
+			_sltType.removeClass('z-on');
+			_this.addClass('z-on');
+			_tagVal.val(_val);
+			_tagValItem.val(_valItem);
+			$("#itemMsg").text('');
+		}
+	});
+
+	// 添加活动分类
+	$('.j-add-tag').click(function(){
+
+		var _this = $(this);
+		if(!_this.prev().hasClass('j-add-txt')){
+			$('<input type="text" class="f-fl u-txt u-w0 j-add-txt"/>').insertBefore(_this);
+		}
+	});
+
+	// 活动分类的输入框 转为 标签
+	$('body').on('blur', '.j-add-txt', function(){
+		var _this = $(this), _val = _this.val();
+		var valId = "";
+		if(_val.length > 0){
+			$('<a href="javascript:void(0);" data-val="'+ _val +'" data-val-item="2" class="f-fl u-type j-slt-type">'+ _val +'<em class="f-ib j-slt-del-title">&times;</em></a>').insertBefore(_this);
+			var url = '${dynamicDomain}'+ "/excitationActivity/addTitle";
+			var data = {} ;
+			data.newTitle = _val ;
+			data = jQuery.param(data) ;
+			$.ajax({
+				type: "POST",
+				dataType: 'json',
+				data: data,
+				url: url ,
+				success: function(data){
+				   if(data.itemNew != null){
+					   winAlert("活动分类已存在，请重新输入！");
+					   $('.j-slt-type:last').remove();
+					   $('<input type="text" value="'+_val+'" class="f-fl u-txt u-w0 j-add-txt"/>').insertBefore($('.j-add-tag'));
+					   return false;
+				   }else if(data.acItem !=null ){
+					  valId = data.acItem.objectId;
+					  $('.j-slt-type:last').attr('data-val', valId);
+				   }
+				}
+			});
+		}
+		_this.remove();
+	});
+	
+	// 删除活动分类
+	$(document.body).on('click', '.j-slt-del-title', function(){
+		var typeTag=$(this).parent();
+		var delId = typeTag.attr("data-val");
+		var url = '${dynamicDomain}'+ "/excitationActivity/delTitle";
+		var data = {} ;
+		data.delId = delId ;
+		data = jQuery.param(data) ;
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			data: data,
+			url: url ,
+			success: function(data){
+			    if(data.delResult=='0'){
+				   typeTag.remove();
+			    }else if(data.delResult=='2'){
+			    	winAlert('该活动分类在使用中，不能删除！');
+			    }
+				
+			}
+		});
+		return false;
+	});
+	
+	var _addListBtn = $('.j-add-lst'), _onMulti = 'on';
+	_addListBtn.click(function(){
+
+		var _this = $(this);
+		var _indiv = _this.prev(), _multi = _this.next();
+		var _tit = _this.parent().find('label:first');
+
+		if(_this.hasClass(_onMulti)){
+
+			_this.removeClass(_onMulti).text('设置多项奖励');
+			_indiv.show();
+			_multi.hide();
+			_tit.text('奖励${s_welfarePointName}：');
+
+		}else{
+			_this.addClass(_onMulti).text('设置单项奖励');
+
+			if($('.j-lst-del').length <= 0){
+				var _str = '<fieldset class="f-cb">';
+					_str+= '<label class="f-fl">&nbsp;</label>';
+					_str+= '<span class="f-fl">奖励规则</span>';
+					_str+= '<input type="text" name="excitation"  class="f-fl u-txt u-w2" placeholder="" />';
+					_str+= '<span class="f-fl">奖励${s_welfarePointName}</span>';
+					_str+= '<input type="text" name="excitation"  class="f-fl u-txt u-w2 positive_integer" value="" />';
+					_str+= '<input type="hidden" name="excitation"  class="f-fl u-txt u-w2" value="" />';
+					_str+= '<a href="javascript:void(0);" class="f-fl u-lst j-lst-del">删除</a>';
+					_str+= '<a href="javascript:void(0);" class="f-fl u-lst j-lst-add">增加</a>';
+					_str+= '</fieldset>';
+				_multi.append(_str);
+			}
+
+			_indiv.hide();
+			_multi.show();
+			_tit.text('奖励明细：');
+		}
+	});
+	
+	// 删除奖励明细
+	$(document.body).on('click', '.j-lst-del', function(){
+		var excObjectId = $(this).parent().find("input[name*=excitation]:eq(2)").val();
+		if(excObjectId !=''){
+			var excObjectId = excObjectId;
+			var data = {} ;
+			data.objectId = excObjectId ;
+			data = jQuery.param(data) ;
+			var url = "${dynamicDomain}/excitationActivity/deleteRewardInfo";
+			$.ajax({
+				type: "post",
+				dataType: "json",
+				data : data,
+				url: url,
+				success:function(data){
+					/* alert("----"+data.delResult);
+					if(data.delResult == '0'){
+						alert('删除奖励明细成功！');
+					} */
+				}
+			});
+		}
+		$(this).parent().remove();
+		if($('.j-lst-del').length <= 0){
+			$('.j-cnt-lst').hide();
+			$('.j-add-lst').text('设置多项奖励').removeClass('plus');
+		}
+		if($('.j-lst-add').length <= 0){
+			//如果删除的是有增加按钮的则在最后一个面板里再添加增加按钮
+			var delBtn=$("fieldset[class='f-cb']:last-child").find(".j-lst-del");
+			if(typeof(delBtn)!="undefined"){
+				delBtn.after('<a href="javascript:void(0);" class="f-fl u-lst j-lst-add">增加</a>');
+			}
+		}
+	});
+
+
+
+	// 增加奖励明细
+	$(document.body).on('click', '.j-lst-add', function(){
+		var _str = '<fieldset class="f-cb">';
+			_str+= '<label class="f-fl">&nbsp;</label>';
+			_str+= '<span class="f-fl">奖励规则</span>';
+			_str+= '<input type="text" name="excitation"  class="f-fl u-txt u-w2" placeholder="" />';
+			_str+= '<span class="f-fl">奖励${s_welfarePointName}</span>';
+			_str+= '<input type="text" name="excitation"  class="f-fl u-txt u-w2 positive_integer" />';
+			_str+= '<input type="hidden" name="excitation"  class="f-fl u-txt u-w2" />';
+			_str+= '<a href="javascript:void(0);" class="f-fl u-lst j-lst-del">删除</a>';
+			_str+= '<a href="javascript:void(0);" class="f-fl u-lst j-lst-add">增加</a>';
+			_str+= '</fieldset>';
+		//查找有几项规则
+		var ruleLength=$(".j-lst-del").length;
+		if(ruleLength==0){
+			//替换input的name，变为name+个数
+			_str=_str.replace(new RegExp(/(excitation)/g),"excitation");
+		}else{
+			//替换input的name，变为name+个数
+			_str=_str.replace(new RegExp(/(excitation)/g),"excitation"+ruleLength);
+		}
+		$(_str).insertAfter($(this).parent());
+		$(this).remove();
+	});
+	
+});
+
+//处理层冲突
+$(document).on('click', '#j-pop-up332 .j-pop-cancel', function(){
+	$('#m-mask').hide();
+})
+$(document).on('click', '#j-pop-up332 .j-pop-sure', function(){
+	$('#m-mask').hide();
+})
+
+// 初始化函数载体
+function popInit(_char){
+	var _func = {
+		'init332': function(){
+			
+			return {'title':'选择人员', 'html': tmp332Html}; 
+		} 
+	};
+	return _func[_char];
+}
+
+// 弹窗的确定按钮回滚函数
+function popSure(_char){
+	var _func = {
+		// "添加人员" 弹窗确定按钮回调
+		'sure332': function(){
+			var userIdList = $("input[name='userId']");
+			var userIdStr = "";
+			if (userIdList) {
+				userIdList.each(function() {
+					$(this).val('');
+				});
+			}
+			$('#j-win51-lst').html('');   //先清空之前选择的人员
+			var _has = {};
+			$('#j-win51-lst a').each(function(){
+				var _k = $(this).attr('data-id');
+				_has['z'+_k] = _k;
+			});
+
+			var _v = [], lst = '', _n = 0;
+			$('#j-pop51-rst input').each(function(){
+				var _this = $(this), _val = _this.val(), _arr = _val.split('|');
+				if(typeof(_has['z'+_arr[0]]) === 'undefined'){
+					lst += '<a href="javascript:void(0);" data-id="'+ _arr[0] +'" class="f-ib">'+ _arr[1] +'('+ _arr[0] 
+						+')<i class="j-win-del"><input type="hidden" name="userId" value="' + _arr[2] + '"></i></a>';
+				};
+			});
+			$('#j-pop51-rst').empty();
+			$('#j-win51-lst').append($(lst));
+			$('#j-total').html('已选择 <i style= "color:red;">'+ $('#j-win51-lst a').length +'</i> 个员工');
+			var allCheck = $("input[name=allPeople]");
+			allCheck.attr("checked",false);
+			return true;
+		}
+	
+	     
+	
+	};
+	return _func[_char];
+}
+
+</script>
+<script src="${staticDomain}js/jquery.popup.js"></script>
+<!-- 弹窗[选择员工] -->
+<table class="m-pop-up" id="j-pop-member"><tr><td class="z-tac">
+	<div class="z-ib z-wid650">
+		<h4 class="u-tit">选择员工</h4>
+		<h5 class="u-close">
+			<a href="javascript:void(0);" data-pop="test1" class="j-pop-cancel">×</a>
+			<input type="hidden" class="j-pop-data" />
+		</h5>
+		<div class="pop-member f-cb">
+
+			<div class="f-fl u-lft">
+				<span class="f-ib">选择部门：</span>
+				<div>
+					<dl class="j-pop-list"></dl>
+				</div>
+			</div>
+			<div class="f-fl u-rgt">
+				<span class="f-ib">待选：<input type="checkbox" id="sltWaitAll" data-type="wait" class="f-ib j-slt-all"> <label for="sltWaitAll">全选</label></span>
+				<div class="u-max-h j-wait-area"></div>
+			</div>
+			<div class="f-fl u-ctr">
+				<a href="javascript:void(0);" class="f-ib u-add j-act-plus">添加 &gt;&gt;</a>
+				<a href="javascript:void(0);" class="f-ib u-del j-act-move">移除 &lt;&lt;</a>
+				<a href="javascript:void(0);" class="f-ib u-clr j-act-clear">清空</a>
+			</div>
+			<div class="f-fl u-rgt">
+				<span class="f-ib">已选：<input type="checkbox" id="sltHasAll" data-type="has" class="f-ib j-slt-all"> <label for="sltHasAll">全选</label></span>
+				<div class="u-max-h j-has-area"></div>
+			</div>
+		</div>
+		<h6 class="u-btn">
+			<a href="javascript:void(0);" class="u-sub j-pop-sure">提交</a>
+			<a href="javascript:void(0);" class="u-rst j-pop-cancel">取消</a>
+		</h6>
+	</div>
+</td></tr></table>
+<script src="${staticDomain}ueditor/editor_api.js" charset="utf-8"></script>
+<script>
+$(function(){
+
+	// 控制样式的尾部元素
+	$('.j-pop-list').find('dt:last,dd:last').addClass('z-last');
+	$('.j-pop-list > dd').find('p:last').addClass('z-last');
+
+	// 预定义数组[子公司对应部门]
+	var _jsonCompany = {
+		'01':['瀚银集团', {'0101':'财务部', '0102':'人事部', '0103':'行政部'}],
+		'02':['上海瀚之友', {'0201':'企划部', '0202':'运营部', '0203':'研发部'}]
+	};
+
+	// 预定义数组[部门对应员工]
+	var _jsonData = {
+		'0101':['财务部', {'010101':'财务A', '010102':'财务B', '010103':'财务C'}],
+		'0102':['人事部', {'010201':'人事A', '010202':'人事B', '010203':'人事C'}],
+		'0103':['行政部', {'010301':'行政A', '010302':'行政B', '010303':'行政C'}],
+		'0201':['企划部', {'020101':'企划A', '020102':'企划B', '020103':'企划C'}],
+		'0202':['运营部', {'020201':'运营A', '020202':'运营B', '020203':'运营C'}],
+		'0203':['研发部', {'020301':'研发A', '020302':'研发B', '020303':'研发C'}]
+	};
+
+	// 生成子公司对应部门HTML代码
+	var _html = '';
+	$.each(_jsonCompany, function(i, rs){
+		// var _ss = 
+		_html+= '<dt>'+ rs[0] +'</dt>\n';
+		_html+= '<dd>\n';
+
+		$.each(rs[1], function(k, v){
+			_html+= '<p><input type="checkbox" value="'+ k +'" data-txt="'+ v +'" class="f-ib j-will-slt" /><i class="f-ib">'+ v +'</i></p>\n';
+		});
+
+		_html+= '</dd>\n';
+	});
+	$('.j-pop-list').html(_html);
+
+	// 部门 级联 待选员工 列表
+	$('body').on('click', '.j-will-slt', function(){
+
+		var _this = $(this), _val = _this.val();
+		var _json = getMemberByDepartmentId(_jsonData, _val);
+
+		if(_this.is(':checked')){
+			// 合并新旧数据
+			var _old = getOldDate();
+			if(_old !== false){
+				var mergeJson = mergeData(_json, _old);
+			}else{
+				var mergeJson = _json;
+			}
+
+			$('.j-wait-area').html(createListHtml(mergeJson));
+
+		}else{
+			removeWaitlist(_json);
+		}
+
+		// 取消全选状态
+		$('.j-slt-all').prop('checked', false);
+		
+	});
+
+	// 删除选项
+	$('body').on('click', '.j-slt-del', function(){
+		$(this).parent().remove();
+		return false;
+	});
+
+	// 全选操作
+	$('.j-slt-all').click(function(){
+
+		var _this = $(this), _status = true;
+		var _type = _this.attr('data-type');
+		var _wait = $('.j-'+ _type +'-slt');
+		if(!_this.is(':checked')) _status = false;
+		if(_wait.length > 0) _wait.prop('checked', _status);
+	});
+
+	// 添加待选区的选中项到已选区域[去重]
+	$('.j-act-plus').click(function(){
+
+		var _checkList = $('.j-wait-slt').filter(':checked');
+
+		if(_checkList.length > 0){
+
+			var _hasList = {};
+			$.each(_checkList, function(){
+				var _this = $(this), _id = _this.val();
+				_hasList[_id] = _this.attr('data-txt');
+			});
+
+			// 读取已有数据
+			var _old = getOldDate('has');
+			if(_old !== false){
+				var mergeJson = mergeData(_hasList, _old);
+			}else{
+				var mergeJson = _hasList;
+			}
+
+			// 写入已选区域
+			$('.j-has-area').html(createListHtml(mergeJson, 'has'));
+			
+			// 移除待选区域
+			removeWaitlist(_hasList);
+
+			// 取消全选状态
+			$('.j-slt-all').prop('checked', false);
+		}
+	});
+
+	// 移除已选区的选中项到待选区域[去重]
+	$('.j-act-move').click(function(){
+
+		var _checkList = $('.j-has-slt').filter(':checked');
+
+		if(_checkList.length > 0){
+
+			var _hasList = {};
+			$.each(_checkList, function(){
+				var _this = $(this), _id = _this.val();
+				_hasList[_id] = _this.attr('data-txt');
+			});
+
+			// 读取已有数据
+			var _old = getOldDate('wait');
+			if(_old !== false){
+				var mergeJson = mergeData(_hasList, _old);
+			}else{
+				var mergeJson = _hasList;
+			}
+
+			// 写入待选区域
+			$('.j-wait-area').html(createListHtml(mergeJson, 'wait'));
+			
+			// 移除已选区域
+			removeWaitlist(_hasList, 'has');
+
+			// 取消全选状态
+			$('.j-slt-all').prop('checked', false);
+		}
+	});
+
+	// 清空已选区的选中项
+	$('.j-act-clear').click(function(){
+
+		var _hasArea = $('.j-has-area');
+		if(_hasArea.find('p').length > 0){
+			_hasArea.html('');
+		}
+
+		// 取消全选状态
+		$('.j-slt-all, .j-will-slt').prop('checked', false);
+	});
+
+});
+
+// [函数]获取区域内已有数据
+function getOldDate(_char){
+
+	var _c = _char || 'wait';
+	var _data = false;
+	var _old = $('.j-'+ _c +'-area').find('.j-'+ _c +'-slt');
+	if(_old.length > 0){
+		_data = {};
+		$.each(_old, function(){
+			var _this = $(this), _id = _this.val();
+			_data[_id] = _this.attr('data-txt');
+		});
+	}
+	return _data;
+}
+
+// [函数]通过部门ID返回员工数据集
+function getMemberByDepartmentId(_json, _id){
+	var _subJson;
+	$.each(_json, function(k, v){
+		if(k == _id){
+			_subJson = v[1];
+			return false;
+		}
+	});
+	return _subJson;
+}
+
+// [函数]依据部门的取消状态减少待选区域项
+function removeWaitlist(_json, _char){
+	var _aryId = [];
+	var _c = _char || 'wait';
+	for(var k in _json){
+		_aryId.push('#j-'+ _c +'-id' + k);
+	}
+	var _ids = _aryId.join(',');
+	$(_ids).remove();
+}
+
+// [函数]创建输出列表
+function createListHtml(_list, _type){
+	var _t = _type || 'wait';
+	var _html = '';
+	for(var k in _list){ // 遍历json对象的每个key/value对,p为key
+		if(_list[k] != ''){
+			_html += '<p class="f-cb" id="j-'+ _t +'-id'+ k +'"><input type="checkbox" value="'+ k +'" data-txt="'+ _list[k] +'" class="f-fl j-'+ _t +'-slt" />';
+			_html += '<span class="f-fl">'+ _list[k] +'</span><a href="javascript:void(0);" data-id="'+ k +'" class="f-fr j-slt-del"></a></p>\n';
+		}
+	}
+	return _html;
+}
+
+// [函数]新数据集交集到旧数据集
+function mergeData(_newJson, _oldJson){
+
+	for(var k in _newJson){
+		if(typeof(_oldJson[k]) == 'undefined'){
+			_oldJson[k] = _newJson[k];
+		}
+	}
+	return _oldJson;
+}
+
+// [回调函数]选择员工的弹窗的确定按钮事件
+function addMember(){
+	var _bool = true;
+	var _hasList = $('.j-has-slt');
+	if(_hasList.length > 0){
+		var _data = [];
+		$.each(_hasList, function(){
+			var _this = $(this), _id = _this.val();
+			_data.push(_id + '|' + _this.attr('data-txt'));
+		});
+		$('.j-member-v').val(_data.join(','));
+		//$('.j-member-n').val('已选择 '+ _data.length +' 人');
+	}else{
+		alert('请选择员工');
+		_bool = false;
+	}
+	return _bool;
+}
+</script>
+<script type="text/javascript">
+function checkForm(){
+	//返回值
+	var isTure=false;
+	//参数个数 
+	var argsLength = arguments.length;
+	if(argsLength>0){
+		for(var i=0;i<argsLength;i++){
+			var arg=arguments[i];
+			var obj=$("#"+arg);
+			if($.trim(obj.val())==""){
+				obj.css("border","1px solid red").fadeOut(300).fadeIn(300).fadeOut(300).fadeIn(300);
+				//值为空设置返回值false
+				isTure=false;
+			}else{
+				isTure=true;
+			}
+		}
+	}
+	return isTure;
+}
+</script>
+<script type="text/javascript">
+$(function() {
+	//保存草稿
+	$("#draftInfo").click(function() {
+		if(setValue()){
+		   $("input[name=status]").val(1);
+		   if(commitData()){
+			   $("#saveForm").submit();
+		   }
+		}
+	}); 
+	//我要发布
+	$("#releaseInfo").click(function() {
+		if(setValue()){
+		   $("input[name=status]").val(2);
+			if(commitData()){
+				$("#saveForm").submit();
+			}
+		}
+	});
+});
+//必填参数校验，以及对应的隐藏域赋值
+function setValue(){
+	//判断是否选择了活动分类
+	var itemType = $("input[name=itemType]").val();
+	var activityCategoriesId = $("input[name=activityCategoriesId]").val();
+	if(itemType == '' || activityCategoriesId == ''){
+		$("#itemMsg").text('请选择活动分类');
+		return false;
+	}
+	//区分是否选择的全年有效
+	var beginTime = $("input[name=activityBeginTime]").val();
+	var endTime = $("input[name=activityEndTime]").val();
+	var allYear = $("input[name=allYear]").val();
+	if(allYear ==''){
+		if(beginTime =='' || endTime ==''){
+			$("#actiMsg").text('请选择活动有效期');
+			return false;
+		}
+	}
+	var ruleLength=$(".j-lst-del").length;
+	var score = $("input[name=score]").val();
+	/* if(ruleLength <1 && score == ''){
+		$("#rewardMsg").text('请设置奖励');
+		return false;
+	} */
+	//如果可报名人数和报名时间都为空，则为普通活动
+	var canApplyPeople = $("input[name=canApplyPeople]").val();
+	var applyBeginTime = $("input[name=applyBeginTime]").val();
+	var applyEndTime   = $("input[name=applyEndTime]").val();
+	if(canApplyPeople=='' && applyBeginTime == '' && applyEndTime == '' ){
+		$("input[name=activityType]").val(1);
+	}
+	else{  //否则为报名活动
+		$("input[name=activityType]").val(2);
+	}
+	if(canApplyPeople !='' && applyBeginTime == '' && applyEndTime == '' ){
+		$("#sign-start").addClass('required');
+		$("#sign-end").addClass('required');
+	}
+	else{
+		$("#sign-start").removeClass('required');
+		$("#sign-end").removeClass('required');
+	}
+	var objectId = $("input[name=objectId]").val();
+	var applyPeople = $("input[name=applyPeople]").val();
+	var activityStatus = $("input[name=activityStatus]").val();
+	if(activityStatus == '2'){    //发布中的活动  校验报名人数不能小于当前报名人数
+		if(objectId !='' && applyPeople !='' && canApplyPeople !=''){
+			if(canApplyPeople < applyPeople){
+				$("#applyPeopleMsg").text('发布中的活动，报名人数不能小于当前报名人数');
+				return false;
+			}
+		}
+	}
+	if(endTime < beginTime){
+		$("#actiMsg").text('活动结束日期必须大于活动开始日期');
+		return false;
+	}
+	if(applyEndTime < applyBeginTime){
+		$("#signMsg").text('报名结束日期必须大于报名开始日期');
+		return false;
+	}
+	if(allYear ==''){
+		if(beginTime !='' &&  endTime !=''){
+			if(applyEndTime > endTime){
+				$("#signMsg").text('报名结束日期必须小于活动结束日期');
+				return false;
+			}
+		}
+	}
+	var totalUser = $("#totalUser").text();
+	var userAll = $("input[name=userAll]").val();
+	if(totalUser == '0' && userAll == ''){
+		$("#userMsg").text('请选择发布对象');
+		return false;
+	}
+	var objectId = $("input[name=objectId]").val();
+	if($(".j-lst-del").is(":visible")){
+	  //如果多项奖励的长度大于等于1，则type类型为2--多项奖励
+	  if(ruleLength >=1){
+		 $("input[name=type]").val(2);
+	  }
+	}else if(score !=''){   //如果单项奖励设置了值，则type类型为1--单项奖励
+		 $("input[name=type]").val(1);
+	}else if(objectId !=''){ //修改活动奖励，将原本有的奖励清空
+		if(ruleLength < 1 &&　score ==''){
+			$("input[name=type]").val($("input[name=rewardType]").val());
+		}
+	}
+	$("input[name=excitationSize]").val(ruleLength);
+	return true;
+}
+//校验活动标题是否重复
+function isUniqueTitle(){
+	var isUniqueFlag=false;
+	var title = $("input[name=title]").val();
+	var data = {} ;
+	data.title = title ;
+	data = jQuery.param(data) ;
+	var url = "${dynamicDomain}/excitationActivity/isUniqueTitle";
+	$.ajax({
+		type: "post",
+		dataType: "json",
+		data : data,
+		url: url,
+		async:false,
+		success:function(resu){
+			if(resu == true){
+				$("#acTitle").text('活动标题已存在，请重新输入');
+				isUniqueFlag =  false;
+			}else{
+				isUniqueFlag =  true;
+			}
+		}
+	});
+	return isUniqueFlag;
+}
+
+function commitData(){
+	var userIdList = $("input[name='userId']");
+	var userIdStr = "";
+	if (userIdList) {
+		userIdList.each(function() {
+			var userId = $(this).val();
+			if(userId !=''){
+			  userIdStr += $(this).val() + ",";
+			}
+		});
+		$("input[name='members']").val(userIdStr);
+	}
+	
+	var objectId = $("input[name=objectId]").val();
+	var excTitle = $("input[name=excTitle]").val();
+	var title = $("input[name=title]").val();
+	var result = true;
+	if (objectId == '') {    //新增活动时，校验活动标题是否重复
+		result = isUniqueTitle();
+	} else if (objectId != '' && (excTitle != title)) { //修改活动信息，如果活动标题做了修改，则校验活动标题是否重复
+		result = isUniqueTitle();
+	}
+	return result;
+}
+</script>
+</body>
+</html>

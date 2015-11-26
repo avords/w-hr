@@ -1,0 +1,88 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=0" />
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>体检 - 福利商城</title>
+    <script type="text/javascript" src="${staticDomain}js/jquery.zfocus.js"></script>
+    <script src="${staticDomain}js/jquery.lazyload.min.js"></script>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/common.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/list.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/insure.hr.css" />
+</head>
+<body>
+<form id="submitForm" action="${dynamicDomain }/mall/subject/${subject}" method="post">
+<div class="m-focus">
+	<div class="u-focus" id="j-focus">
+        <ul class="f-cb">
+            <#list banner as item>
+                <#if item.url??>
+                    <a href="${item.url}" >
+                <#else>
+                    <a href="javascript:void(0);">
+                </#if>
+                    <img src="${adminStaticDomain}${item.picturePath}" />
+                 </a>
+            </#list>
+        </ul>
+	</div>
+	<script type="text/javascript">$('#j-focus').zFocus({timer:3000, speed:500, onClass:'z-on'});</script>
+</div>
+
+<div id="g-goods">
+	<h3 class="f-cb">
+		<b class="f-fl">保险商品</b>
+		<span class="f-fr f-ib">
+		    <#if pageSearch.currentPage<=0>
+		       <a href="javascript:void(0);" class="u-lft f-ib"></a>
+		    <#else> 
+		       <a href="${dynamicDomain }/mall/subject/${subject}?ec_p=${pageSearch.currentPage-1}" class="u-lft f-ib"></a>
+		    </#if>
+			<small><i>${pageSearch.currentPage}</i> / ${pageSearch.totalPage}</small>
+			<#if pageSearch.currentPage&gt;=0>
+               <a href="javascript:void(0);" class="u-rgt f-ib"></a>
+            <#else> 
+               <a href="${dynamicDomain }/mall/subject/${subject}?ec_p=${pageSearch.currentPage+1}" class="u-rgt f-ib"></a>
+            </#if>
+		</span> 
+	</h3>
+
+	<ul class="f-cb j-cb-list">
+		<#list pageSearch.list as item>
+            <li>
+                <a target="_blank" href="${dynamicDomain}/product/detail/${item.skuId}">
+	                <p><img class="product" data-original="${adminStaticDomain}${item.mainPicture}"></p>
+	                <h5 title="${item.name}">${item.name}</h5>
+	            </a>
+            </li>
+        </#list>
+	</ul>
+	
+</div>
+ <div class="u-act f-cb" style="margin:30px auto 0;max-width:1200px;min-width:1002px;">
+    <@pageform totalPage=pageSearch.totalPage currentPage=pageSearch.currentPage formId="submitForm" />
+</div>
+</form>
+<script type="text/javascript">
+$(function(){
+    $("img.product").lazyload({
+        placeholder:"${staticDomain}image/product.png",
+        skip_invisible : false,
+        threshold : 200
+    });
+    $("img:not(.product)").lazyload({
+        placeholder:"${staticDomain}image/package.png",
+        skip_invisible : false,
+        threshold : 200
+    });  
+    // 控制列表末元素的样式
+    $('.j-cb-list > li:nth-child(5n)').css('margin-right', '0');
+    $('.b_page_team').css('text-align','center');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>订单成功</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/excel.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+</head>
+<body id="p16-4">
+<div id="p16-4">
+<div class="g-ok">  
+    <p>收银台 </p>
+    <div class="g-in">
+        <span class="one">我们会尽快处理您的订单！</span><em>${plan.name}</em> <br>
+        <span>线下支付：<i>${totalAmount?string('0.00')}元 </i> <br>
+            <a href="${dynamicDomain}/welfarePlan/page">返回</a>
+        </span>
+    </div>
+</div>
+</div>
+</body>
+</html>

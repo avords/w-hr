@@ -1,0 +1,271 @@
+<#include "/common/order.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>福利订单信息 - 福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/order.z.css" />
+</head>
+<body>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">福利管理</a> &gt;
+		<a href="javascript:void(0);">发放福利券</a> &gt;
+		订单详情
+	</h4>
+</div>
+
+<div id="u-step">
+	<input type="hidden" id="subOrderId"/>
+	<@hrWorkflow status='${subOrderTemp.subOrderState}'/> 
+	
+	<#if subOrderTemp.subOrderState!=8>
+		<ul class="f-cb">
+			<#list subOrderTemp.subOrderTimeInfoList as timeInfo>
+				<li class="on"><span class="f-ib">${timeInfo.stateDesc}</span><br />${timeInfo.operationTime?string('yyyy-MM-dd HH:mm:ss')}</li> 
+			</#list> 
+		</ul>
+	</#if>
+</div>
+
+<div id="g-odr2">
+
+	<dl class="nt">
+		<dt>
+			
+			<#if subOrderTemp.subOrderState==4  && subOrderTemp.orderGrantType == 1>
+				<#if notGrantCount gt 0 >
+					<a href="javascript:void(0);" class="f-ib onl" onclick="onlineSend('${subOrderTemp.objectId}')">在线发放</a>
+				</#if>
+			<#elseif  subOrderTemp.subOrderState==4  && subOrderTemp.orderGrantType == 2>
+				<a href="javascript:void(0);" class="f-ib j-btn-dline" onclick="sureButton('${subOrderTemp.objectId}')">线下发放</a>
+				<span>(提醒：下载电子凭证文件，选择线下发放后无法线上发放)</span>
+			<#elseif subOrderTemp.subOrderState==4>
+				<#if notGrantCount gt 0 >
+					<a href="javascript:void(0);" class="f-ib onl" onclick="onlineSend('${subOrderTemp.objectId}')">在线发放</a>
+					<a href="javascript:void(0);" class="f-ib j-btn-dline" onclick="sureButton('${subOrderTemp.objectId}')">线下发放</a>
+					<span>(提醒：下载电子凭证文件，选择线下发放后无法线上发放)</span>
+				</#if>
+			</#if>
+			
+		</dt>
+		<dd>订单编号：${subOrderTemp.subOrderNo} </dd>
+	</dl>
+
+	<p class="u-info">
+		<input type="hidden" id="totalCount" value="${subOrderTemp.productCount}">
+		<span class="f-ib">操作账号：${subOrderTemp.loginName}</span>
+		<span class="f-ib">付款方式：<@paymentWay payWay='${subOrderTemp.paymentWay}' /></span><br />
+		<span class="f-ib">总数量：${subOrderTemp.productCount}</span>
+		<#if expiretotalCount??&&(expiretotalCount>0)>
+			<span class="f-ib">已作废(退货)：${expiretotalCount}</span>		
+		</#if>
+		<span class="f-ib">
+			<#if subOrderTemp.orderGrantType == 1>
+				<a href="${dynamicDomain}/grantWelfare/exportGrantedCardInfo/${subOrderTemp.objectId}" target="_blank">已发放：<label id="count1">${grantedCount}</label></a>
+			<#elseif  subOrderTemp.orderGrantType == 2>
+				已发放：<label id="count1">${grantedCount}</label>
+			<#else>
+				已发放：<label id="count1">${grantedCount}</label>
+			</#if>
+		</span>
+		<span class="f-ib">剩余份数：<i id="count2">${notGrantCount}</i></span>
+	</p>
+
+	<h5 class="u-tt">${welfarePackage.packageName}(${category.firstParameter}选${category.secondParameter})</h5>
+	<div class="u-g-list">
+		<ol class="f-cb">
+			<li class="u-t2">&nbsp;商品信息</li>
+			<li class="u-t3">&nbsp;</li>
+			<li class="u-t4">&nbsp;单价</li>
+			<li class="u-t5">数量</li>
+			<li class="u-t6">&nbsp;小计</li>
+		</ol>
+		<div class="u-list j-list">
+			<#list subOrderTemp.orderProductList as orderSku>
+				<ul class="f-cb">
+					<li class="u-t2">
+						<a href="${dynamicDomain}/welfarePackage/detail/${orderSku.productId}" target="_blank">
+						<img  class="listImg"  src="${adminStaticDomain}${orderSku.imgUrl}" /></a>
+					</li>
+					<li class="u-t3"><a href="${dynamicDomain}/welfarePackage/detail/${orderSku.productId}" target="_blank">${orderSku.name}</a></li>
+					<li class="u-t4"><b>${orderSku.productPrice?string('0.00')}${s_welfarePointName}</b><br>￥${orderSku.productPrice?string('0.00')}</li>
+					<li class="u-t5">${orderSku.productCount}</li>
+					<li class="u-t6">${orderSku.productPrice?string('0.00')}${s_welfarePointName}</li>
+				</ul>
+			</#list> 
+			<p><span>套餐数量：共 <i>${subOrderTemp.productCount}</i> &nbsp;件&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				实付：<b>${subOrderTemp.payableAmount?string('0.00')}</b> &nbsp;${s_welfarePointName}</span></p>
+		</div>
+	</div>
+</div>
+
+<!-- 线下发放的弹窗 -->
+<form action="${dynamicDomain}/grantWelfare/exportCardInfo" method="post" id="offline-form" target="top">
+<input type="hidden" id="subObjectId"  name="subObjectId">
+<div class="m-pop u-pop1">
+	<h4>线下发放确认<a href="javascript:void(0);" class="f-ib j-pop-close"></a></h4>
+
+	<fieldset class="f-cb u-pop-f1">
+		<label class="f-fl">支付密码：</label>
+		<span class="f-fl"><input type="password" class="u-txt" id="password" name="password" onchange="getPwd(this)"/></span>
+	</fieldset>
+	<fieldset class="f-cb u-pop-f1">
+		<p>提醒：若您选择线下发放后，将不能再进行线上发放操作。</p>
+	</fieldset>
+	<fieldset class="f-cb u-pop-f1">
+		<label class="f-fl">&nbsp;</label>
+		<span class="f-fl">
+			<button type="button" class="u-sub"  onclick="confirmGrant()">确认发放</button>
+			<button type="reset" class="u-reset j-pop-close">取消</button>
+		</span>
+	</fieldset>
+</div>
+</form>
+
+<script>
+$(function(){
+	// 弹窗
+	$('.j-btn-dline').click(function(){
+		openMask(true);
+		openPop(true,250);
+	});
+	
+	$('body').on('click','.j-pop-close',function(){
+		openMask(false);
+		openPop(false);
+	});
+	
+});
+
+
+//窗口缩放控制位置
+var _mPop = '.m-pop';
+$(window).resize(function(){
+	if(!$(_mPop).is(':hidden')){
+		centerPop(_mPop, 250);
+	}
+});
+
+// 开启弹窗
+function openPop(_bool, _myh){
+	_myh = _myh || 0;
+	if(!_bool){
+		$(_mPop).hide();
+	}else{
+		centerPop(_mPop, _myh);
+	}
+}
+
+// 弹窗位置居中
+function centerPop(_ob, _myh){
+
+	var _pop = $(_ob), _h = _pop.height(), _w = _pop.width();
+	var _win = $(window), _wh = _win.height(), _ww = _win.width();
+	var _mh = _myh == 0 ? (((_wh - _h) / 2) - _myh) : _myh;
+	var _css = {'top':_mh , 'left':(_ww - _w) / 2};
+
+	_pop.css(_css).show();
+}
+
+// 开启遮罩
+function openMask(_bool){
+	var _mask = $('#g-mask');
+	if(_bool){
+		if(_mask.length === 1){
+			_mask.show();
+		}else{
+			$('<div id="g-mask"></div>').appendTo('body').css('opacity','.2');
+		}
+	}else{
+		_mask.hide();
+	}
+}
+
+
+//点击线下发放
+function sureButton(subOrderId){
+	$("#password").val("") ;
+	$('#subOrderId').val(subOrderId) ;
+}
+
+var pwd = "";
+function getPwd(obj){
+	if(obj){
+		pwd = $(obj).val();
+	}
+	return pwd;
+}
+
+
+//线下发放确认
+function confirmGrant(){
+	var subOrderId = $('#subOrderId').val() ;
+	var pwd = getPwd();
+	
+	if(pwd==null || pwd==""){
+		winAlert("请输入支付密码") ;
+		return false ;
+	}
+	
+	$('#subObjectId').val(subOrderId) ;
+	
+	if(subOrderId && pwd){
+		$.ajax({
+	          url:'${dynamicDomain}/grantWelfare/confirmPayOffline',
+	          type : 'post',
+	          async : true,
+	          dataType : 'json',
+	          data : "subOrderId=" + subOrderId + "&password=" +pwd,
+	          success : function(json) {
+	              if(json.result==1){
+	                 openMask(false);
+	    			 openPop(false);
+	    			 
+	    			 //显示内容-修改
+	    			 var totalCount =  $('#totalCount').val() ;
+	    			 $('#count1').text(totalCount) ;//已发放 
+	    			 $('#count2').text(0) ;//未发放
+	    			 
+	    			 $('#offline-form').submit();
+	    			 
+	              }else if(json.result==0){
+	            	  winAlert("支付密码错误");
+	              }
+	              return false;
+	          }
+	      });
+	}
+	return false;
+}
+
+
+//在线发放
+function onlineSend(subOrderId){
+	$.ajax({
+        url:'${dynamicDomain}/grantWelfare/checkSubOrderState',
+        type : 'post',
+        async : false,
+        dataType : 'json',
+        data : {subOrderId: subOrderId},
+          success : function(json) {
+        	  if(json.subOrderState == 4){
+        		    //待发放 
+        		  	if(json.grantType=="" || json.grantType==1 || json.grantType==null){
+        		  		document.location.href = "${dynamicDomain}/grantWelfare/editWelfare/"+subOrderId ;
+        		  	}
+			  }else if(json.subOrderState == 5){
+				    //已发放 
+				  	winAlert("该订单已全部发放完成！","window.location.href='${dynamicDomain}/grantWelfare/queryWelfareList'") ;
+			  } 
+          },
+    	  error: function(){
+		  }
+    });
+}
+
+
+</script>
+</body>
+</html>

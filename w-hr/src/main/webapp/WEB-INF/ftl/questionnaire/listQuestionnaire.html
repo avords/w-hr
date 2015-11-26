@@ -1,0 +1,310 @@
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<title>问卷调查(投票)</title>
+<link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+<script src="${staticDomain}js/jquery.popup.js"></script>
+<style type="text/css">
+a div{
+ 	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 100%;
+	overflow: hidden;
+}
+  </style>
+</head>
+<body>
+<#include "/common/page.html">
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">信息发布</a> &gt;
+		问卷调查(投票)
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+
+	<#include "/include/nav_menu_link.html">
+	<script>var _menuIndex = 2;</script>
+
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit"><span class="f-ib">问卷调查(投票)管理</span></h4>
+
+		<div id="g-lst-p25">
+
+			<div class="u-act f-cb">
+				<h4 class="f-fl">
+					<a href="${dynamicDomain}/questionnaire/create" class="f-ib u-pub">新增投票</a>
+				</h4>
+				<h5 class="f-fr">
+					<@spage url="${dynamicDomain}/questionnaire/page"  totalPage=pageQust.totalPage currentPage=pageQust.currentPage?number formId="idUp" />
+				</h5>
+			</div>
+
+			<form action="" method="post">
+			<div class="u-lst z-top">
+				<ol class="f-cb">
+					<li class="z-w1"><input type="checkbox" class="f-ib j-chk-all" id="checkAll" name="checkAll"></li>
+					<li class="z-w2">标题</li>
+					<li class="z-w6">状态</li>
+					<li class="z-w3">发布日期</li>
+					<li class="z-w4">有效日期</li>
+					<li class="z-w5">操作</li>
+				</ol>
+			</div>
+
+			<div class="u-lst z-cnt j-list">
+				<#list pageQust.list as item>
+				<ul class="f-cb">
+					<li class="z-w1"><input type="checkbox" class="f-ib j-chk-son" id="checkId" name="checkId" value="${item.objectId }" data-st="${item.status }" data-num="${item.countNum }"></li>
+					<li class="z-w2"><a href="javascript:void(0);" data-t="${item.questionTitle }" data-v="${item.voteAll},${item.questionInfo }" class="j-pop-show" title="${item.questionTitle }"><div>${item.questionTitle }</div></a></li>
+					<li class="z-w6">
+						<#if item.status=="1">
+							草稿
+						<#elseif item.status=="2">
+							投票中
+						<#elseif item.status=="3">
+							投票已锁定
+						<#else>
+							已结束
+						</#if>
+					</li>
+					<li class="z-w3">${(item.releaseDate?string('yyyy-MM-dd HH:mm:ss')) }</li>
+					<li class="z-w4">${(item.startDate?string('yyyy-MM-dd HH:mm:ss'))} <br />${(item.endDate?string('yyyy-MM-dd HH:mm:ss')) }</li>
+					<li class="z-w5">
+						<a href="${dynamicDomain}/questionnaire/edit/${item.objectId }" class="gtg">修改</a>&nbsp;&nbsp;
+						<#if item.status=="2">
+							<a href="${dynamicDomain}/questionnaire/doSetStatus/${item.objectId }/3" class="gtg">锁定</a>&nbsp;&nbsp;
+						</#if>
+						<#if item.status=="3">
+							<a href="${dynamicDomain}/questionnaire/doSetStatus/${item.objectId }/2" class="gtg">解除锁定</a>&nbsp;&nbsp;
+						</#if>
+						<a href="javascript:void(0);" data-id="${item.objectId }" data-pop="confirm,1,doConfirm(${item.objectId})" data-num="${item.countNum}" class="gdel j-pop-open">删除</a>
+					</li>
+				</ul>
+				</#list>
+			</div>
+
+			<div class="u-act f-cb">
+				<h4 class="f-fl u-pl1">
+					<input type="checkbox" class="f-ib j-chk-all" /> <span class="f-ib">全选</span>
+					<a href="javascript:void(0);" class="f-ib u-del" onclick="doBatchDelete();">批量删除</a>
+					<a href="javascript:void(0);" class="f-ib u-del" onclick="doBatchLock();">批量锁定</a>
+				</h4>
+				<h5 class="f-fr">
+					<@page url="${dynamicDomain}/questionnaire/page"  totalPage=pageQust.totalPage currentPage=pageQust.currentPage?number formId="idDown" />
+				</h5>
+			</div>
+			</form>
+
+			<script>
+			$(function(){
+				// 全选
+				$('.j-chk-all').click(function(){
+					var _this = $(this), _son = $('.j-chk-son');
+					if(_this.is(':checked')){
+						_son.prop('checked', true);
+					}else{
+						_son.prop('checked', false);
+					}
+					//var ids = getIds();
+				});
+
+				// 控制列表尾元素的样式
+				$('.j-list').find('ul:last').css('border-bottom',0);
+			});
+			</script>
+
+		</div>
+	</div>
+</div>
+
+<!-- 复制历年计划的弹窗 -->
+<div class="m-pop u-pop4">
+	<a href="javascript:void(0);" class="f-ib u-close j-pop-close"></a>
+	<p></p>
+	<dl></dl>
+	<dl></dl>
+	<dl></dl>
+	<dl></dl>
+	<dl></dl>
+</div>
+
+<script>
+$(function(){
+
+	// 弹窗
+	$('.j-pop-show').click(function(){
+		openMask(true);
+		openPop(true, 250, $(this));
+	});
+
+	$('body').on('click','.j-pop-close',function(){
+		openMask(false);
+		openPop(false);
+	});
+});
+
+// 窗口缩放控制位置
+var _mPop = '.m-pop';
+$(window).resize(function(){
+	if(!$(_mPop).is(':hidden')){
+		centerPop(_mPop, 250);
+	}
+});
+
+// 开启弹窗
+function openPop(_bool, _myh, _dataId){
+	_myh = _myh || 0;
+	if(!_bool){
+		$(_mPop).hide();
+	}else{
+		centerPop(_mPop, _myh, _dataId);
+	}
+}
+
+// 弹窗位置居中
+function centerPop(_ob, _myh, _dataId){
+
+	var _pop = $(_ob), _h = _pop.height(), _w = _pop.width();
+	var _win = $(window), _wh = _win.height(), _ww = _win.width();
+	var _mh = _myh == 0 ? (((_wh - _h) / 2) - _myh) : _myh;
+	var _css = {'top':_mh , 'left':(_ww - _w) / 2};
+
+	_dataId = _dataId || 0;
+	if(_dataId != 0){
+		var _title = _dataId.attr('data-t'), _val = _dataId.attr('data-v'), _ary = _val.split(',');
+		var l = _ary.length;
+		_pop.find('p').html(_title +'<br /><em>共'+ _ary[0] +'人参与投票</em>');
+		if (l>1) {
+			var _arry1 = _ary[1].split('||');
+			_pop.find('dl').eq(0).html('<dt>'+_arry1[0]+'('+ _arry1[1] +')</dt><dd class="z-c1" style="width:'+ _arry1[1] +';"></dd>');
+		}
+		if (l>2) {
+			var _arry2 = _ary[2].split('||');
+			_pop.find('dl').eq(1).html('<dt>'+_arry2[0]+'('+ _arry2[1] +')</dt><dd class="z-c2" style="width:'+ _arry2[1] +';"></dd>');
+		}
+		if (l>3) {
+			var _arry3 = _ary[3].split('||');
+			_pop.find('dl').eq(2).html('<dt>'+_arry3[0]+'('+ _arry3[1] +')</dt><dd class="z-c3" style="width:'+ _arry3[1] +';"></dd>');
+		}
+		if (l>4) {
+			var _arry4 = _ary[4].split('||');
+			_pop.find('dl').eq(3).html('<dt>'+_arry4[0]+'('+ _arry4[1] +')</dt><dd class="z-c1" style="width:'+ _arry4[1] +';"></dd>');
+		}
+		if (l>5) {
+			var _arry5 = _ary[5].split('||');
+			_pop.find('dl').eq(4).html('<dt>'+_arry5[0]+'('+ _arry5[1] +')</dt><dd class="z-c2" style="width:'+ _arry5[1] +';"></dd>');
+		}
+	}
+
+	_pop.css(_css).show();
+}
+
+// 开启遮罩
+function openMask(_bool){
+	var _mask = $('#g-mask');
+	if(_bool){
+		if(_mask.length === 1){
+			_mask.show();
+		}else{
+			$('<div id="g-mask"></div>').appendTo('body').css('opacity','.2');
+		}
+	}else{
+		_mask.hide();
+	}
+}
+</script>
+
+
+<!-- 弹窗[确认删除] -->
+<table class="m-pop-up" id="j-pop-confirm"><tr><td class="z-tac">
+	<div class="z-ib z-wid400">
+		<h4 class="u-tit">删除确认</h4>
+		<h5 class="u-close">
+			<a href="javascript:void(0);" data-pop="test1" class="j-pop-cancel">×</a>
+			<input type="hidden" class="j-pop-data" />
+		</h5>
+		<div class="pop-confirm">确认删除么？此操作不可恢复！</div>
+		<h6 class="u-btn">
+			<a href="javascript:void(0);" class="u-sub j-pop-sure" data-num="" id="comfirm_sure">确认</a>
+			<a href="javascript:void(0);" class="u-rst j-pop-cancel">取消</a>
+		</h6>
+	</div>
+</td></tr></table>
+<script>
+function doConfirm(id){
+	var num = $("#comfirm_sure").attr("data-num");
+	if (num>0) {
+		$(".j-pop-cancel").click();
+		winAlert("已有投票，不可删除");
+		return false;
+	}
+	window.location = "${dynamicDomain}/questionnaire/delete/"+id;
+	return true;
+}
+function getIds(){
+    var content = '';
+    $(".j-chk-son:checked").each(function(){
+    	content =content+$(this).val()+",";
+    	var num =  $(this).attr("data-num");
+    	if (num>0){
+    		content="__";
+    		return false;
+    	}
+    });
+    if(content.indexOf(",")>0){
+        content =content.substring(0,content.length-1);
+    }
+    return content;
+}
+
+function getIdsByLock(){
+    var content = '';
+    $(".j-chk-son:checked").each(function(){
+    	content =content+$(this).val()+",";
+    	var num =  $(this).attr("data-st");
+    	if (num==4||num==3){
+    		content="__";
+    		return false;
+    	}
+    });
+    if(content.indexOf(",")>0){
+        content =content.substring(0,content.length-1);
+    }
+    return content;
+}
+
+function doBatchDelete(){
+	var ids = getIds();
+	if (ids=="" || ids==null) {
+		winAlert("请选择数据");
+		return false;
+	}
+	if (ids=="__") {
+		winAlert("被选中的数据中有已有投票的数据，不可批量删除");
+		return false;
+	}
+	window.location = "${dynamicDomain}/questionnaire/doBatchdelete/"+ids;
+	return true;
+}
+
+function doBatchLock(){
+	var ids = getIdsByLock();
+	if (ids=="" || ids==null) {
+		winAlert("请选择数据");
+		return false;
+	}
+	if (ids=="__") {
+		winAlert("被选中的数据中有已结束或已锁定的数据，不可批量锁定");
+		return false;
+	}
+	window.location = "${dynamicDomain}/questionnaire/doBatchLock/3/"+ids;
+	return true;
+}
+</script>
+</body>
+</html>

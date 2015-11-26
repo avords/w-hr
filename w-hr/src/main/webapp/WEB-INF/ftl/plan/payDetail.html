@@ -1,0 +1,456 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>订单支付详情</title>
+    <script src="${staticDomain}js/jquery.popup.v1.js"></script>
+        <script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>     
+    <link media="all" rel="stylesheet" href="${staticDomain}css/excel.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+</head>
+<body id="p16-3">
+<div id="p16-3">
+<div id="g-crum2">
+    <h4>
+        <a href="javascript:void(0);">账户首页</a> &gt;
+        <a href="javascript:void(0);">信息管理</a> &gt;
+        添加|修改福利计划
+    </h4>
+</div>
+
+<div id="g-content" class="f-cb">
+
+    <#include "/include/nav_menu_link.html">    
+    <script>var _menuIndex = 1;</script>
+
+    <div class="m-main f-fr">
+        
+        <h4 class="u-tit f-cb">
+            <span class="f-ib">福利计划设置</span>
+        </h4>
+
+        <div id="g-step" class="f-cb">
+            <a href="javascript:void(0);" class="u-c21">计划信息</a>
+            <a href="javascript:void(0);">制定计划</a>
+            <a href="javascript:void(0);">额度分配</a>
+            <a href="javascript:void(0);">员工选择</a>
+            <a href="javascript:void(0);">确定选择</a>
+            <a href="javascript:void(0);">订单支付</a>
+            <a href="javascript:void(0);" class="u-c33">付款详情</a>
+        </div>
+
+        <h3>付款详情</h3>
+
+        <div class="g-con"> 
+            <div class="m-hd">
+                <span>年份：${welfarePlan.year}年</span>
+                <span>计划名称：${welfarePlan.name}</span>
+                <span>参与员工：${welfarePlan.headCount}人</span>
+                <span>本计划发放额度：${welfarePlan.totalAmount?string('0')}</span>
+                <span>员工消费额度：${totalAmount?string('0')}</span>
+            </div>  
+
+            <h5>申请商品详情</h5>
+            
+            
+            <div class="m-table j-tbl">
+                <table>
+                    <thead>
+                        <tr>
+                            <td class="z-l1">子计划名称</td>
+                            <td class="z-l2" colspan="4">
+                                <table>                                 
+                                        <tr>
+                                            <td class="wt wt1">选项</td>
+                                            <td>价格（元）</td>
+                                            <td>数量</td>
+                                            <td>应付</td>
+                                        </tr>                                                                       
+                                </table>
+                            </td>                           
+                            <td class="z-l3">状态</td>
+                            <td class="z-l3">操作</td>                    
+                        </tr>
+                    </thead>
+                    <tbody>
+                      <#list welfareSubPlans as subPlan>
+                        <tr>
+                            <td class="z-l1 z-none">${subPlan.name}</td>
+                            <td class="z-l2" colspan="4">
+                                <table class="in"> 
+                                       <#list subPlan.orderSkus as item>                                 
+	                                        <tr>
+	                                            <td class="wt">${item.name}</td>
+	                                            <td class="z-color">${item.productPrice?string('0.00')}</td>
+	                                            <td>
+	                                               <#if subPlan.objectId!=null>
+	                                                  <a href="javascript:void(0);" class="z-blue f-ib j-pop-open" data-char="number" data-param="${subPlan.objectId},${item.objectId}">${item.productCount}</a>
+	                                               <#else>
+	                                                  ${item.productCount}
+	                                               </#if>
+	                                            </td>
+	                                            <td class="z-color">${(item.productCount*item.productPrice)?string('0.00')}</td>
+	                                        </tr>
+                                      </#list>                                                  
+                                </table>
+                            </td>               
+                            <td class="z-l3 z-none1">
+	                          <#if subPlan.status==1>
+	                            已付款
+	                         <#elseif subPlan.status==0>
+	                            未付款
+	                         <#elseif subPlan.status==2>
+	                            已发放
+	                         </#if>
+                            </td>
+                            <td class="z-l3 z-none1">
+                             <#if subPlan.welfareItemName!="生日" && subPlan.status==1&&subPlan.name!="剩余额度转${s_welfarePointName}"&&!subPlan.isPublish>
+                                <a href="javascript:void(0);" data-char="plancp" data-param="${subPlan.objectId},${subPlan.publishDate?string('yyyy-MM-dd HH:mm:ss')}" class="f-ib j-pop-open">立即发放</a>
+                                <!--<a href="javascript:void(0);">立即支付</a> -->
+                             </#if>
+                             <#if subPlan.order??&&subPlan.order.totalRepport??>
+                                <a href="${dynamicDomain}/fileUpDown/downloadFile?filePath=${subPlan.order.totalRepport}&fileName=${subPlan.order.totalFileName}" class="f-ib">下载总检报告</a>
+                             </#if>
+                            </td>
+                        </tr>
+                        </#list>
+                    </tbody>
+                </table>
+            </div> 
+
+             <div class="m-ft">
+                <p class="f-cb">
+                    <span>
+                        已付款：${paid?string('0.00')}元 <br>
+                        待付款：${unpaid?string('0.00')}元<br>
+                        <em>总额：<i>${totalAmount?string('0.00')}元</i></em>
+                    </span>
+                </p>
+                <p class="u-btn">
+                   <#if isCanPay>
+                    <a href="${payDomain}/onlinePay/welfarePlanOrderPayCenter?planId=${welfarePlan.objectId}">继续支付</a>
+                   </#if>
+                    <a href="${dynamicDomain}/welfarePlan/page" class="z-right">返回</a>
+                </p>
+            </div>  
+        </div>
+
+    </div>
+</div>
+</div>
+<script>
+// 控制列表的样式表
+$('div.j-tbl table table').find('tr:first').css({'border-top':0});
+// 弹窗对象预定义
+var POPUP = {};
+
+// 配置信息 [弹窗1：发放时间] 
+POPUP.plancp = {
+
+    'title': '发放时间', 'top': 200, 'width':480,'position':'fixed',
+    'content': 'popupContentForPlanCp();',
+    'complete': 'popupCompleteForPlanCp();',
+    'sure': {'txt':'确定', 'func':'popupSureForPlanCp();'},
+    'cancel': {'txt':'取消'}
+};
+
+function popupContentForPlanCp(){
+
+    return  '<div id="p-16-3-wind">'+           
+                '<ul class="j-play">'+
+                    '<li class="on" data-val="1">发放时间：<input type="hidden" id="subPlanId"><input type="text" readonly="readonly" class="f-ib u-txt-date" id="sel-start" value="" style="width:165px;"/></li>'+
+                    '<li data-val="2">立即发放</li>'+
+                '</ul>'+
+            '</div>';
+}
+
+function popupCompleteForPlanCp(_param){
+  var param = _param.split(',');
+  var subPlanId = param[0];
+  var oldPublishDate = param[1];
+  $('#sel-start').val(oldPublishDate);
+  $('#subPlanId').val(subPlanId);
+}
+function popupSureForPlanCp(){
+    var type = $('.j-play .on').data('val');
+    var publishDate = $('#sel-start').val();
+    var subPlanId = $('#subPlanId').val();
+    if(type=='1'&&publishDate==''){
+       winAlert('发布时间不能为空');
+       return false;
+    }
+    $.ajax({
+            url:"${dynamicDomain}/welfareSubPlan/grant/"+subPlanId,
+            async: false,
+            type : 'post',
+            dataType : 'json',
+            data:{'type':type,'publishDate':publishDate},
+            success : function(json) {
+                if(json.result){
+                   winAlertReload('发放成功');
+                }else{
+                   winAlert('操作失败');
+                }
+            }
+    });
+    return true;
+}
+
+// 日期控件 
+$(document.body).on('click', '#sel-start', function(){
+
+    WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d %H:%m:%s',readOnly:true});
+    return false;
+});
+    
+    
+// 弹窗里的单选
+$(document.body).on('click', '.j-play li', function(){
+
+    var _this = $(this), _on = ('on');
+
+    if(_this.hasClass(_on)) return false;
+    
+    _this.addClass(_on).siblings().removeClass(_on);
+
+    return false;
+});
+
+// 配置信息 [弹窗2：修改] 
+POPUP.number = {
+
+    'title': '子计划选项人员明细', 'top': 200, 'width':690,
+    'content': 'popupContentFornumber();',
+    'complete': 'popupCompleteFornumber();',
+    'sure': {'txt':'确定', 'func':'popupSureFornumber();'}
+    
+};
+
+function popupCompleteFornumber(_param){
+    console.log(_param);
+    // 参数值
+    // '<h3>子计划名称：体检计划</h3>'+
+    //                  '<h3>选项名称：体检计划</h3><br />'+
+    //              '<span>应付金额：50000元</span>'+
+    //              '<span> 待支付员工数：198人</span>'+
+    //              '<span>取消人数：2人 </span>'+
+
+    // ajax 根据 _param 读取数据；以下是模拟数据，请注意数据格式
+    var param = _param.split(',');
+    var subPlanId = param[0];
+    var orderSkuId = param[1];
+    $('#searchButton').data('subPlanId',subPlanId);
+    $('#searchButton').data('orderSkuId',orderSkuId);
+    searchStaff(1);
+}
+
+function popupSureFornumber(){
+
+    return true;
+}
+
+function popupContentFornumber(){
+
+    return  '<div id="p-16-3-num" class="j-mumber f-cb">'+
+                '<div class="m-f1 f-cb">'+
+                    '<fieldset >'+
+                        '<label class="f-ib">确认状态：</label>'+
+                        '<span class="f-ib f-por">'+
+                            '<input type="hidden" class="j-slt-val" value="" name="search_EQI_staffStatus" id="search_EQI_staffStatus">'+
+                            '<input type="text" value="全部" readonly="readonly" class="u-txt-slt j-slt">'+
+                            '<em class="f-ib f-poa j-opt" id="j-opt-pay"></em>'+                            
+                        '</span>'+
+                    '</fieldset>'+
+
+                    '<fieldset >'+
+                        '<label class="f-ib">在职状态：</label>'+
+                        '<span class="f-ib f-por">'+
+                            '<input type="hidden" class="j-slt-val" value="" name="search_EQI_status" id="search_EQI_status">'+
+                            '<input type="text" value="全部" readonly="readonly" class="u-txt-slt j-slt">'+
+                            '<em class="f-ib f-poa j-opt" id="j-job"></em>'+                            
+                        '</span>'+
+                    '</fieldset>'+
+                '</div>'+
+                
+                '<div class="m-f2 f-cb">'+
+
+                    '<fieldset>'+
+                        '<label class="f-ib">员工：</label>'+
+                        '<input type="text" class="f-ib u-txt" name="search_LIKES_userName" id="search_LIKES_userName"/>'+    
+                    '</fieldset>'+
+                    '<a href="javascript:void(0);" onclick="searchStaff();" data-subPlanId="" data-orderSkuId="" id="searchButton">查找</a>'+
+                '</div>'+
+                '<div class="m-hd" id="j-list">'+
+                //  '<h3>子计划名称：体检计划</h3>'+
+                //  '<h3>选项名称：体检计划</h3><br />'+
+                    // '<span>应付金额：50000元</span>'+
+                    // '<span> 待支付员工数：198人</span>'+
+                    // '<span>取消人数：2人 </span>'+ 
+                '</div>'+
+
+                '<div class="m-foot">'+
+                    '<table>'+
+                        '<thead>'+
+                            '<tr>'+
+                                '<td class="z-fw1">员工工号</td>'+
+                                '<td class="z-fw2">员工姓名</td>'+
+                                '<td class="z-fw2">部门</td>'+
+                                '<td class="z-fw2">在职状态</td>'+
+                                '<td>确认状态</td>'+
+                            '</tr>'+
+                        '</thead>'+
+                        '<tbody id="j-list2"></tbody>'+
+                    '</table>'+
+
+                    '<h5 class="f-fr" id="up-down">'+
+                        '<a href="javascript:void(0);" class="f-ib u-lft" onclick="prevPage();">上一页</a>'+
+                        '<span class="f-ib" id="PageInfo" data-currentPage="" data-totalPage=""></span>'+
+                        '<a href="javascript:void(0);" class="f-ib u-rgt" onclick="nextPage();">下一页</a>'+
+                    '</h5>'+
+                                                        
+                '</div>'+
+    
+        '</div>';
+}
+
+// 模拟Select控件
+var _on = 'z-on-slt';
+
+// 下拉项的显示事件
+$(document.body).on('click', '.j-slt', function(){
+
+    var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+    $('.j-slt').not(this).removeClass(_on).next().hide();
+
+    if(_this.hasClass(_on)){
+        _this.removeClass(_on);
+        _opt.hide();
+    }else{
+        _this.addClass(_on);
+        _opt.show();
+    }
+
+    return false;
+});
+
+// 下拉项的点击事件
+$(document.body).on('click', '.j-opt > a', function(){
+
+    var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+    _opt.hide().prev().removeClass(_on).val(_this.text()).prev().val(_val);
+});
+
+// 
+$(document.body).click(function(){
+    $('.j-opt').hide();
+    $('.j-slt').removeClass(_on);
+});
+
+function searchStaff(currentPage){
+   var subPlanId = $('#searchButton').data('subPlanId');
+   var orderSkuId = $('#searchButton').data('orderSkuId');
+   var search_EQI_status = $('#search_EQI_status').val();
+   var search_EQI_staffStatus = $('#search_EQI_staffStatus').val();
+   var search_LIKES_userName = $('#search_LIKES_userName').val();
+   $.ajax({
+            url:"${dynamicDomain}/welfareSubPlan/getStaffDetail/"+subPlanId,
+            async: false,
+            type : 'post',
+            dataType : 'json',
+            data:{'orderSkuId':orderSkuId,
+                  'search_EQI_statusForStatus':search_EQI_status,
+                  'search_EQI_staffStatus':search_EQI_staffStatus,
+                  'search_LIKES_userName':search_LIKES_userName,
+                  'ec_p':currentPage
+                 },
+            success : function(json) {
+                if(json.result){
+                   var plan = json.plan;
+                   var subPlan = json.subPlan;
+                   var pageSearch = json.pageSearch;
+                   var orderSku = json.orderSku;
+                       var data = {'1':'子计划名称：'+subPlan.name+'', '2':'选项名称：'+orderSku.name+''},
+                           data1 = {'1':'应付金额：'+(orderSku.productPrice*orderSku.productCount)+'元', '2':'取消人数：'+(parseInt(plan.headCount)-parseInt(orderSku.productCount))+'人'};
+                        var opt = '';
+                        for(var i in data){
+                            opt += '<h3>'+ data[i] +'</h3>';    
+                        }
+                        opt += '<br/>';
+                        for(var i in data1){
+                            opt += '<span>'+ data1[i] +'</span>';
+                        }
+                    
+                        $('#j-list').html(opt);
+                    
+                    
+                        var _list2 = '';
+                        var list = pageSearch.list;
+                        for(var i=0;i<list.length;i++){
+                           var item = list[i];
+                           var staffStatus = '在职';
+                           if(item.staff.status=='2'){
+                              staffStatus = '离职';
+                           }
+                           var status='';
+                           if(item.staffStatus=='1'){
+                               status='员工待确认';
+                           }else if(item.staffStatus=='2'){
+                               status='员工已确认';
+                           }else if(item.staffStatus=='3'){
+                                status='HR已确认';
+                           }else if(item.staffStatus=='5'){
+                                status='HR已取消';
+                           }
+                           _list2 += '<tr><td>'+item.staff.workNo+'</td><td>'+item.staff.userName+'</td><td>'+
+                           item.departmentName+'</td><td>'+staffStatus+'</td><td>'+status+'</td></tr>';
+                        }
+                        $('#j-list2').html(_list2);
+                    
+                        
+                    
+                        // 此处的数据是模拟数据，真实数据需数据库获取。注意数据格式！
+                        var _data = {'3':'HR已确认', '5':'HR已取消'};
+                        var _opt = '<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>';
+                        for(var i in _data){
+                            _opt += '<a href="javascript:void(0);" data-val="'+ i +'" class="f-ib">'+ _data[i] +'</a>';
+                        }
+                        $('#j-opt-pay').html(_opt);
+                    
+                        var _data2 = {'1':'在职', '2':'离职'};
+                        var _opt2 = '<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>';
+                        for(var i in _data2){
+                            _opt2 += '<a href="javascript:void(0);" data-val="'+ i +'" class="f-ib">'+ _data2[i] +'</a>';
+                        }
+                        $('#j-job').html(_opt2);
+                        $('#PageInfo').text(pageSearch.currentPage+'/'+pageSearch.totalPage);
+                        $('#PageInfo').data('currentPage',pageSearch.currentPage);
+                        $('#PageInfo').data('totalPage',pageSearch.totalPage);
+                }else{
+                   winAlert('操作失败');
+                }
+            }
+    });
+}
+function prevPage(){
+  var currentPage = $('#PageInfo').data('currentPage');
+  if(parseInt(currentPage)-1>0){
+      searchStaff(parseInt(currentPage)-1);
+  }
+}
+function nextPage(){
+  var currentPage = $('#PageInfo').data('currentPage');
+  var totalPage = $('#PageInfo').data('totalPage');
+  if(parseInt(totalPage)-parseInt(currentPage)>0){
+      searchStaff(parseInt(currentPage)+1);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>发放积分 - 福利商城</title>
+</head>
+<body>
+<?php require('head#tmp.html');?>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">福利管理</a> &gt;
+		发放积分
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+
+	<#include "/include/nav_menu_link.html">
+	<script>var _menuIndex = 0;</script>
+
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit"><span class="f-ib">发放积分</span></h4>
+
+		<div id="g-add-p4" class="f-por">
+
+			<div class="m-acc">
+				<span class="f-ib">当前账户可用积分：</span>
+				<h2><b>1,800,000</b>&nbsp;&nbsp;分</h2>
+				<p>企业名称：上海瀚之友信息技术服务有限公司<br>企业账号：zijin1@99wuxian.com</p>
+			</div>
+
+			<h3>填写积分发放信息</h3>
+			<fieldset class="f-cb u-stp1">
+				<label class="f-fl">发放类目：</label>
+				<span class="f-fl f-por z-slt-w1">
+					<input type="hidden" class="j-slt-val" value="1">
+					<input type="text" value="端午节福利" class="u-txt u-slt j-slt">
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="1" class="f-ib">端午节福利</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib">中秋节福利</a>
+						<a href="javascript:void(0);" data-val="3" class="f-ib">国庆节福利</a>
+					</em>
+				</span>
+			</fieldset>
+
+			<fieldset class="f-cb u-stp1">
+				<label class="f-fl">发放名称：</label>
+				<span class="f-fl">
+					<input type="text" class="u-txt wt1" placeholder="请输入发放名称，如：新年福利积分" />
+				</span>
+			</fieldset>
+			<#include "/include/point_dist.html"/>
+			<fieldset class="f-cb u-stp3">
+				<label class="f-fl">发放日期：</label>
+				<input type="text" readonly="readonly" class="f-fl" id="send-date" value="2015-01-05" />
+			</fieldset>
+
+			<fieldset class="f-cb u-stp3">
+				<label class="f-fl u-vt">发放说明：</label>
+				<textarea class="f-fl"></textarea>
+			</fieldset>
+
+			<fieldset class="f-cb u-stp3">
+				<label class="f-fl">&nbsp;</label>
+				<span class="f-fl">
+					<b class="f-ib j-chk z-on"></b><i class="f-ib">平台通知员工(免费)</i>
+					<b class="f-ib j-chk z-on"></b><i class="f-ib">邮件通知员工(免费)</i><br />
+					<b class="f-ib j-chk"></b><i class="f-ib">短信通知(0.05元/条)</i>
+				</span>
+			</fieldset>
+
+			<h5 class="u-tit1">请编辑短信内容</h5>
+			<textarea class="u-area" placeholder="一条短信最多70字，超出部分拆成多条发送，最多可输入200个字符..."></textarea>
+			<h5 class="u-tit2">(1/1 剩余20字符)</h5>
+
+			<dl class="u-total">
+				<dd>应付积分：<i>39009</i>分</dd>
+				<dd>应付短信积分(39*2=78条)：<i>39009</i>分</dd>
+				<dt>应付总积分：<b>39009</b> 分</dt>
+			</dl>
+			
+			<script src="${staticDomain}/date/WdatePicker.js" charset="utf-8"></script>
+			<script>
+			$(function(){
+
+				// 日期控件
+				$('#send-date').click(function(){
+					WdatePicker();
+				});
+
+				// Tab切换内容部分的开关事件
+				$('.j-tab-sch > a').click(function(){
+
+					var _this = $(this);
+					if(_this.hasClass('z-on')){
+						return false;
+					}else{
+						_this.addClass('z-on').siblings().removeClass('z-on');
+					}
+				});
+
+				// Tab切换
+				var _tab = $('.j-tab-t'), _cnt = $('.j-tab-c');
+				_tab.children('a').click(function(){
+
+					var _this = $(this), _i = _tab.children('a').index(this);
+					if(_this.hasClass('z-on')){
+						return false;
+					}else{
+
+						_tab.children('a').removeClass('z-on');
+						_this.addClass('z-on');
+
+						_cnt.hide().eq(_i).show();
+					}
+				});
+
+				// 选项取消(删除)
+				$('body').on('click', '.j-res', function(){
+
+					var _this = $(this);
+					_this.parent().remove();
+				});
+
+				// 选择发放对象
+				var _sltType = $('.j-slt-type'), _sltCnt = $('.j-tab');
+				_sltType.click(function(){
+
+					var _this = $(this), _i = _sltType.index(this);
+					if(_this.hasClass('z-on')){
+						return false;
+					}else{
+						_sltType.removeClass('z-on');
+						_this.addClass('z-on');
+						_sltCnt.hide().eq(_i).show();
+					}
+				});
+
+				// 模拟Select控件
+				$('.j-slt').click(function(){
+
+					var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+					$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+					if(_this.hasClass('z-on-slt')){
+						_this.removeClass('z-on-slt');
+						_opt.hide();
+					}else{
+						_this.addClass('z-on-slt');
+						_opt.show();
+					}
+					return false;
+				});
+
+				// 模拟多选框
+				$('.j-chk').click(function(){
+
+					var _this = $(this);
+					if(_this.hasClass('z-on')){
+						_this.removeClass('z-on');
+					}else{
+						_this.addClass('z-on');
+					}
+				});
+
+				// 下拉项的点击事件
+				$('.j-opt > a').click(function(){
+
+					var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+					_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+
+					var _tag = _opt.attr('data-tag');
+
+					if(typeof(_tag) != 'undefined' && _tag == 'sel-title'){
+						var _tit = $('.j-title'), _parent = _tit.parent().parent();
+						if(_val == '1'){
+							_parent.show();
+							_tit.focus();
+						}else{
+							_parent.hide();
+							_tit.val('');
+						}
+					}
+					return false;
+				});
+
+				// 模拟Select控件的文档事件
+				$('body').click(function(e){
+					$('.j-opt').hide();
+					$('.j-slt').removeClass('z-on-slt')
+				});
+
+				// 清除列表末元素的样式
+				$('.j-list').find('dl:last').css('border',0);
+				$('.j-tab-c').find('ul:last').css('border',0);
+				$('.j-tab-t').find('a:last').css('padding','0 14px');
+				$('.j-pop-list').find('dt:last').addClass('z-last');
+				$('.j-pop-list > dd').find('p:last').addClass('z-last');
+
+				// 窗口缩放控制位置
+				var _mPop = '.m-pop';
+				$(window).resize(function(){
+					if(!$(_mPop).is(':hidden')){
+						centerPop(_mPop);
+					}
+				});
+
+				// 开启弹窗
+				function openPop(_bool, _myh){
+					_myh = _myh || 0;
+					if(!_bool){
+						$(_mPop).hide();
+					}else{
+						centerPop(_mPop, _myh);
+					}
+				}
+
+				// 新增弹窗
+				$('.j-btn-add').click(function(){
+					openMask(true);
+					openPop(true, 150);
+				});
+
+				// 弹窗关闭
+				$('body').on('click','.j-pop-close',function(){
+					openMask(false);
+					openPop(false);
+				});
+
+				// 弹窗确定操作
+				$('body').on('click','.j-pop-sure',function(){
+					
+					var _list =  $('.j-has-area > p');
+					if(_list.length > 0){
+
+						// 
+						var _html = '';
+						$.each(_list, function(){
+							var _this = $(this), _id = _this.find('input:first').val();
+							var _txt = _this.find('span:first').text();
+							_html += '<a href="javascript:void(0);" data-id="'+ _id +'" class="f-ib">'+ _txt +'<i class="j-res"></i></a>';
+						});
+						$('.j-tag-dap').html(_html);
+
+						openMask(false);
+						openPop(false);
+					}
+				});
+				
+				// 预定义
+				var _hasList = {};
+				var _tagWill = $('.j-will-slt');
+				var _taghasArea = $('.j-has-area');
+
+				// 弹窗的添加操作
+				$('.j-act-plus').click(function(){
+
+					var _will = _tagWill.filter(':checked');
+
+					if(_will.length > 0){
+						$.each(_will, function(){
+							var _this = $(this), _id = _this.val();
+							_hasList[_id] = _this.attr('data-txt');
+						});
+						_taghasArea.html(createHasList(_hasList));
+					}
+					_tagWill.prop('checked', false);
+				});
+
+				// 弹窗的移除操作
+				$('.j-act-move').click(function(){
+
+					var _has = $('.j-has-slt').filter(':checked');
+
+					if(_has.length > 0){
+						$.each(_has, function(){
+							var _this = $(this), _id = _this.val();
+							_this.parent('p').remove();
+							_hasList[_id] = '';
+						});
+					}
+				});
+
+				// 弹窗的删除操作
+				$('body').on('click', '.j-has-del', function(){
+					var _this = $(this), _id = _this.attr('data-id');
+					_this.parent('p').remove();
+					_hasList[_id] = '';
+				});
+
+				// 弹窗的清空操作
+				$('.j-act-clear').click(function(){
+					if(_taghasArea.find('p').length > 0){
+						_taghasArea.html('');
+						_hasList = {};
+					}
+				});
+				
+			});
+			
+			function createHasList(_list){
+				var _html = '';
+				for(var k in _list){//遍历json对象的每个key/value对,p为key
+					if(_list[k] != ''){
+						_html += '<p class="f-cb">';
+						_html += '<input type="checkbox" value="'+ k +'" class="f-fl j-has-slt" />';
+						_html += '<span class="f-fl">'+ _list[k] +'</span>';
+						_html += '<a href="javascript:void(0);" data-id="'+ k +'" class="f-fr j-has-del"></a></p>\n';
+					}
+				}
+				return _html;
+			}
+
+			// 弹窗位置居中
+			function centerPop(_ob, _myh){
+
+				var _pop = $(_ob), _h = _pop.height(), _w = _pop.width();
+				var _win = $(window), _wh = _win.height(), _ww = _win.width();
+				var _mh = _myh == 0 ? (((_wh - _h) / 2) - _myh) : _myh;
+				var _css = {'top':_mh , 'left':(_ww - _w) / 2};
+
+				_pop.css(_css).show();
+			}
+
+			// 开启遮罩
+			function openMask(_bool){
+				var _mask = $('#g-mask');
+				if(_bool){
+					if(_mask.length === 1){
+						_mask.show();
+					}else{
+						$('<div id="g-mask"></div>').appendTo('body').css('opacity','.2');
+					}
+				}else{
+					_mask.hide();
+				}
+			}
+			</script>
+			
+			<h5 class="u-btn"><a href="javascript:void(0);" data-pop="checkinfo,1,0,vam" class="f-ib j-pop-open">开始发放</a></h5>
+		</div>
+	</div>
+</div>
+
+<!--弹窗-->
+<div class="m-pop u-pop2">
+	<h4>新增部门<a href="javascript:void(0);" class="f-ib j-pop-close"></a></h4>
+	<div class="u-pop-f2 f-cb">
+		<div class="f-fl u-lft">
+			<span class="f-ib">选择部门：</span>
+			<div>
+				<dl class="j-pop-list">
+					<dt>瀚银集团</dt>
+					<dd>
+						<p><input type="checkbox" value="0101" data-txt="财务部" class="f-ib j-will-slt" /><i class="f-ib">财务部</i></p>
+						<p><input type="checkbox" value="0102" data-txt="人事部" class="f-ib j-will-slt" /><i class="f-ib">人事部</i></p>
+						<p><input type="checkbox" value="0103" data-txt="行政部" class="f-ib j-will-slt" /><i class="f-ib">行政部</i></p>
+					</dd>
+					<dt>上海瀚之友</dt>
+					<dd>
+						<p><input type="checkbox" value="0201" data-txt="企划部" class="f-ib j-will-slt" /><i class="f-ib">企划部</i></p>
+						<p><input type="checkbox" value="0202" data-txt="运营部" class="f-ib j-will-slt" /><i class="f-ib">运营部</i></p>
+						<p><input type="checkbox" value="0203" data-txt="研发部" class="f-ib j-will-slt" /><i class="f-ib">研发部</i></p>
+					</dd>
+					<dt>阶层11</dt>
+					<dt>阶层22</dt>
+				</dl>
+			</div>
+		</div>
+		<div class="f-fl u-ctr">
+			<a href="javascript:void(0);" class="f-ib u-add j-act-plus">添加 &gt;&gt;</a>
+			<a href="javascript:void(0);" class="f-ib u-del j-act-move">移除 &lt;&lt;</a>
+			<a href="javascript:void(0);" class="f-ib u-clr j-act-clear">清空</a>
+		</div>
+		<div class="f-fl u-rgt">
+			<span class="f-ib">已选：</span>
+			<div class="j-has-area">
+			</div>
+		</div>
+		
+	</div>
+	<h6>
+		<button type="submit" class="u-sub j-pop-sure">确认</button>
+		<button type="reset" class="u-reset j-pop-close">取消</button>
+	</h6>
+</div>
+
+<!-- 弹窗[信息发布的预览] -->
+<table class="m-pop-up" id="j-pop-checkinfo"><tr><td class="z-tac">
+	<div class="z-ib z-wid450">
+		<h4 class="u-tit">确认发放信息</h4>
+		<h5 class="u-close">
+			<a href="javascript:void(0);" class="j-pop-cancel">×</a>
+			<input type="hidden" class="j-pop-data" />
+		</h5>
+		<div class="pop-checkinfo">
+			<dl>
+				<dt>发放名目</dt>
+				<dd>年节福利 -- 端午节福利</dd>
+			</dl>
+			<dl>
+				<dt>发放对象</dt>
+				<dd>按部门发放<br />
+					<em class="f-ib">人事部</em>
+					<em class="f-ib">财务部</em>
+					<em class="f-ib">行政部</em>
+				</dd>
+			</dl>
+			<dl>
+				<dt>发放积分数量</dt>
+				<dd><b>39,520.00</b></dd>
+			</dl>
+			<dl>
+				<dt>发放时间</dt>
+				<dd>2015-01-05</dd>
+			</dl>
+			<span>
+				账户剩余积分：10000.00<br />需支付现金：<b>1901.95</b> 元
+			</span>
+			<p>
+				<i class="f-ib">支付密码：</i>
+				<input type="password" class="f-ib txt" />
+				<a href="javascript:void(0);">忘记支付密码？</a>
+			</p>
+		</div>
+		<h6 class="u-btn">
+			<a href="javascript:void(0);" class="u-sub j-pop-sure">确认发放</a>
+			<a href="javascript:void(0);" class="u-rst j-pop-cancel">取消</a>
+		</h6>
+	</div>
+</td></tr></table>
+
+<?php require('foot#tmp.html');?>
+</body>
+</html>

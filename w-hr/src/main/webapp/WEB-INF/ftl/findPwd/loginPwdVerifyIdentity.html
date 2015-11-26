@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>找回密码-验证身份</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+    <script src="${staticDomain}js/jquery.1.8.3.min.js"></script>
+    <script src="${staticDomain}js/jquery.validate.min.js"></script>
+    <script src="${staticDomain}js/jquery.metadata.js"></script>
+    <script src="${staticDomain}js/additional-methods.js"></script>
+    <script src="${staticDomain}js/jquery.validate_zh.js"></script>
+    <script src="${staticDomain}js/jquery.placeholder.min.js"></script>
+    <script src="${staticDomain}js/jquery.alert.js"></script>
+    <style>
+    #e-y1-1 .repwd table {
+      margin: 0 0;
+    }
+    #e-y1-1 .repwd .wt1 {
+	  width: 80px;
+	  text-align: left;
+	}
+	#e-y1-1 .repwd .sendemail {
+	  font-size: 12px;
+	  width: 95px;
+	  height: 34px;
+	  line-height: 34px;
+	  text-align: center;
+	  color: #fff;
+	  background-color: #fb996a;
+	  vertical-align: middle;
+	}
+    </style>
+</head>
+<body>
+
+<script>var _iNav = 2;</script>
+<div id="e-y1-1">
+
+    <div class="z-ib repwd">
+        <h6>&nbsp;</h6>
+        <p><img src="${staticDomain}image/zstp3-2.gif"></p>
+        <h5 class="f-cb">
+            <span>输入账户名</span>
+            <span class="z-on">验证身份</span>
+            <span>重置密码</span>
+            <span>完成</span>
+        </h5>
+        <form action="${secureDomain}/findLoginPwd/resetPwd" method="post" id="submitForm">
+            <input type="hidden" name="loginName" value="${loginName}">
+            <input type="hidden" name="type" id="type">
+            <input type="hidden" name="email" id="email" value="${email}">
+            <input type="hidden" name="mobilePhone" id="mobilePhone" value="${mobilePhone}">
+            <div style="margin-left:20px;font-size:15px;color:red;">${message}</div>
+            <#if !emailShow&&!mobileShow>
+        		 <table> <tr>
+                    <td colspan="4">帐号未绑定手机和邮箱，请联系管理员。</td>
+                </tr></table>
+           <#elseif emailShow&&mobileShow>
+    		 <div id="emailDiv">
+                 <table><tr>
+                    <td class="wt1">您的邮箱：</td>
+                    <td colspan="2">${email} 如果无法收到邮件，请使用 <a href="javascript:void(0);" id="emailClick" class="atg1">手机号码</a> 找回密码！</td>
+                </tr>
+                <tr>
+                    <td class="wt1">验证码：</td>
+                    <td class="wt2"><input type="text" class="tx1 tx2 required" name="emailcode"/></td>
+                    <td class="wt3"><a href="javascript:void(0);" class="f-ib sendemail">获取验证码</a></td>
+                </tr>
+                 <tr>
+                    <td class="wt1">&nbsp;</td>
+                    <td colspan="2"><button type="button" onclick="javascript:commitForm('mail');">下一步</button></td>
+                </tr>
+                </table>
+               </div>
+               <div id="mobileDiv" style="display:none">
+                <table> <tr>
+                    <td class="wt1">手机号码：</td>
+                    <td colspan="2">${viewUserMobile} 如果无法收到短信，请使用 <a href="javascript:void(0);" id="mobileClick" class="atg1">邮箱地址</a> 找回密码！</td>
+                </tr>
+                <tr>
+                    <td class="wt1">验证码：</td>
+                    <td class="wt2"><input type="text" class="tx1 tx2 required" name="code"/></td>
+                    <td class="wt3"><a href="javascript:void(0);" class="f-ib send">获取验证码</a></td>
+                </tr>
+                 <tr>
+                    <td class="wt1">&nbsp;</td>
+                    <td colspan="2"><button type="button" onclick="javascript:commitForm('mobile');">下一步</button></td>
+                </tr></table>
+                </div>
+           	<#elseif emailShow>
+       		<div id="emailDiv">
+                 <table><tr>
+                    <td class="wt1">您的邮箱：</td>
+                    <td colspan="2">${email} </td>
+                </tr>
+                <tr>
+                    <td class="wt1">验证码：</td>
+                    <td class="wt2"><input type="text" class="tx1 tx2 required" name="emailcode"/></td>
+                    <td class="wt3"><a href="javascript:void(0);" class="f-ib sendemail">获取验证码</a></td>
+                </tr> 
+                 <tr>
+                    <td class="wt1">&nbsp;</td>
+                    <td colspan="2"><button type="button" onclick="javascript:commitForm('mail');">下一步</button></td>
+                </tr>
+                </table>
+               </div>
+        	<#elseif mobileShow>
+           	<div id="mobileDiv">
+                <table> <tr>
+                    <td class="wt1">手机号码：</td>
+                    <td colspan="2">${viewUserMobile} </td>
+                </tr>
+                <tr>
+                    <td class="wt1">验证码：</td>
+                    <td class="wt2"><input type="text" class="tx1 tx2 required" name="code"/></td>
+                    <td class="wt3"><a href="javascript:void(0);" class="f-ib send">获取验证码</a></td>
+                </tr>
+                 <tr>
+                    <td class="wt1">&nbsp;</td>
+                    <td colspan="2"><button type="button" onclick="javascript:commitForm('mobile');">下一步</button></td>
+                </tr></table>
+                </div>
+            </#if>
+        </form>
+    </div>
+</div>
+<script>
+function commitForm(type){
+	$("#type").val(type);
+	$("#submitForm").submit();
+}
+$("#mobileClick").click(function(){
+	$("#mobileDiv").hide();
+	$("#emailDiv").show();
+});
+$("#emailClick").click(function(){
+	$("#mobileDiv").show();
+	$("#emailDiv").hide();
+});
+function getCode(){
+    $.ajax({
+          url:'${secureDomain}/findLoginPwd/getLoginCode',
+          type : 'post',
+          dataType : 'json',
+          data:{'loginName':'${loginName}'},
+          success : function(json) {
+              if(!json.result){
+                 winAlert(json.message);
+              }
+          }
+      });
+}
+function sendEmail(){
+      $.ajax({
+          url:'${secureDomain}/findLoginPwd/sendEmail',
+          type : 'post',
+          dataType : 'json',
+          data:{'loginName':'${loginName}'},
+          success : function(json) {
+              if(!json.result){
+                 winAlert(json.message);
+              }
+          }
+      });
+}
+$(function(){
+ $('#submitForm').validate();
+ $('.send').click(function(){
+        var mobile = $("#mobilePhone").val();
+        if(/^1\d{10}$/.test(mobile)){
+            var _this = $(this);
+            if(_this.hasClass('on')) return false;
+            var _n = 60, _ch = '秒';
+            _this.addClass('on').html('<i>'+ _n +'</i> ' + _ch);
+            var _int = setInterval(function() {
+                var t = _this.find('i').text();
+                t--;
+                if(t <= 0) {
+                    clearInterval(_int);
+                    _this.removeClass('on').html('获取验证码');
+                }else{
+                    _this.html('<i>'+ t +'</i> ' + _ch);
+                }
+            }, 1000);
+            getCode();
+        }else{
+            winAlert("请输入正确的手机号");
+        }
+    });
+    
+    $('.sendemail').click(function(){
+        var mobile = $("#email").val();
+        if(/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/.test(mobile)){
+            var _this = $(this);
+            if(_this.hasClass('on')) return false;
+            var _n = 60, _ch = '秒';
+            _this.addClass('on').html('<i>'+ _n +'</i> ' + _ch);
+            var _int = setInterval(function() {
+                var t = _this.find('i').text();
+                t--;
+                if(t <= 0) {
+                    clearInterval(_int);
+                    _this.removeClass('on').html('发邮件');
+                }else{
+                    _this.html('<i>'+ t +'</i> ' + _ch);
+                }
+            }, 1000);
+            sendEmail();
+        }else{
+            winAlert("请输入正确的邮箱");
+        }
+    });
+});
+</script>
+</body>
+</head>

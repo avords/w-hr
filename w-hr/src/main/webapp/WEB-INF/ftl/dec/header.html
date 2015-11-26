@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="description" content="${((seoKey.seoDescription)!description)!""}" />
+<meta name="keywords" content="${((seoKey.seoKeywords)!keywords)!""}" />
+<title>i福励-${((seoKey.seoTitle)!title)!""}</title>
+<link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/center.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/gw.main.v1.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/common.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+<script src="${staticDomain}js/jquery.1.8.3.min.js"></script>
+<script src="${staticDomain}js/jquery.twbsPagination.js"></script>
+<script src="${staticDomain}js/jquery.alert.js"></script>
+<script src="${staticDomain}js/jquery.cookie.js"></script>
+<script src="${staticDomain}js/jquery.validate.js"></script>
+<script src="${staticDomain}js/jquery.metadata.js"></script>
+<script src="${staticDomain}js/additional-methods.js"></script>
+<script src="${staticDomain}js/jquery.validate_zh.js"></script>
+<script src="${staticDomain}js/common.js"></script>
+<script src="${staticDomain}js/meta.width.js"></script>
+<script type="text/javascript">
+var dynamicDomain = "${dynamicDomain}";
+</script>
+${head}
+<script>
+function queryCartCount(){
+ $.ajax({
+          url:'${secureDomain}/cart/queryCount',
+          type : 'post',
+          dataType:'jsonp',  
+  		  callback:'queryCount_callback',  
+          success : function(json) {
+              if(json.result){
+                 var count = json.count;
+                 $('#cartProductCount').text(count);
+                 if(count=='0'){
+                    $('.cart-count').attr('href','javascript:void(0);');
+                    //购物车为0时点击有提示
+                    $('#j-show').click(function(){
+                        var _this =$(this), _on = 'a-on', _darution = 1500;
+                        if(_this.hasClass(_on)) return false;
+                        _this.addClass(_on).next().show();
+                        window.setTimeout(function(){
+                            _this.removeClass(_on).next().hide();
+                        }, _darution);
+                    });
+                 }
+              }else{
+                winAlert(json.message);
+              }
+          }
+      });
+}
+</script>
+</head>

@@ -1,0 +1,125 @@
+<div style="display: none;" id="tmp11">
+	<dl>
+		<dt>发放名目</dt>
+		<dd id="desc_welfareItemName"></dd>
+	</dl>
+	<dl>
+		<dt>发放对象</dt>
+		<dd id="desc_distributeBy" class="lst"></dd>
+	</dl>
+	<dl>
+		<dt>发放积分数量</dt>
+		<dd id="desc_totalPoint"></dd>
+	</dl>
+	<dl>
+		<dt>发放时间</dt>
+		<dd id="desc_distributeDate"></dd>
+	</dl>
+	<span>
+		账户剩余积分：<span id="desc_balance"></span>
+		<span id="needCharge">
+			<h6 class="u-btn"><a href="javascript:void(0);" class="u-sub"  onclick="refreshBalance()">刷新积分</a></h6>&nbsp;&nbsp;
+			<a href="${dynamicDomain}/points" class="txt" target="_blank">去购买积分</a>
+		</span><br/>
+	</span>
+	<p>
+		<i class="f-ib">支付密码：</i>
+		<input type="password" class="f-ib txt" id="password" name="password" onchange="getPwd(this)">
+		<a href="javascript:void(0);" data-pop="2,400,220,1,1" class="txt j-pop-open">忘记支付密码？</a>
+	</p>
+</div>
+<script>
+
+var distributeByObject ={1:"向公司内全部在职员工发放",2:"特定人员发放",3:"特定人员不发放",4:"按部门发放",5:"按项目组发放",10:"批量发放"}
+var totalPoint = null;
+
+
+function toConfirm(msg){
+	var entity = msg.pointDistribute;
+	$("#distributeId").val(entity.objectId);
+	var itemNames = msg.itemNames;
+	$("#desc_welfareItemName").html($("#welfareItemName").val());
+	var by = distributeByObject[entity.distributeBy];
+	by += "（共需发放" + entity.headCount + "名员工）";
+	if(itemNames && itemNames.length>0){
+		by += "<br/>";
+		for(i=0;i<itemNames.length;i++){
+			by += '<em class="f-ib">' + itemNames[i].name+'</em>';
+		}
+	}
+	$("#desc_distributeBy").html(by);
+	$("#desc_totalPoint").html(entity.totalPoint);
+	$("#desc_distributeDate").html(new Date(entity.distributeDate.time).format("yyyy-MM-dd"));
+	$("#desc_balance").html(msg.accountBalance);
+	totalPoint = entity.totalPoint;
+	rePopup( ['1',500,0,'1',1],msg.accountBalance);
+}
+
+function refreshBalance(){
+	$.ajax({
+      url:'${dynamicDomain}/staff/getAccountBalance',
+      type : 'post',
+      async : true,
+      dataType : 'json',
+      success : function(json) {
+    	  var balance = json.accountBalance;
+          if(balance){
+        	  $("#desc_balance").html(balance);
+        	  rePopup( ['1',500,0,'1',1],balance);
+          }
+      }
+  });
+}
+
+function rePopup(_data, balance){
+	if(balance < totalPoint){
+		$("#needCharge").show();
+		$("#j-pop-up11 .j-pop-sure").hide();
+	}else{
+		$("#needCharge").hide();
+		$("#j-pop-up11 .j-pop-sure").show();
+	}
+	doRePopup(_data);
+}
+
+pwd = "";
+function getPwd(obj){
+	if(obj){
+		pwd = $(obj).val();
+	}
+	return pwd;
+}
+
+function confirmPay(){
+	var id = $("#distributeId").val();
+	var pwd = getPwd();
+	if(totalPoint<=0){
+		winAlert("发放积分为不能为0");
+		return false;
+	}
+	if(id && pwd){
+		$("#j-pop-up11 .u-btn .u-sub:contains('确定')").removeClass("j-pop-sure");
+		$.ajax({
+	          url:'${dynamicDomain}/pointDistribute/confirm',
+	          type : 'post',
+	          async : true,
+	          dataType : 'json',
+	          data : "distributeId=" + id + "&password=" +pwd,
+	          success : function(json) {
+	              if(json.result==1){
+	            	 winAlert("发放成功！","window.location.href='${dynamicDomain}/pointDistribute'");
+	            	 return false;
+	              }else if(json.result==0){
+	            	  winAlert("支付密码错误");
+	              }else{
+	            	  winAlert("帐户积分余额不足，请先购买积分");
+	              }
+	              $("#j-pop-up11 .u-btn .u-sub:contains('确定')").addClass("j-pop-sure");
+	              return false;
+	          }
+	      });
+	}
+	return false;
+}
+
+</script>

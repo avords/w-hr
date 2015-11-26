@@ -1,0 +1,63 @@
+<#include "/common/page.html">
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>历年年度福利计划</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/excel.css" />
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+    <script src="${staticDomain}js/jquery.popup.js"></script>
+    <script src="${staticDomain}js/ajaxfileupload.js"></script>
+</head>
+<body>
+<div id="p9-1-3">
+	<div id="g-crum2">
+		<h4>
+			<a href="javascript:void(0);">账户首页</a> &gt;
+			<a href="javascript:void(0);">福利管理</a> &gt;
+			福利计划设置
+		</h4>
+	</div>
+	<div id="g-content" class="f-cb">
+		<#include "/include/nav_menu_link.html">	
+		<script>var _menuIndex = 1;</script>
+		<div class="m-main f-fr">
+			<h4 class="u-tit"><span class="f-ib">福利计划设置</span></h4>
+			<div id="g-step" class="f-cb">
+				<a href="javascript:void(0);" class="<#if canBack>u-c22<#else>u-c21</#if>">计划信息</a>
+				<a href="javascript:void(0);" class="<#if canBack>u-c12</#if>">制定计划</a>
+				<a href="javascript:void(0);" class="<#if canBack>u-c12</#if>">额度分配</a>
+				<a href="javascript:void(0);" class="u-c13">员工选择</a>
+				<a href="javascript:void(0);">确定选择</a>
+				<a href="javascript:void(0);">订单支付</a>
+				<a href="javascript:void(0);" class="u-c31">付款详情</a>
+			</div>
+			<div class="g-con">
+				<h3>员工选择</h3>
+				<dl class="f-cb">
+					<dt>年份：</dt>
+					<dd>${welfarePlan.year}</dd> <br>
+					<dt>计划名称：</dt>
+					<dd>${welfarePlan.name}</dd> <br>
+	
+					<dt>发放总人数：</dt>
+					<dd>${welfarePlan.headCount}人</dd> <br>
+	
+					<dt>总额度：</dt>
+					<dd>${welfarePlan.totalAmount}元</dd>
+				</dl>
+				
+				<h4>该计划将于${(welfarePlan.beginSelectDate?string('yyyy年MM月dd日 HH时mm分'))!''}发布给员工，正式发布 <br>后将不能变更计划内容和员工额度。</h4>
+			</div>
+
+			<p class="g-bt-ft">
+				<#if canBack>
+				<a href="${dynamicDomain}/welfarePlanStaff/page/${welfarePlan.objectId}" class="u-gray">上一步</a>
+				</#if>
+				<a href="${dynamicDomain}/welfarePlan/page">返回</a>
+			</p>
+		</div>
+	</div>
+</div>
+</body>
+</html>

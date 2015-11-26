@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<title>公告活动管理</title>
+<meta http-equiv="Content-Language" content="zh-cn" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="-1" />
+<meta http-equiv="Cache-Control" content="no-cache" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/center.z.css" />
+<link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+<script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+</head>
+<body>
+<#include "/common/page.html">
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">信息发布</a> &gt;
+		公告活动管理
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+<#include "/include/nav_menu_link.html">
+    <form action="${dynamicDomain }/infomation/listNotice" method="post" id="noticeForm" name="noticeForm">
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit"><span class="f-ib">公告活动管理</span></h4>
+
+		<div id="g-lst-p23">
+
+			<div class="u-flt f-cb">
+
+				<span class="f-fl"><input type="text" name="search_LIKES_title" class="u-txt z-tw1" placeholder="标题"></span>
+				<span class="f-fl"><input type="text" name="search_GED_createdOn" readonly="readonly" placeholder="创建开始时间" class="u-txt u-date" id="date-start" /></span>
+				<span class="f-fl"><input type="text" name="search_LED_createdOn" readonly="readonly" placeholder="创建结束时间" class="u-txt u-date" id="date-end" /></span>
+				<script>
+				$(function(){
+					$('#date-start').click(function(){
+						WdatePicker({maxDate:'#F{$dp.$D(\'date-end\')}'});
+					});
+					$('#date-end').click(function(){
+						WdatePicker({minDate:'#F{$dp.$D(\'date-start\')}'});
+					});
+				});
+				</script>
+
+				<span class="f-fl f-por">
+					<input type="hidden" name="search_EQI_type" class="j-slt-val">
+					<input type="text" value="类型" readonly="" class="u-txt u-slt j-slt">
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>
+						<a href="javascript:void(0);" data-val="1" class="f-ib">公告</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib">活动</a>
+					</em>
+				</span>
+
+				<span class="f-fl f-por">
+					<input type="hidden" name="search_EQI_status" class="j-slt-val">
+					<input type="text" value="状态" readonly="" class="u-txt u-slt j-slt">
+					<em class="f-ib f-poa j-opt">
+						<a href="javascript:void(0);" data-val="" class="f-ib">全部</a>
+                        <a href="javascript:void(0);" data-val="1" class="f-ib">草稿</a>
+						<a href="javascript:void(0);" data-val="2" class="f-ib">发布中</a>
+						<a href="javascript:void(0);" data-val="3" class="f-ib">已过期</a>
+					</em>
+				</span>
+
+				<span class="f-fr z-lst">
+					<button type="submit" class="u-sch">查询</button>
+				</span>
+
+				<script type="text/javascript">
+				$(function(){
+
+					// 模拟Select控件
+					$('.j-slt').click(function(){
+
+						var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+						$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+						if(_this.hasClass('z-on-slt')){
+							_this.removeClass('z-on-slt');
+							_opt.hide();
+						}else{
+							_this.addClass('z-on-slt');
+							_opt.show();
+						}
+						return false;
+					});
+
+					// 下拉项的点击事件
+					$('.j-opt > a').click(function(){
+
+						var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+						_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+						
+						return false;
+					});
+
+					$('body').click(function(e){
+						$('.j-opt').hide();
+						$('.j-slt').removeClass('z-on-slt')
+					});
+
+					// 全选
+					$('.j-chk-all').click(function(){
+
+						var _this = $(this), _son = $('.j-chk-son');
+						if(_this.is(':checked')){
+							_son.prop('checked', true);
+						}else{
+							_son.prop('checked', false);
+						}
+					});
+
+					// 控制列表尾元素的样式
+					$('.j-list').find('ul:last').css('border-bottom',0);
+
+				});
+				</script>
+			</div>
+
+			<div class="u-act f-cb">
+				<h4 class="f-fl">
+					<a href="${dynamicDomain }/infomation/addNotice" class="f-ib u-pub">发布公告</a>
+					<!-- <a href="${dynamicDomain }/infomation/addActivity" class="f-ib u-pub1">发布活动</a> -->
+				</h4>
+				<h5 class="f-fr">
+					<@spage url="${dynamicDomain}/infomation/listNotice"  totalPage=pageInfomation.totalPage currentPage=pageInfomation.currentPage?number formId="idUp" />
+				</h5>
+			</div>
+
+			<div class="u-lst z-top">
+				<ol class="f-cb">
+					<li class="z-w1"><input type="checkbox" class="f-ib j-chk-all"></li>
+					<li class="z-w2">标题</li>
+					<li class="z-w3">类型</li>
+					<li class="z-w4">创建日期</li>
+					<li class="z-w5">有效日期</li>
+					<li class="z-w6">状态</li>
+					<li class="z-w7">操作</li>
+				</ol>
+			</div>
+
+			<div class="u-lst z-cnt j-list">
+                <#list items as item>
+                  <ul class="f-cb">
+                    <li class="z-w1"><input type="checkbox" value="${item.objectId }" name="checkbox" class="f-ib j-chk-son"></li>
+                    <li class="z-w2"><a href="${dynamicDomain}/infomation/detail/${item.objectId}">${item.title }</a></li>
+                    <li class="z-w3">${item.typeName }</li>
+                    <li class="z-w4"><small>${item.createdOn?string("yyyy-MM-dd HH:mm")}</small></li>
+					<li class="z-w5">
+					<small>${item.activityBeginDate?string("yyyy-MM-dd")} <br /> 
+					${item.activityEndDate?string("yyyy-MM-dd")}</small></li>
+                    <li class="z-w6">${item.statusName }</li>
+                    <li class="z-w7">
+                    	<#if item.status == 1>
+                      		<a href="${dynamicDomain }/infomation/releaseInfo/${item.objectId}" class="gtg">发布</a>&nbsp;&nbsp;
+                    		<a href="${dynamicDomain }/infomation/delete/${item.objectId}" data-id="100" data-pop="confirm,1,doConfirm,vam" class="gtg gdel j-pop-open">删除</a>
+                        </#if>
+                    	<#if item.status == 2>
+                      		<a href="${dynamicDomain }/infomation/repeal/${item.objectId}" class="gtg">撤销</a>&nbsp;&nbsp;
+                      	</#if>
+                      	<#if item.status != 3>
+                      		<a href="${dynamicDomain }/infomation/edit/${item.objectId}/${item.type}" class="gtg">修改</a>
+                    	</#if>
+                    </li>
+                  </ul>
+                </#list>
+			<div class="u-act f-cb" >
+				<h4 class="f-fl u-pl1">
+					<input type="checkbox" class="f-ib j-chk-all" /> <span class="f-ib">全选</span>
+					<a href="javascript:void(0);" class="f-ib u-del" onclick = "doConfirm();">批量删除</a>
+					<a href="javascript:void(0);" class="f-ib u-del" onclick = "dorepeal();">批量撤销</a>
+				</h4>
+				<h5 class="f-fr">
+					<@page url="${dynamicDomain}/infomation/listNotice"  totalPage=pageInfomation.totalPage currentPage=pageInfomation.currentPage?number formId="idDown" />
+				</h5>
+			</div>
+
+		</div>
+	</div>
+</div>
+		<input type = "hidden" id="noticeIds" name="noticeIds">
+</form>
+
+</div>
+<script type="text/javascript">
+function doConfirm(){
+	
+	var noticeIds = "";
+	$('input[name="checkbox"]:checked').each(function(){ 
+		noticeIds+=$(this).val()+",";
+	});
+	if(noticeIds == ''){
+		winAlert("请选择要删除的公告信息");
+		return false;
+	}
+    $("#noticeIds").val(noticeIds);
+	$.ajax( {
+			url : "${dynamicDomain}/infomation/delBatch?ajax=1&noticeIds="+$("#noticeIds").val(),
+			type : 'post',
+			dataType : 'json',
+			success : function(msg) {
+				alert(msg);
+				if (msg>0) {
+					alert("成功删除" + msg + "条记录");
+					$("#noticeForm").attr("action","${dynamicDomain}/infomation/listNotice");
+					$("#noticeForm").submit();
+				} else {
+					alert("删除失败");
+				}
+			}
+		});
+	return true;
+}
+
+function dorepeal(){
+	var noticeIds = "";
+	$('input[name="checkbox"]:checked').each(function(){ 
+		noticeIds+=$(this).val()+",";
+	});
+	if(noticeIds == ''){
+		winAlert("请选择要撤销的公告信息");
+		return false;
+	}
+    $("#noticeIds").val(noticeIds);
+	
+	$.ajax( {
+			url : "${dynamicDomain}/infomation/repealBatch?ajax=1&noticeIds="+$("#noticeIds").val(),
+			type : 'post',
+			dataType : 'json',
+			success : function(msg) {
+				if (msg>0) {
+					alert("成功撤销" + msg + "条记录");
+					$("#noticeForm").attr("action","${dynamicDomain}/infomation/listNotice");
+					$("#noticeForm").submit();
+				} else {
+					alert("撤销失败");
+				}
+			}
+		});
+	return true;
+}
+</script>
+</body>
+</html>

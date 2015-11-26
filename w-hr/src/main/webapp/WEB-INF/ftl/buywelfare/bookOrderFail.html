@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>预定 - 福利商城</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/global.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/order.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+     <script>
+    $(function(){
+      $('body').css({'background-color':'#fff'});
+    });
+    </script>
+</head>
+<body>
+<div id="g-pay-chk">
+    
+    <h4 class="f-cb">
+        <!-- <a href="javascript:void(0);" class="f-fl"><img src="${staticDomain}image/gw.logo.t.png" /></a> -->
+        <span class="f-fl">预定</span>
+    </h4>
+
+    <p class="u-desc">
+        订单提交失败，请稍后重试！<br />
+    </p>
+    <p class="u-desc">
+       ${msg}
+    </p>
+</div>
+<script>
+  EndTimeMsg = ${surplusTime/1000}
+  function show() {
+    h = Math.floor(EndTimeMsg / 60 / 60);
+    m = Math.floor((EndTimeMsg - h * 60 * 60) / 60);
+    s = Math.floor((EndTimeMsg - h * 60 * 60 - m * 60));
+    document.getElementById("DD").innerHTML = parseInt(h/24);
+    document.getElementById("HH").innerHTML = h;
+    document.getElementById("MM").innerHTML = m;
+    document.getElementById("SS").innerHTML = s;
+    EndTimeMsg--;
+    if (EndTimeMsg < 0)
+    {
+        document.getElementById("DD").innerHTML = "0";
+        document.getElementById("HH").innerHTML = "00";
+        document.getElementById("MM").innerHTML = "00";
+        document.getElementById("SS").innerHTML = "00";;
+    }
+  }
+$(function(){
+ setInterval("show()", 1000)
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>体检套餐详情</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/reset.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/main.z.css" />
+    <style>
+	.u-nav {
+	  background-color: #FF8067; 
+	  }
+    .u-border{
+	  height: 26px;
+	  line-height: 26px;
+	  border: 1px solid #B2B2B2;
+	  color: #333;
+	  text-align: center;
+	  font-size: 14px;
+	  vertical-align:middle;
+    }
+    </style>
+    <script>
+    $(function(){
+      $('body').css({'background-color':'#fff'});
+    });
+    </script>
+</head>
+<body>
+<script>var _iNav = 2;</script>
+<form method="post" action="${dynamicDomain}/buyWelfare/buyWelfareIndex" onsubmit="return validateForm();" id="welfarePackageForm" name="welfarePackageForm" >
+<div id="e-y3-3-1" class="lyt">
+	<div class="info f-cb">
+		<div class="lft"><img src="${dynamicDomain}${physicalPackage.packageImgUrl}" style="width:390px;height:245px;"/></div>
+		<div class="rgt">
+			<h5 style="height:auto;">${physicalPackage.packageName}</h5>
+			<p style="text-indent:0em;">套餐简介：${physicalPackage.packageContent}</p>
+			<h6>销售价：<i>￥${physicalPackage.packagePrice?string('0.00')}</i> 元</h6>
+			<h6>截止日期：${physicalPackage.endDate?string("yyyy年MM月dd日")}</h6>
+			<h5 class="f-cb" style="font-size:14px;color:#626262;">
+	            <span class="f-fl u-lab">份&nbsp;&nbsp;&nbsp;数：</span>
+	            <span class="f-fl u-lab">
+		            <a href="javascript:void(0);" data-type="subt" class="j-comp u-border" style="display:inline-block;width:14px;">-</a>
+		            <input type="text" id="count" name="count" class="j-count u-border" value="1" style="width:50px;"/>
+		            <a href="javascript:void(0);" data-type="add" class="j-comp u-border" style="display:inline-block;width:14px;">+</a>
+	            </span>
+	            <span class="f-fl u-lab  stock-num" style="color:red;font-size:15px;margin-left:10px;">
+	            <#if physicalPackage.packageStock==0>
+                 套餐已售罄
+                 <#else>
+                   剩余库存${physicalPackage.packageStock}
+                 </#if>
+	            </span>
+            </h5>
+            <input type="hidden" name="pakageId" id="pakageId"  value="${physicalPackage.objectId}"/>
+            <#if isPermission>
+			    <h4><a href="javascript:void(0);" class="f-ib buy_welfare">立即购买</a></h4>
+			</#if>
+		</div>
+	</div>
+	<div class="list">
+		<table>
+			<thead>
+				<tr class="j-lst">
+					<td colspan="2" class="td0" style="width:30%;">体检项目</td>
+					<td class="td2" style="width:70%;">临床验证</td>
+				</tr>
+			</thead>
+			<tbody>
+			    <#list physicalItems as item>
+	                <tr>
+	                    <#if item_index gte 1>
+		                	<#if physicalItems[item_index].parentItemId == physicalItems[item_index-1].parentItemId>
+		                	  <td class="td0 tde">&nbsp;</td>
+		                	<#else>
+		                	   <td class="td0">${item.firstItemName }</td>
+		                	</#if>
+	                  	<#else>
+		                   <td class="td0">${item.firstItemName }</td>
+	                   	</#if>
+	                    <td class="td1">${item.secondItemName }</td>
+	                    <td class="td2">${item.targetExplain }</td>
+	                </tr>
+                </#list>
+			</tbody>
+		</table>
+	</div>
+	<div class="desc">
+		<span>使用说明</span>
+		<p>${physicalPackage.packageExplain}</p>
+	</div>
+</div>
+</form>
+<script>
+
+function validateForm(){
+    var count = $('#count').val();
+    var stock = '${physicalPackage.packageStock}';
+    if(parseInt(count)<=0||count==''||!/^[1-9]+\d*$/.test(count)){
+        winAlert('数量有误，请重新输入');
+        return false;
+    }
+    if(parseInt(count)>parseInt(stock)){
+        winAlert('库存不足!');
+        return false;
+    }
+    return true;
+}
+
+    $(function(){
+    
+        // 列表尾元素的样式控制
+        $('#g-lt1-main').find('ul:last').css('border-bottom-color','#c6c6c6');
+    
+        // 数量加减
+        $('.j-comp').click(function(){
+            var _count = $('.j-count');
+            var _this = $(this), _type = _this.attr('data-type');
+            var _val = _count.val();
+            
+            if(_type == 'subt'){
+                if(_val <= 1){
+                    winAlert('数量不能少于1');
+                    return false;
+                }
+                _val--;
+            }else{
+            	var stock = $('.stock-num').text();
+            	stock = stock.match(/^[^\d]+?(\d+)?[^\d]+?$/)[1];
+            	stock = parseInt(stock || -1);
+            	if(stock != -1 && _val<stock)
+                	_val++;
+            }
+            _count.val(_val);
+        });
+        //立即购买
+        $(".buy_welfare").click(function (){
+        	if(validateForm()){
+        		$("#welfarePackageForm").submit();
+        	}
+        });
+         
+    });
+</script>
+</body>
+</head>

@@ -1,0 +1,179 @@
+<#include "/common/page.html">
+<#if welfarePlan??>
+<#assign title='修改福利计划'>
+<#else>
+<#assign title='添加福利计划'>
+</#if>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <title>${title}</title>
+    <link media="all" rel="stylesheet" href="${staticDomain}css/popup.z.css" />
+    <link media="all" rel="stylesheet" href="${staticDomain}css/excel.css" />
+    <script src="${staticDomain}js/jquery.popup.plus.js"></script>
+    <script src="${staticDomain}js/jquery.popup.js"></script>
+    <script src="${staticDomain}date/WdatePicker.js"></script>
+    <style>
+      .discription .error{
+        display:block;
+        margin-top:10px;
+      }
+    </style>
+</head>
+<body id="p9-1">
+<div id="g-crum2">
+	<h4>
+		<a href="javascript:void(0);">账户首页</a> &gt;
+		<a href="javascript:void(0);">福利管理</a> &gt;
+		${title}
+	</h4>
+</div>
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">	
+	<script>var _menuIndex = 1;</script>
+	<div class="m-main f-fr">
+		<form action="${dynamicDomain}/welfarePlan/save" method="post" id="welfarePlanForm">
+		<input type="hidden" name="objectId" value="${entity.objectId}">
+		<input type="hidden" name="status" value="${entity.status}">
+		<input type="hidden" name="companyId" value="${entity.companyId}">
+		<input type="hidden" name="organizationId" value="${entity.organizationId}">
+		<input type="hidden" name="headCount" value="${entity.headCount}">
+		<input type="hidden" name="totalAmount" value="${entity.totalAmount}">
+		<input type="hidden" name="rejectHeadCount" value="${entity.rejectHeadCount}">
+		<input type="hidden" name="confirmHeadCount" value="${entity.confirmHeadCount}">
+		<input type="hidden" name="minGrantQuota" value="${entity.minGrantQuota}">
+		<#if entity??>
+		    <input type="hidden" name="overplusStrategy" value="${entity.overplusStrategy}">
+		<#else>
+		    <input type="hidden" name="overplusStrategy" value="1">
+		</#if>
+		
+		<h4 class="u-tit f-cb">
+			<span class="f-ib">福利计划设置</span>
+		</h4>
+		<div id="g-step" class="f-cb">
+			<a href="javascript:void(0);" class="u-c23">计划信息</a>
+			<a href="javascript:void(0);">制定计划</a>
+			<a href="javascript:void(0);">额度分配</a>
+			<a href="javascript:void(0);">员工选择</a>
+			<a href="javascript:void(0);">确定选择</a>
+			<a href="javascript:void(0);">订单支付</a>
+			<a href="javascript:void(0);" class="u-c31">付款详情</a>
+		</div>
+		
+		<div id="p9-1-up">
+			<h3>计划信息</h3>
+			<fieldset>
+				<label class="f-ib">年份设置：</label>
+				<span class="f-ib f-por">
+					<input type="text" name="year" class="f-ib u-txt-date required" value="${entity.year}" onclick="WdatePicker({dateFmt:'yyyy',minDate:'{%y-1}',maxDate:'{%y+2}',readOnly:true})">
+				</span>
+			</fieldset>
+			<fieldset>
+				<label class="f-ib">计划名称：</label>
+				<span class="f-ib">
+					<input type="text" class="f-ib u-txt {required:true,maxlength:50}" name="name" value="${entity.name}"/><i>*</i>
+				</span>
+			</fieldset>
+			<fieldset>
+				<label class="f-ib">员工选择期限：</label>
+				<input type="text" readonly="readonly" class="f-ib u-txt-date required" id="sel-start" name="beginSelectDate" value="${entity.beginSelectDate?string('yyyy-MM-dd')}"/>
+				<span class="f-ib">TO</span>
+				<input type="text" readonly="readonly" class="f-ib u-txt-date required" id="sel-end" name="endSelectDate" value="${entity.endSelectDate?string('yyyy-MM-dd')}"/>
+				<i>* 福利计划将在开始时间自动下发给员工，请正确设置开始时间和截止时间.</i>
+			</fieldset>
+			<fieldset>
+				<label class="f-ib z-vlt">计划说明：</label>
+				<div class="f-ib discription">
+					<textarea class="{maxlength:1000}" placeholder="提供员工参考的说明，例 1.员工在选择完所有的福利套餐后;2.剩余的${s_welfarePointName}可以在福利商城自由购买商品;" name="planDescription">${entity.planDescription}</textarea>
+				</div>
+			</fieldset>
+			<div class="u-foot f-cb">
+                <h4>剩余额度处理策略：</h4>
+                <#if entity??>
+                    <#if entity.overplusStrategy==1>
+                        <p>                                         
+		                    <i style="font-weight:700;">剩余额度转换成员工${s_welfarePointName}</i>（当员工选择截止时间到期后，您可以查看到所有员工的剩余额度情况，当您为其付款后，i福励平台会自动将员工的剩余额度转换成该员工可自由使用的${s_welfarePointName}。）                              
+		                </p>
+                    <#elseif entity.overplusStrategy==2>
+                         <p>
+                            <i style="font-weight:700;">本计划剩余额度累计</i>（当员工选择截止时间到期后，本计划内的剩余额度将纳入下个福利计划的额度供员工使用）
+                         </p>
+                    <#elseif entity.overplusStrategy==3>
+                        <p>
+                            <i style="font-weight:700;">本计划剩余额度作废</i>（当员工选择截止时间到期后，属于本计划的剩余额度将作废。）
+                        </p>
+                    </#if>
+		        <#else>
+		                <p>                                         
+                            <i style="font-weight:700;">剩余额度转换成员工${s_welfarePointName}</i>（当员工选择截止时间到期后，您可以查看到所有员工的剩余额度情况，当您为其付款后，i福励平台会自动将员工的剩余额度转换成该员工可自由使用的${s_welfarePointName}。）                              
+                        </p>
+		        </#if>
+            </div>  			
+			<script>
+			$(function(){
+
+				// 日期控件 
+				$('#sel-start').click(function(){
+					WdatePicker({dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'sel-end\')}'});
+				});
+				$('#sel-end').click(function(){
+					WdatePicker({dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'sel-start\')}'});
+				});
+			
+
+				// 模拟Select控件
+				$('.j-slt').click(function(){
+
+					var _this = $(this), _val = _this.prev('input'), _opt = _this.next('em');
+
+					$('.j-slt').not(this).removeClass('z-on-slt').next().hide();
+
+					if(_this.hasClass('z-on-slt')){
+						_this.removeClass('z-on-slt');
+						_opt.hide();
+					}else{
+						_this.addClass('z-on-slt');
+						_opt.show();
+					}
+					return false;
+				});
+
+				//下拉项的点击事件
+				$('.j-opt > a').click(function(){
+
+					var _this = $(this), _val = _this.attr('data-val'), _opt = _this.parent('em');
+
+					_opt.hide().prev().removeClass('z-on-slt').val(_this.text()).prev().val(_val);
+					
+					return false;
+				});
+				$('body').click(function(e){
+					$('.j-opt').hide();
+					$('.j-slt').removeClass('z-on-s')
+				});
+				$('body').attr('id','p9-1');
+				//设置策略
+				var strategy = '${entity.overplusStrategy}';
+				if(strategy!=''){
+				   $("[data-value='"+strategy+"']").find('.j-change').trigger("click");
+				}
+				$('#welfarePlanForm').validate();
+			});
+			
+			function saveData(){
+			    $('#welfarePlanForm').submit();
+			}
+			</script>
+		</div>
+
+		<div class="g-bt-ft">
+			<a href="${dynamicDomain}/welfarePlan/page" class="u-gray">返回</a>
+			<a href="javascript:void(0);" onclick="saveData();">保存并下一步</a>
+		</div>
+		</form>
+	</div>
+	</div>
+</body>
+</html>

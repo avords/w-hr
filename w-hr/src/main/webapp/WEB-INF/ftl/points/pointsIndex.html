@@ -1,0 +1,143 @@
+<html lang="zh-CN">
+<head>
+    <title>购买${s_welfarePointName}</title>
+    <script src="${staticDomain}js/func.js"></script>
+    <style>
+    #g-inte-fm fieldset span {
+	  color: #999;
+	  font-size: 13px;
+	}
+	#g-inte-fm fieldset .error{
+	  color: #f00;
+	  font-size: 13px;
+	}
+    </style>
+</head>
+<body>
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">福利管理</a> &gt;
+		<a href="javascript:void(0);">购买${s_welfarePointName}</a>
+	</h4>
+</div>
+	<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<div class="m-main f-fr">
+		<h4 class="u-tit"><span class="f-ib">购买${s_welfarePointName}</span></h4>
+		<div id="g-inte-fm" class="f-por">
+			<div class="m-acc">
+				<span class="f-ib">当前账户可用${s_welfarePointName}：</span>
+				<h2><b>${sumPoint?string("#,##0.00")}</b>&nbsp;&nbsp;${s_welfarePointName}</h2>
+				<p>
+					账户名称：${user.userName}<br />
+					接收账号：${user.loginName}
+				</p>
+			</div>
+			<form method="post" action="${dynamicDomain}/points/confirmPointsMsg" name="LifeServiceBookingOrder" id="LifeServiceBookingOrder">
+				<h6 class="m-step"><i class="f-ib">1</i><em class="f-ib">填写购买信息</em></h6>
+				<fieldset>
+					<label class="f-ib">充值数量：</label>
+					<input type="text" class="f-ib u-ipt-t u-w1 positive_integer required" name="count"/>
+					<span class="f-ib u-nxt">${s_welfarePointName} <i>(1元=1${s_welfarePointName})</i></span>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib">应付金额：</label>
+					<span class="f-ib"><b class="money">0.00</b><b>元</b></span>
+				</fieldset>
+
+				<h6 class="m-step"><i class="f-ib">2</i><em class="f-ib">发票信息</em></h6>
+				<fieldset>
+					<label class="f-ib">发票抬头：</label>
+					<input type="text" class="f-ib u-ipt-t u-w2" name="invoiceUp" maxlength="30" value="${subOrderTemp.invoiceUp}"/>
+				</fieldset>
+				<fieldset><label class="f-ib">寄送地址：</label>
+					<input type="text" class="f-ib u-ipt-t u-w2" name="invoiceAddress" maxlength="30" value="${subOrderTemp.invoiceAddress}"/>
+				</fieldset>
+				<fieldset><label class="f-ib">联系人：</label>
+					<input type="text" class="f-ib u-ipt-t u-w2" name="invoiceContacts" maxlength="10" value="${subOrderTemp.invoiceContacts}"/>
+				</fieldset>
+				<fieldset><label class="f-ib">联系方式：</label>
+					<input type="text" class="f-ib u-ipt-t u-w2 mobile" name="invoiceTelephone" maxlength="20" value="${subOrderTemp.invoiceTelephone}"/>
+				</fieldset>
+				<fieldset>
+					<label class="f-ib"><input type="checkbox" class="f-ib notice" name="notice" />&nbsp;短信通知：</label>
+					<input type="text" class="f-ib u-ipt-t u-w2 mobile" id="noticeMobile" placeholder="默认显示账户绑定手机号码" maxlength="11" value="${user.mobilePhone}"/>
+					<span style="color: red;" class="errormsg"></span>
+				</fieldset>
+					<input type="hidden" name="recipteMoble" id="recipteMoble" value=""/>
+
+				<h5>
+				<button type="button" class="f-ib u-sub">提交订单</button>
+				</h5>
+			</form>
+			<script>
+			$(function(){
+				
+				$("#LifeServiceBookingOrder").validate();
+				
+				//输入充值数量信息
+				$(".u-w1").blur(function(){
+					var points = $(".u-w1").val();
+					if(points != ''){
+						if(utils.isNumber(points)){
+							var num=Number(points) ; 
+							var rs1=num.toFixed(2); 
+							$(".money").html(rs1);
+						}else{
+							$(".money").html("0.00");
+						}
+					}else{
+						$(".money").html("0.00");
+					}
+				});				
+				
+
+				// 选择支付方式
+				var _selPay = $('.j-sel-pay');
+				_selPay.click(function(){
+					_selPay.removeClass('z-on').siblings('i').hide();;
+					$(this).addClass('z-on').siblings('i').show();
+				});
+				
+				
+				
+				//提交订单
+				$(".u-sub").click(function(){
+					//校验
+					var noticeMobile = $("#noticeMobile").val();
+					if($(".notice").attr("checked")=='checked'){
+						// 手机校验
+						if (!utils.isMobile(noticeMobile)||noticeMobile.length <= 0) {
+							$(".errormsg").text('必填');
+							return false;
+						} else {
+							if (!utils.isMobile(noticeMobile)) {
+								$(".errormsg").text('格式不正确');
+								return false;
+							} else {
+								$(".errormsg").text('');
+							}
+						}
+					}
+					
+					if($("#LifeServiceBookingOrder").valid()){
+						$("#recipteMoble").val(noticeMobile);
+						$("#LifeServiceBookingOrder").submit();
+					}
+					
+				});
+				
+				
+				
+				
+				
+				
+			});
+			</script>
+		</div>
+
+	</div>
+</div>
+</body>
+</html>

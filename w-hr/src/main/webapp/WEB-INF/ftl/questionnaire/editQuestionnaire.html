@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<title>问卷调查</title>
+</head>
+<body>
+
+<div id="g-crum2">
+	<h4>
+		<a href="${dynamicDomain}/index">账户首页</a> &gt;
+		<a href="javascript:void(0);">信息发布</a> &gt;
+		问卷调查
+	</h4>
+</div>
+
+<div id="g-content" class="f-cb">
+	<#include "/include/nav_menu_link.html">
+	<script>var _menuIndex = 2;</script>
+
+	<div class="m-main f-fr">
+		
+		<h4 class="u-tit f-cb">
+			<span class="f-ib"><#if entity??>修改<#else>新增</#if>问卷调查</span>
+			<a href="javascript:void(0);" class="f-fr" onclick="window.history.go(-1);">返回</a>
+		</h4>
+
+		<div id="g-add-p26">
+			<form action="${dynamicDomain }/questionnaire/saveToPage" id="questionnaire" method="post">
+			<input type="hidden" name="objectId" value="${entity.objectId}" >
+			<fieldset>
+				<label class="f-ib">调查标题：</label>
+				<#if entity??>
+					<#if entity.status=="1">
+						<input type="text" class="f-ib u-txt required " id="questionTitle" name="questionTitle" value="${entity.questionTitle}" maxlength="120"/><i class="f-ib">*</i>
+					<#else>
+						<input type="text" class="f-ib u-txt" id="questionTitle" name="questionTitle" value="${entity.questionTitle}" readonly="readonly"/><i class="f-ib">*</i>
+					</#if>
+				<#else>
+					<input type="text" class="f-ib u-txt {required:true}" id="questionTitle" name="questionTitle" value="${entity.questionTitle}" maxlength="120"/><i class="f-ib">*</i>
+				</#if>
+			</fieldset>
+
+			<fieldset>
+				<label class="f-ib">选项设置：<input type="hidden" class="j-type-val" id="selectSet" name="selectSet" value="${entity.selectSet}" ></label>
+				<a href="javascript:void(0);" data-val="1" id="ss1" class="z-on f-ib u-type j-slt-type">仅单选</a>
+				<a href="javascript:void(0);" data-val="2" id="ss2" class="f-ib u-type j-slt-type">可多选</a>
+			</fieldset>
+
+			<fieldset>
+				<label class="f-ib z-vlt">问卷项目设置：</label>
+				<div class="f-ib">
+					<#if entity??>
+						<#if questions??>
+							<#list questions as question>
+								<#if entity.status=="1">
+									<h6><b>${question_index+1}.</b><input type="text" style="width:308px;" class="f-ib u-txt required " name="prejectContent" id="prejectContent${question_index}" maxlength="80" value="${question.questionContent}"/> <i class="f-ib">*</i></h6>
+								<#else>
+									<h6><b>${question_index+1}.</b><input type="text" style="width:308px;" class="f-ib u-txt" name="prejectContent" id="prejectContent${question_index}" value="${question.questionContent}" readonly="readonly"/> <i class="f-ib">*</i></h6>
+								</#if>
+							</#list>
+							<#if entity.status=="1">
+								<a href="javascript:void(0);" class="f-ib j-add-txt">新增问卷项目</a>
+							</#if>
+						<#else>
+							<a href="javascript:void(0);" class="f-ib j-add-txt">新增问卷项目</a>
+						</#if>
+					<#else>
+						<h6><b>1.</b><input type="text" style="width:308px;" class="f-ib u-txt required" name="prejectContent" id="prejectContent0" maxlength="80"/> <i class="f-ib">*</i></h6>
+						<h6><b>2.</b><input type="text" style="width:308px;" class="f-ib u-txt required" name="prejectContent" id="prejectContent1" maxlength="80"/> <i class="f-ib">*</i></h6>
+						<a href="javascript:void(0);" class="f-ib j-add-txt">新增问卷项目</a>
+					</#if>
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<label class="f-ib">有效日期：</label>
+				<input type="text" readonly="readonly" class="f-ib u-txt-date required" id="startDate" name="startDate" value="${(entity.startDate?string('yyyy-MM-dd'))}"/>
+				<span class="f-ib">TO</span>
+				<input type="text" readonly="readonly" class="f-ib u-txt-date required" id="endDate" name="endDate" value="${(entity.endDate?string('yyyy-MM-dd'))}"/><i>*</i>
+			</fieldset>
+
+			<fieldset class="u-btn">
+				<a href="#" class="f-ib u-sub" id="toSave" onclick="toSave();">发布调查</a>
+				<a href="${dynamicDomain }/questionnaire/page" class="f-ib u-bak">返回列表</a>
+			</fieldset>
+
+			<script src="${staticDomain}date/WdatePicker.js" charset="utf-8"></script>
+			<script type="text/javascript">
+			$(function(){
+				$("#questionnaire").validate();
+				var entity = '${entity}';
+				var startTime = "${(entity.startDate?string('yyyy-MM-dd'))}";
+				// 设置日历控件
+				if (startTime!=null && startTime!=""){
+					var d = new Date();
+					var vYear = d.getFullYear();
+					var vMon = d.getMonth()+1;
+					var vDay = d.getDate();
+					var currDate = vYear+"-"+vMon+"-"+vDay;
+					var curr=new Date(currDate.replace("-", "/").replace("-", "/"));
+					var start=new Date(startTime.replace("-", "/").replace("-", "/"));
+					if (start>curr){
+						$('#startDate').click(function(){
+							WdatePicker({minDate: '%y-%M-%d',maxDate:'#F{$dp.$D(\'endDate\')}'});
+						});
+						$('#endDate').click(function(){
+							WdatePicker({minDate: '#F{$dp.$D(\'startDate\')}'});
+						});
+					}else{
+						$('#startDate').click(function(){
+							WdatePicker({minDate: startTime,maxDate:'#F{$dp.$D(\'endDate\')}'});
+						});
+						$('#endDate').click(function(){
+							WdatePicker({minDate: '%y-%M-%d'});
+						});
+					}
+				}else{
+					$('#startDate').click(function(){
+						WdatePicker({minDate: '%y-%M-%d',maxDate:'#F{$dp.$D(\'endDate\')}'});
+					});
+					$('#endDate').click(function(){
+						WdatePicker({minDate:'#F{$dp.$D(\'startDate\')}'});
+					});
+				}
+
+				var selectSet = '${entity.selectSet}';
+				if (selectSet!=null && selectSet!="") {
+					if (selectSet=='1') {
+						$("#ss2").removeClass('z-on');
+						$("#ss1").addClass('z-on');
+					}else if (selectSet=='2'){
+						$("#ss1").removeClass('z-on');
+						$("#ss2").addClass('z-on');
+					}
+				}else{
+					$("#selectSet").val("1");
+				}
+				if (entity!=null && entity!='undefined' && entity!=''){
+					var status = '${entity.status}';
+					if (status=='1') {
+						// 选项设置的选中事件
+						var _sltType = $('.j-slt-type');
+						_sltType.click(function(){
+							var _this = $(this), 
+							_val = _this.attr('data-val'),
+							_tagVal = $('.j-type-val');
+							if(_this.hasClass('z-on')){
+								return false;
+							}else{
+								_sltType.removeClass('z-on');
+								_this.addClass('z-on');
+								_tagVal.val(_val);
+							}
+						});
+					}
+				}else{
+					// 选项设置的选中事件
+					var _sltType = $('.j-slt-type');
+					_sltType.click(function(){
+						var _this = $(this), 
+						_val = _this.attr('data-val'),
+						_tagVal = $('.j-type-val');
+						if(_this.hasClass('z-on')){
+							return false;
+						}else{
+							_sltType.removeClass('z-on');
+							_this.addClass('z-on');
+							_tagVal.val(_val);
+						}
+					});
+				}
+
+				// 添加
+				$('.j-add-txt').click(function(){
+					var _this = $(this), _parent = _this.parent(), _h6 = _parent.find('h6');
+					if(_h6.length >= 5){
+						winAlert('很抱歉，不能超过5项！');
+						return false;
+					}
+					var _opt = '<h6><b>'+(_h6.length+1)+'.</b><input type="text"  style="width:308px;" class="f-ib u-txt required {maxlength:80}" name="prejectContent" maxlength="80" id="prejectContent'+_h6.length+'"/> <i class="f-ib">*</i></h6>';
+					$(_opt).insertBefore(_this);
+
+				});
+				
+			});
+			function toSave(){
+				$("#questionnaire").submit();
+			}
+			</script>
+			</form>	
+		</div>
+	</div>
+</div>
+</body>
+</html>
